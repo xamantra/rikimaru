@@ -4,7 +4,6 @@ const container_1 = require("../core/container");
 class HelpCommand {
     constructor() {
         this.MessageHelper = container_1.Container.MessageHelper;
-        this.BotCommand = container_1.Container.BotCommand;
         this.ClientManager = container_1.Container.ClientManager;
         this.Color = container_1.Container.Color;
         console.log(`Constructed: "${HelpCommand.name}"`);
@@ -19,7 +18,7 @@ class HelpCommand {
         }
     }
     Embed(message) {
-        const commands = this.BotCommand.GetCommands;
+        const commands = container_1.Container.BotCommand.GetCommands;
         const client = this.ClientManager;
         const list = [];
         const color = this.Color;

@@ -1,6 +1,5 @@
 import { Message } from "discord.js";
 import { Color } from "./../core/colors";
-import { BotCommand } from "./bot.command";
 import { MessageHelper } from "./../helpers/message.helper";
 import { ClientManager } from "./../core/client";
 import { CallbackCommand } from "./callback.command";
@@ -8,12 +7,10 @@ import { Container } from "../core/container";
 
 export class HelpCommand {
   private MessageHelper: MessageHelper;
-  private BotCommand: BotCommand;
   private ClientManager: ClientManager;
   private Color: Color;
   constructor() {
     this.MessageHelper = Container.MessageHelper;
-    this.BotCommand = Container.BotCommand;
     this.ClientManager = Container.ClientManager;
     this.Color = Container.Color;
     console.log(`Constructed: "${HelpCommand.name}"`);
@@ -29,7 +26,7 @@ export class HelpCommand {
   }
 
   private Embed(message: Message): any {
-    const commands: CallbackCommand[] = this.BotCommand.GetCommands;
+    const commands: CallbackCommand[] = Container.BotCommand.GetCommands;
     const client: ClientManager = this.ClientManager;
     const list: any[] = [];
     const color: Color = this.Color;
