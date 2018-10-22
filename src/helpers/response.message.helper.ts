@@ -1,8 +1,11 @@
-import { IMedia } from "../interfaces/page.interface";
+import {
+  IMedia,
+  IDate,
+  INextAiringEpisode
+} from "../interfaces/page.interface";
 import { EndDate } from "../models/end.date.model";
 import { NextAiringEpisode } from "../models/next.airing.episode.model";
 import { ResponseMessage } from "../models/response.message.model";
-import { StartDate } from "../models/start.date.model";
 import { TitleHelper } from "./title.helper";
 import { TimeHelper } from "./time.helper";
 import { Container } from "../core/container";
@@ -24,10 +27,10 @@ export class ResponseMessageHelper {
     const timeHelper: TimeHelper = this.TimeHelper;
     const titleHelper: TitleHelper = this.TitleHelper;
     let responseMessage: ResponseMessage;
-    let nextAiringEpisode: NextAiringEpisode;
+    let nextAiringEpisode: INextAiringEpisode;
     let episode: number;
-    let start: StartDate;
-    let end: EndDate;
+    let start: IDate;
+    let end: IDate;
     let countdown: string = null;
     const lastUpdate: string = timeHelper.Elapsed(media.updatedAt);
     if (media.startDate !== null) {

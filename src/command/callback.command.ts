@@ -1,19 +1,20 @@
 import { Message } from "discord.js";
 import { Command } from "../models/command.model";
+import { ICommand } from "../interfaces/command.interface";
 
 export class CallbackCommand {
   public Name: string;
   public Description: string;
   public ParameterRequired: boolean;
   public DMResponse: boolean;
-  public Callback: (message: Message, command: Command, dm: boolean) => void;
+  public Callback: (message: Message, command: ICommand, dm: boolean) => void;
 
   constructor(
     name: string,
     description: string,
     requireParameter: boolean,
     dmResponse: boolean,
-    callBack: (message: Message, command: Command, dm: boolean) => void
+    callBack: (message: Message, command: ICommand, dm: boolean) => void
   ) {
     this.Name = name;
     this.Description = description;

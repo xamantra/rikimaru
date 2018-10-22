@@ -18,7 +18,7 @@ let Root = class Root {
 };
 __decorate([
     json2typescript_1.JsonProperty("data", data_model_1.Data),
-    __metadata("design:type", data_model_1.Data)
+    __metadata("design:type", Object)
 ], Root.prototype, "Data", void 0);
 Root = __decorate([
     json2typescript_1.JsonObject("root")

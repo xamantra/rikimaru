@@ -1,14 +1,14 @@
 import { Anilist } from "../core/anilist";
+import { ICommand } from "./../interfaces/command.interface";
 import { Container } from "./../core/container";
 import { MediaResult } from "./../core/media.result";
 import { MediaHandler } from "./../handlers/media.handler";
 import { Color } from "./../core/colors";
 import { ResponseMessageHelper } from "./response.message.helper";
-import { Command } from "../models/command.model";
-import { Media } from "../models/media.model";
 import { JsonConvert, ValueCheckingMode } from "json2typescript";
 import { Root } from "../models/root.model";
 import { Message } from "discord.js";
+import { IMedia } from "../interfaces/page.interface";
 
 export class MediaHelper {
   private Color: Color;
@@ -26,7 +26,7 @@ export class MediaHelper {
   public Handle(
     aniList: Anilist,
     message: Message,
-    command: Command,
+    command: ICommand,
     isDM: boolean
   ): void {
     const mediaHandler: MediaHandler = this.MediaHandler;
@@ -37,7 +37,7 @@ export class MediaHelper {
       command.Parameter,
       "ANIME"
     );
-    let media: Media[] = [];
+    let media: IMedia[] = [];
     const jsonConvert: JsonConvert = new JsonConvert();
     jsonConvert.ignorePrimitiveChecks = false;
     jsonConvert.valueCheckingMode = ValueCheckingMode.ALLOW_NULL;
@@ -45,16 +45,16 @@ export class MediaHelper {
       media = await (jsonConvert.deserialize(root, Root) as Root).Data.Page
         .media;
 
-      const ongoing: Media[] = mediaHandler.OngoingMedia(media);
-      const unreleased: Media[] = mediaHandler.UnreleasedMedia(media);
-      const unreleasedNoDate: Media[] = mediaHandler.UnreleasedNoDateMedia(
+      const ongoing: IMedia[] = mediaHandler.OngoingMedia(media);
+      const unreleased: IMedia[] = mediaHandler.UnreleasedMedia(media);
+      const unreleasedNoDate: IMedia[] = mediaHandler.UnreleasedNoDateMedia(
         media
       );
-      const exactMedia: Media[] = mediaHandler.ExactMedia(
+      const exactMedia: IMedia[] = mediaHandler.ExactMedia(
         media,
         command.Parameter
       );
-      const completed: Media[] = mediaHandler.CompletedMedia(media);
+      const completed: IMedia[] = mediaHandler.CompletedMedia(media);
 
       if (exactMedia.length > 0) {
         exactMedia.forEach(m => {

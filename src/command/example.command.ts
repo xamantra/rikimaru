@@ -1,5 +1,6 @@
 import { Command } from "../models/command.model";
 import { Randomizer } from "./../helpers/random.helper";
+import { ICommand } from "../interfaces/command.interface";
 
 export class ExampleCommand {
   private media: string[] = [];
@@ -29,7 +30,7 @@ export class ExampleCommand {
     console.log(`Constructed: "${ExampleCommand.name}"`);
   }
 
-  public MediaExample(command: Command, count: number): string {
+  public MediaExample(command: ICommand, count: number): string {
     let result: string = ``;
     const picked: string[] = [];
     for (let i: number = 0; i < this.media.length; i++) {

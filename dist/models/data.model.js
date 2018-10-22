@@ -18,7 +18,7 @@ let Data = class Data {
 };
 __decorate([
     json2typescript_1.JsonProperty("Page", page_model_1.Page),
-    __metadata("design:type", page_model_1.Page)
+    __metadata("design:type", Object)
 ], Data.prototype, "Page", void 0);
 Data = __decorate([
     json2typescript_1.JsonObject("data")

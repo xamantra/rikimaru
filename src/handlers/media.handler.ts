@@ -1,6 +1,6 @@
-import { Media } from "../models/media.model";
 import { Container } from "./../core/container";
 import { TitleHelper } from "./../helpers/title.helper";
+import { IMedia } from "../interfaces/page.interface";
 
 export class MediaHandler {
   private TitleHelper: TitleHelper;
@@ -9,9 +9,9 @@ export class MediaHandler {
     console.log(`Constructed: ${MediaHandler.name}`);
   }
 
-  public ExactMedia(mediaList: Media[], search: string): Media[] {
+  public ExactMedia(mediaList: IMedia[], search: string): IMedia[] {
     const title: TitleHelper = this.TitleHelper;
-    const filteredMedia: Media[] = [];
+    const filteredMedia: IMedia[] = [];
     mediaList.forEach(m => {
       if (title.Match(m.title, search)) {
         filteredMedia.push(m);
@@ -20,8 +20,8 @@ export class MediaHandler {
     return filteredMedia;
   }
 
-  public OngoingMedia(mediaList: Media[]): Media[] {
-    const filteredMedia: Media[] = [];
+  public OngoingMedia(mediaList: IMedia[]): IMedia[] {
+    const filteredMedia: IMedia[] = [];
     mediaList.forEach(m => {
       if (m.status === "RELEASING" && m.nextAiringEpisode !== null) {
         filteredMedia.push(m);
@@ -30,8 +30,8 @@ export class MediaHandler {
     return filteredMedia;
   }
 
-  public UnreleasedMedia(mediaList: Media[]): Media[] {
-    const filteredMedia: Media[] = [];
+  public UnreleasedMedia(mediaList: IMedia[]): IMedia[] {
+    const filteredMedia: IMedia[] = [];
     mediaList.forEach(m => {
       if (m.status === "NOT_YET_RELEASED" && m.nextAiringEpisode !== null) {
         filteredMedia.push(m);
@@ -40,8 +40,8 @@ export class MediaHandler {
     return filteredMedia;
   }
 
-  public UnreleasedNoDateMedia(mediaList: Media[]): Media[] {
-    const filteredMedia: Media[] = [];
+  public UnreleasedNoDateMedia(mediaList: IMedia[]): IMedia[] {
+    const filteredMedia: IMedia[] = [];
     mediaList.forEach(m => {
       if (m.status === "NOT_YET_RELEASED" && m.nextAiringEpisode === null) {
         filteredMedia.push(m);
@@ -50,8 +50,8 @@ export class MediaHandler {
     return filteredMedia;
   }
 
-  public CompletedMedia(mediaList: Media[]): Media[] {
-    const filteredMedia: Media[] = [];
+  public CompletedMedia(mediaList: IMedia[]): IMedia[] {
+    const filteredMedia: IMedia[] = [];
     mediaList.forEach(m => {
       if (m.status === "FINISHED") {
         filteredMedia.push(m);

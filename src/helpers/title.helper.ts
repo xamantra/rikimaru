@@ -1,11 +1,12 @@
 import { Title } from "../models/title.model";
+import { ITitle } from "../interfaces/page.interface";
 
 export class TitleHelper {
   constructor() {
     console.log(`Constructed: "${TitleHelper.name}"`);
   }
 
-  public Get(title: Title): string {
+  public Get(title: ITitle): string {
     if (title.english !== null) {
       return title.english;
     } else if (title.romaji !== null) {
@@ -15,7 +16,7 @@ export class TitleHelper {
     }
   }
 
-  public Match(title: Title, search: string): boolean {
+  public Match(title: ITitle, search: string): boolean {
     if (
       title.english !== null &&
       title.english.toLowerCase() === search.toLowerCase()

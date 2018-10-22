@@ -34,7 +34,7 @@ let Media = class Media {
 };
 __decorate([
     json2typescript_1.JsonProperty("coverImage", cover_image_model_1.CoverImage),
-    __metadata("design:type", cover_image_model_1.CoverImage)
+    __metadata("design:type", Object)
 ], Media.prototype, "coverImage", void 0);
 __decorate([
     json2typescript_1.JsonProperty("id", Number),
@@ -46,7 +46,7 @@ __decorate([
 ], Media.prototype, "idMal", void 0);
 __decorate([
     json2typescript_1.JsonProperty("title", title_model_1.Title),
-    __metadata("design:type", title_model_1.Title)
+    __metadata("design:type", Object)
 ], Media.prototype, "title", void 0);
 __decorate([
     json2typescript_1.JsonProperty("type", String),
@@ -62,11 +62,11 @@ __decorate([
 ], Media.prototype, "updatedAt", void 0);
 __decorate([
     json2typescript_1.JsonProperty("startDate", start_date_model_1.StartDate),
-    __metadata("design:type", start_date_model_1.StartDate)
+    __metadata("design:type", Object)
 ], Media.prototype, "startDate", void 0);
 __decorate([
     json2typescript_1.JsonProperty("endDate", end_date_model_1.EndDate),
-    __metadata("design:type", end_date_model_1.EndDate)
+    __metadata("design:type", Object)
 ], Media.prototype, "endDate", void 0);
 __decorate([
     json2typescript_1.JsonProperty("episodes", Number),
@@ -74,7 +74,7 @@ __decorate([
 ], Media.prototype, "episodes", void 0);
 __decorate([
     json2typescript_1.JsonProperty("nextAiringEpisode", next_airing_episode_model_1.NextAiringEpisode),
-    __metadata("design:type", next_airing_episode_model_1.NextAiringEpisode)
+    __metadata("design:type", Object)
 ], Media.prototype, "nextAiringEpisode", void 0);
 __decorate([
     json2typescript_1.JsonProperty("streamingEpisodes", [media_streaming_episode_model_1.MediaStreamingEpisode]),
