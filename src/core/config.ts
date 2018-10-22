@@ -1,4 +1,4 @@
-import { EnvironmentVariables } from "../extras/env.sample";
+import { EnvironmentVariables } from "../extras/env";
 
 export class Config {
   private Token: string;
