@@ -1,9 +1,9 @@
 export class GraphQL {
-  private Page: string;
-  private Anime: string;
+  private Search: string;
+  private Media: string;
 
   constructor() {
-    this.Page = `
+    this.Search = `
     query($id: Int, $page: Int, $perPage: Int, $search: String, $type: MediaType) {
       Page(page: $page, perPage: $perPage) {
         media(id: $id, search: $search, type: $type) {
@@ -45,9 +45,9 @@ export class GraphQL {
         }
       }
     }`;
-    this.Anime = `
-    query($id: Int) {
-      media(id: $id, type: ANIME) {
+    this.Media = `
+    query($id: Int, $type: MediaType) {
+      media(id: $id, type: $type) {
         coverImage {
           large
         }
@@ -84,16 +84,16 @@ export class GraphQL {
   }
 
   public Init(): void {
-    if (this.Page !== null && this.Anime !== null) {
+    if (this.Search !== null && this.Media !== null) {
       console.log("GraphQL Queries are ready!");
     }
   }
 
-  public get MediaQL(): string {
-    return this.Page;
+  public get SearchQL(): string {
+    return this.Search;
   }
 
   public get AnimeQL(): string {
-    return this.Anime;
+    return this.Media;
   }
 }

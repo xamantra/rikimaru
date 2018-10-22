@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class GraphQL {
     constructor() {
-        this.Page = `
+        this.Search = `
     query($id: Int, $page: Int, $perPage: Int, $search: String, $type: MediaType) {
       Page(page: $page, perPage: $perPage) {
         media(id: $id, search: $search, type: $type) {
@@ -44,9 +44,9 @@ class GraphQL {
         }
       }
     }`;
-        this.Anime = `
-    query($id: Int) {
-      media(id: $id, type: ANIME) {
+        this.Media = `
+    query($id: Int, $type: MediaType) {
+      media(id: $id, type: $type) {
         coverImage {
           large
         }
@@ -82,15 +82,15 @@ class GraphQL {
         console.log(`Constructed: "${GraphQL.name}"`);
     }
     Init() {
-        if (this.Page !== null && this.Anime !== null) {
+        if (this.Search !== null && this.Media !== null) {
             console.log("GraphQL Queries are ready!");
         }
     }
-    get MediaQL() {
-        return this.Page;
+    get SearchQL() {
+        return this.Search;
     }
     get AnimeQL() {
-        return this.Anime;
+        return this.Media;
     }
 }
 exports.GraphQL = GraphQL;

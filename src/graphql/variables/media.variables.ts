@@ -3,16 +3,9 @@ export class MediaVariables {
     console.log(`Constructed: "${MediaVariables.name}"`);
   }
 
-  public Get(
-    search: string,
-    page: number = 1,
-    perPage: number = 100,
-    type: string
-  ): Object {
+  public Get(id: number, type: string): Object {
     return {
-      search: search,
-      page: page,
-      perPage: perPage,
+      id: id,
       type: type
     };
   }

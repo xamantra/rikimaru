@@ -4,11 +4,9 @@ class MediaVariables {
     constructor() {
         console.log(`Constructed: "${MediaVariables.name}"`);
     }
-    Get(search, page = 1, perPage = 100, type) {
+    Get(id, type) {
         return {
-            search: search,
-            page: page,
-            perPage: perPage,
+            id: id,
             type: type
         };
     }

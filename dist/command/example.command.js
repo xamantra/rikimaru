@@ -78,7 +78,7 @@ class ExampleCommand {
                 result += `\n-*${command.Name}* ${item}`;
                 picked.push(item);
             }
-            else if (picked.length === count) {
+            if (picked.length === count) {
                 return result;
             }
         }

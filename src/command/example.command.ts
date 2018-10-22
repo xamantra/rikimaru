@@ -81,7 +81,8 @@ export class ExampleCommand {
       if (!picked.includes(item) && picked.length < count) {
         result += `\n-*${command.Name}* ${item}`;
         picked.push(item);
-      } else if (picked.length === count) {
+      }
+      if (picked.length === count) {
         return result;
       }
     }

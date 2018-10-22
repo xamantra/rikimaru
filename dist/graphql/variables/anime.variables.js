@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class AnimeVariables {
+class MediaVariables {
     constructor() {
-        console.log(`Constructed: "${AnimeVariables.name}"`);
+        console.log(`Constructed: "${MediaVariables.name}"`);
     }
     Get(id) {
         return {
@@ -10,5 +10,5 @@ class AnimeVariables {
         };
     }
 }
-exports.AnimeVariables = AnimeVariables;
+exports.MediaVariables = MediaVariables;
 //# sourceMappingURL=anime.variables.js.map
