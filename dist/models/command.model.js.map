@@ -1,0 +1,1 @@
+{"version":3,"file":"command.model.js","sourceRoot":"","sources":["../../src/models/command.model.ts"],"names":[],"mappings":";;AAEA,MAAa,OAAO;IAGlB,YAAY,IAAY,EAAE,SAAiB;QACzC,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC,IAAI,EAAE,CAAC;QACxB,IAAI,CAAC,SAAS,GAAG,SAAS,CAAC,IAAI,EAAE,CAAC;IACpC,CAAC;CACF;AAPD,0BAOC"}
