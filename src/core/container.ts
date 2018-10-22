@@ -2,15 +2,15 @@ import { Config } from "./config";
 import { ResponseMessageHelper } from "./../helpers/response.message.helper";
 import { TitleHelper } from "./../helpers/title.helper";
 import { TimeHelper } from "./../helpers/time.helper";
-import { MediaHelper } from "./../helpers/media.helper";
+import { MediaFunction } from "../command/functions/media.command.function";
 import { MediaHandler } from "./../handlers/media.handler";
 import { MediaVariables } from "./../graphql/variables/media.variables";
 import { AnimeVariables } from "./../graphql/variables/anime.variables";
-import { Ping } from "./ping";
+import { PingFunction } from "../command/functions/ping.command.function";
 import { Color } from "./colors";
-import { HelpCommand } from "./../command/help.command";
+import { HelpFunction } from "../command/functions/help.command.function";
 import { EmbedHelper } from "./../helpers/embed.helper";
-import { BotCommand } from "./../command/bot.command";
+import { CommandManager } from "../command/manager.command";
 import { MessageHelper } from "../helpers/message.helper";
 import { MessageHandler } from "../handlers/message.handler";
 import { GraphQL } from "../graphql/graphql";
@@ -24,7 +24,6 @@ export class Container {
   public static Config: Config;
   public static ClientManager: ClientManager;
   public static MessageHelper: MessageHelper;
-  public static MediaHelper: MediaHelper;
   public static TimeHelper: TimeHelper;
   public static TitleHelper: TitleHelper;
   public static ResponseMessageHelper: ResponseMessageHelper;
@@ -33,13 +32,15 @@ export class Container {
   public static ResponseHandler: ResponseHandler;
   public static MediaHandler: MediaHandler;
   public static CommandExample: ExampleCommand;
-  public static BotCommand: BotCommand;
-  public static HelpCommand: HelpCommand;
+  public static CommandManager: CommandManager;
   public static AnimeVariables: AnimeVariables;
   public static MediaVariables: MediaVariables;
   public static MediaResult: MediaResult;
   public static GraphQL: GraphQL;
   public static Anilist: Anilist;
   public static Color: Color;
-  public static Ping: Ping;
+
+  public static get Instance(): Container {
+    return this;
+  }
 }

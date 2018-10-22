@@ -1,57 +1,29 @@
 import "reflect-metadata";
-import { Color } from "./../core/colors";
-import { Config } from "../core/config";
 import "class-transformer";
 import { ICommand } from "../interfaces/command.interface";
 import { Message } from "discord.js";
 import { Container } from "../core/container";
-import { CallbackCommand } from "../command/callback.command";
+import { BotCommand } from "../command/bot.command";
+import { RescueCenter } from "../core/rescue.center";
 
 export class ResponseHandler {
-  private Color: Color;
   constructor() {
-    this.Color = Container.Color;
     console.log(`Constructed: "${ResponseHandler.name}"`);
   }
 
-  public Get(config: Config, message: Message, command: ICommand): void {
-    const color: Color = this.Color;
-    const commands: CallbackCommand[] = Container.BotCommand.GetCommands;
+  public Get(message: Message, command: ICommand): void {
+    const commands: BotCommand[] = Container.CommandManager.Commands;
     let iteration: number = 1;
-    commands.forEach(callbackCommand => {
-      if (callbackCommand.Name === command.Name) {
-        const commandString: string = command.Name;
+    commands.forEach(cmd => {
+      if (cmd.Name === command.Name) {
         const parameter: string = command.Parameter;
-        if (callbackCommand.ParameterRequired && parameter.trim().length <= 0) {
-          Container.MediaResult.SendInfo(
-            message,
-            {
-              embed: {
-                color: color.Random,
-                title: `**Rikimaru Rescue Center**`,
-                description: `The command ***-${commandString}*** requires a *parameter*.`,
-                fields: [
-                  {
-                    name: `Examples for ***-${commandString}*** : `,
-                    // tslint:disable-next-line:max-line-length
-                    value: Container.CommandExample.MediaExample(command, 5)
-                  }
-                ],
-                timestamp: new Date(),
-                footer: {
-                  icon_url: Container.ClientManager.GetClient().user.avatarURL,
-                  text: "© Rikimaru"
-                }
-              }
-            },
-            callbackCommand.DMResponse
-          );
+        const paramRequired: boolean = cmd.ParameterRequired;
+        if (paramRequired && parameter.length <= 0) {
+          this.SendRescue(message, cmd.DMResponse, command);
+        } else if (!paramRequired && parameter.length >= 0) {
+          this.SendRescue(message, cmd.DMResponse, command);
         } else {
-          callbackCommand.Callback(
-            message,
-            command,
-            callbackCommand.DMResponse
-          );
+          cmd.Function.Execute(message, command, cmd.DMResponse);
         }
         return;
       } else {
@@ -68,5 +40,9 @@ export class ResponseHandler {
       }
       iteration++;
     });
+  }
+
+  private SendRescue(message: Message, dm: boolean, command: ICommand): void {
+    Container.MediaResult.SendInfo(message, RescueCenter.Embed(command), dm);
   }
 }

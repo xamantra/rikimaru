@@ -1,9 +1,15 @@
 import { Message } from "discord.js";
-import { Container } from "./container";
+import { ICommandFunction } from "../../interfaces/command.function.interface";
+import { Container } from "../../core/container";
+import { ICommand } from "../../interfaces/command.interface";
 
-export class Ping {
+export class PingFunction implements ICommandFunction {
   constructor() {
-    console.log(`Constructed: "${Ping.name}"`);
+    console.log(`Constructed: "${PingFunction.name}"`);
+  }
+
+  public Execute(message?: Message, command?: ICommand, dm?: boolean): void {
+    this.Get(message, dm);
   }
 
   public async Get(message: Message, isDM: boolean): Promise<void> {

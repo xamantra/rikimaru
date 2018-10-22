@@ -1,29 +1,36 @@
-import { Anilist } from "../core/anilist";
-import { JsonHelper } from "./json.helper";
-import { ICommand } from "./../interfaces/command.interface";
-import { Container } from "./../core/container";
-import { MediaResult } from "./../core/media.result";
-import { MediaHandler } from "./../handlers/media.handler";
-import { Color } from "./../core/colors";
-import { ResponseMessageHelper } from "./response.message.helper";
-import { JsonConvert, ValueCheckingMode } from "json2typescript";
-import { Root } from "../models/root.model";
+import { Anilist } from "../../core/anilist";
+import { ICommandFunction } from "../../interfaces/command.function.interface";
+import { JsonHelper } from "../../helpers/json.helper";
+import { ICommand } from "../../interfaces/command.interface";
+import { Container } from "../../core/container";
+import { MediaResult } from "../../core/media.result";
+import { MediaHandler } from "../../handlers/media.handler";
+import { Color } from "../../core/colors";
+import { ResponseMessageHelper } from "../../helpers/response.message.helper";
+import { Root } from "../../models/root.model";
 import { Message } from "discord.js";
-import { IMedia } from "../interfaces/page.interface";
+import { IMedia } from "../../interfaces/page.interface";
 
-export class MediaHelper {
+export class MediaFunction implements ICommandFunction {
   private Color: Color;
   private MediaHandler: MediaHandler;
   private MediaResult: MediaResult;
   private ResponseMessageHelper: ResponseMessageHelper;
+  private Anilist: Anilist;
 
   constructor() {
     this.Color = Container.Color;
     this.MediaHandler = Container.MediaHandler;
     this.MediaResult = Container.MediaResult;
     this.ResponseMessageHelper = Container.ResponseMessageHelper;
-    console.log(`Constructed: "${MediaHelper.name}"`);
+    this.Anilist = Container.Anilist;
+    console.log(`Constructed: "${MediaFunction.name}"`);
   }
+
+  public Execute(message?: Message, command?: ICommand, dm?: boolean): void {
+    this.Handle(this.Anilist, message, command, dm);
+  }
+
   public Handle(
     aniList: Anilist,
     message: Message,

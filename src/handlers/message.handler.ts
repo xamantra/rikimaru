@@ -44,15 +44,15 @@ export class MessageHandler {
         return;
       }
       const isCommand: boolean = helper.IsCommand(config, message);
-      const command: string = isCommand
+      const cmdName: string = isCommand
         ? helper.GetCommand(config, message).trim()
         : "";
       const parameter: string = helper.GetParameter(config, message).trim();
       if (isCommand) {
-        const _command: ICommand = new Command(command, parameter);
-        console.log(_command);
+        const command: ICommand = new Command(cmdName, parameter);
+        console.log(command);
         const response: ResponseHandler = Container.ResponseHandler;
-        response.Get(config, message, _command);
+        response.Get(message, command);
       }
     });
   }

@@ -1,24 +1,26 @@
 import { Message } from "discord.js";
-import { Color } from "./../core/colors";
-import { MessageHelper } from "./../helpers/message.helper";
-import { ClientManager } from "./../core/client";
-import { CallbackCommand } from "./callback.command";
-import { Container } from "../core/container";
+import { ICommandFunction } from "../../interfaces/command.function.interface";
+import { Color } from "../../core/colors";
+import { ClientManager } from "../../core/client";
+import { BotCommand } from "../bot.command";
+import { Container } from "../../core/container";
+import { ICommand } from "../../interfaces/command.interface";
 
-export class HelpCommand {
-  private MessageHelper: MessageHelper;
+export class HelpFunction implements ICommandFunction {
   private ClientManager: ClientManager;
   private Color: Color;
   constructor() {
-    this.MessageHelper = Container.MessageHelper;
     this.ClientManager = Container.ClientManager;
     this.Color = Container.Color;
-    console.log(`Constructed: "${HelpCommand.name}"`);
+    console.log(`Constructed: "${HelpFunction.name}"`);
   }
 
-  public ShowHelp(message: Message): void {
-    const isDM: boolean = this.MessageHelper.IsDMChannel(message);
-    if (isDM) {
+  public Execute(message?: Message, command?: ICommand, dm?: boolean): void {
+    this.ShowHelp(message, dm);
+  }
+
+  private ShowHelp(message: Message, dm: boolean): void {
+    if (dm) {
       message.member.send(this.Embed(message));
     } else {
       message.reply(this.Embed(message));
@@ -26,7 +28,7 @@ export class HelpCommand {
   }
 
   private Embed(message: Message): any {
-    const commands: CallbackCommand[] = Container.BotCommand.GetCommands;
+    const commands: BotCommand[] = Container.CommandManager.Commands;
     const client: ClientManager = this.ClientManager;
     const list: any[] = [];
     const color: Color = this.Color;
