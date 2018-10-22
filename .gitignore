@@ -74,8 +74,6 @@ typings/
 
 # my files
 env.ts
-env.js
-env.js.map
 sample-data.json
 *.graphql
 npm
