@@ -6,7 +6,7 @@ export class TitleHelper {
     console.log(`Constructed: "${TitleHelper.name}"`);
   }
 
-  public Get(title: ITitle): string {
+  public Get(title: ITitle) {
     if (title.english !== null) {
       return title.english;
     } else if (title.romaji !== null) {
@@ -16,7 +16,7 @@ export class TitleHelper {
     }
   }
 
-  public Match(title: ITitle, search: string): boolean {
+  public Match(title: ITitle, search: string) {
     if (
       title.english !== null &&
       title.english.toLowerCase() === search.toLowerCase()

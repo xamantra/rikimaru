@@ -1,8 +1,9 @@
-import { Client, Guild } from "discord.js";
+import { Client } from "discord.js";
 import { Container } from "./container";
 
 export class ClientManager {
   private Client: Client;
+
   constructor(client: Client) {
     client.login(Container.Config.GetToken);
     this.Client = client;
@@ -11,8 +12,8 @@ export class ClientManager {
     );
   }
 
-  public Init(): void {
-    const client: Client = this.Client;
+  public Init() {
+    const client = this.Client;
     client.on("ready", () => {
       console.log(
         `Bot has started, with ${client.users.size} users, in ${
@@ -31,7 +32,7 @@ export class ClientManager {
     });
   }
 
-  public GetClient(): Client {
+  public GetClient() {
     return this.Client;
   }
 }

@@ -25,8 +25,8 @@ export class Color {
     console.log(`Constructed: "${Color.name}"`);
   }
 
-  public get Random(): number {
-    const list: number[] = this.List;
+  public get Random() {
+    const list = this.List;
     return list[Randomizer.randomInt(0, list.length - 1)];
   }
 }

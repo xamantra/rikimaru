@@ -2,13 +2,10 @@ import { Config } from "./config";
 import { ResponseMessageHelper } from "./../helpers/response.message.helper";
 import { TitleHelper } from "./../helpers/title.helper";
 import { TimeHelper } from "./../helpers/time.helper";
-import { MediaFunction } from "../command/functions/media.command.function";
 import { MediaHandler } from "./../handlers/media.handler";
 import { SearchVariables } from "../graphql/variables/search.variables";
 import { MediaVariables } from "../graphql/variables/media.variables";
-import { PingFunction } from "../command/functions/ping.command.function";
 import { Color } from "./colors";
-import { HelpFunction } from "../command/functions/help.command.function";
 import { EmbedHelper } from "./../helpers/embed.helper";
 import { CommandManager } from "../command/manager.command";
 import { MessageHelper } from "../helpers/message.helper";
@@ -40,7 +37,7 @@ export class Container {
   public static Anilist: Anilist;
   public static Color: Color;
 
-  public static get Instance(): Container {
+  public static get Instance() {
     return this;
   }
 }

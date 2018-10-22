@@ -1,4 +1,5 @@
 import { HelpFunction } from "./functions/help.command.function";
+import { Response } from "./../core/enums";
 import { ICommandFunction } from "./../interfaces/command.function.interface";
 import { MediaFunction } from "./functions/media.command.function";
 import { BotCommand } from "./bot.command";
@@ -12,61 +13,81 @@ export class CommandManager {
   }
 
   public Init(): void {
-    const commands: BotCommand[] = this.BotCommands;
+    const commands = this.BotCommands;
 
-    const helpFunction: ICommandFunction = new HelpFunction();
-    const whenAnimeFunction: ICommandFunction = new MediaFunction("anime");
-    const whenMangaFunction: ICommandFunction = new MediaFunction("manga");
-    const pingFunction: ICommandFunction = new PingFunction();
+    const helpFunction = new HelpFunction();
+    const whenAnimeFunction = new MediaFunction("anime");
+    const whenMangaFunction = new MediaFunction("manga");
+    const pingFunction = new PingFunction();
 
     const help = new BotCommand(
       "help",
       "Show all my command list.",
       false,
+      Response.ChannelReply,
       helpFunction
     );
     const dmhelp = new BotCommand(
       "dmhelp",
       "Just similar with the* ***-help*** *command.",
       false,
+      Response.DirectMessage,
       helpFunction
     );
     const when = new BotCommand(
       "when",
       `Search for a schedule of an anime that matches the keyword/parameter.\nYou can either put the exact anime title or just a keyword.`,
       true,
+      Response.ChannelReply,
       whenAnimeFunction
     );
     const dmwhen = new BotCommand(
       "dmwhen",
       "Just similar with the* ***-when*** *command.",
       true,
+      Response.DirectMessage,
       whenAnimeFunction
     );
     const whenmanga = new BotCommand(
       "whenmanga",
       `Search for a schedule of a manga that matches the keyword/parameter.\nYou can either put the exact manga title or just a keyword.`,
       true,
+      Response.ChannelReply,
       whenMangaFunction
     );
     const dmwhenmanga = new BotCommand(
       "dmwhenmanga",
       `Just similar with the* ***-whenmanga*** *command.`,
       true,
+      Response.DirectMessage,
       whenMangaFunction
     );
-    const subscribe = new BotCommand("subcribe", "", true, null);
-    const mysubs = new BotCommand("viewsubs", "", true, null);
+    const subscribe = new BotCommand(
+      "subcribe",
+      "",
+      true,
+      Response.DirectMessage,
+      null
+    );
+    const mysubs = new BotCommand(
+      "viewsubs",
+      "",
+      true,
+      Response.DirectMessage,
+      null
+    );
     const ping = new BotCommand(
       "ping",
       "Just check your ping and the API's ping.",
       false,
+      Response.ChannelReply,
       pingFunction
     );
     const dmping = new BotCommand(
       "dmping",
       "Just similar with* ***-ping*** *command.",
       false,
+      Response.DirectMessage,
       pingFunction
     );
 
@@ -82,7 +103,7 @@ export class CommandManager {
     commands.push(dmping);
   }
 
-  public get Commands(): BotCommand[] {
+  public get Commands() {
     return this.BotCommands;
   }
 }

@@ -16,11 +16,11 @@ export class MediaResult {
     message: Message,
     isDM: boolean = false,
     responseMessage: ResponseMessage
-  ): void {
+  ) {
     this.Send(message, this.EmbedTemplate(responseMessage), isDM);
   }
 
-  private Send(message: Message, content: any, isDM: boolean = false): void {
+  private Send(message: Message, content: any, isDM: boolean = false) {
     if (isDM) {
       message.author.send(content);
     } else {
@@ -28,18 +28,18 @@ export class MediaResult {
     }
   }
 
-  public SendInfo(message: Message, content: any, isDM: boolean = false): void {
+  public SendInfo(message: Message, content: any, isDM: boolean = false) {
     this.Send(message, content, isDM);
   }
 
-  private EmbedTemplate(rsMessage: ResponseMessage): any {
-    let name: string = "";
-    let value: string = "";
+  private EmbedTemplate(rsMessage: ResponseMessage) {
+    let name = "";
+    let value = "";
     if (rsMessage.Status === "RELEASING") {
       name = `*Episode ${rsMessage.Current}*`;
       value = `Will air in approximately **${
         rsMessage.Countdown
-      }**\n Last update: *${rsMessage.UpdatedAt}*`;
+      }**\nLast update: *${rsMessage.UpdatedAt}*`;
     } else if (
       rsMessage.Status === "NOT_YET_RELEASED" &&
       rsMessage.Countdown !== null
@@ -55,7 +55,7 @@ export class MediaResult {
       rsMessage.Countdown === null
     ) {
       name = `*Not Yet Aired*`;
-      value = `Will be aired on **${rsMessage.StartDate}**\n Last update: *${
+      value = `Will be aired on **${rsMessage.StartDate}**\nLast update: *${
         rsMessage.UpdatedAt
       }*`;
     } else if (rsMessage.Status === "FINISHED") {

@@ -1,8 +1,8 @@
 import sqlite3, { Database, Statement } from "sqlite3";
 
 export class DataHelper {
-  public static Init(): void {
-    const db: Database = this.DB;
+  public static Init() {
+    const db = this.DB;
     db.run(
       "CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY AUTOINCREMENT, discord_id TEXT)"
     );
@@ -16,7 +16,7 @@ export class DataHelper {
     console.log(`Constructed: "${DataHelper.name}"`);
   }
 
-  public static get DB(): Database {
+  public static get DB() {
     return new sqlite3.Database("data/rikimaru.db", function(err: Error): void {
       if (err !== null) {
         console.log(err);

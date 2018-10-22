@@ -6,14 +6,14 @@ import { JsonConvert } from "json2typescript";
 
 export class SubscriptionData {
   private static SubscriptionList: Subscription[] = [];
-  public static Init(): void {
-    const db: Database = DataHelper.DB;
-    const converter: JsonConvert = JsonHelper.Converter;
+  public static Init() {
+    const db = DataHelper.DB;
+    const converter = JsonHelper.Converter;
     db.serialize(() => {
       db.each(`SELECT * FROM subscription`, (err: Error, row: any) => {
         if (row !== null) {
           try {
-            const sub: Subscription = converter.deserialize(
+            const sub = converter.deserialize(
               row,
               Subscription
             ) as Subscription;
@@ -27,8 +27,8 @@ export class SubscriptionData {
     });
   }
 
-  public static Add(mediaId: string, userId: string): void {
-    const db: Database = DataHelper.DB;
+  public static Add(mediaId: string, userId: string) {
+    const db = DataHelper.DB;
     db.serialize(() => {
       db.run(
         `INSERT OR IGNORE INTO subscription (media_id, user_id) VALUES("${mediaId}","${userId}")`,
@@ -41,7 +41,7 @@ export class SubscriptionData {
     });
   }
 
-  public static get All(): Subscription[] {
+  public static get All() {
     return this.SubscriptionList;
   }
 }

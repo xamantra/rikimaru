@@ -3,7 +3,6 @@ import "class-transformer";
 import { ICommand } from "../interfaces/command.interface";
 import { Message } from "discord.js";
 import { Container } from "../core/container";
-import { BotCommand } from "../command/bot.command";
 import { RescueCenter } from "../core/rescue.center";
 
 export class ResponseHandler {
@@ -11,13 +10,13 @@ export class ResponseHandler {
     console.log(`Constructed: "${ResponseHandler.name}"`);
   }
 
-  public Get(message: Message, command: ICommand): void {
-    const commands: BotCommand[] = Container.CommandManager.Commands;
-    let iteration: number = 1;
+  public Get(message: Message, command: ICommand) {
+    const commands = Container.CommandManager.Commands;
+    let iteration = 1;
     commands.forEach(cmd => {
       if (cmd.Name === command.Name) {
-        const parameter: string = command.Parameter;
-        const paramRequired: boolean = cmd.ParameterRequired;
+        const parameter = command.Parameter;
+        const paramRequired = cmd.ParameterRequired;
         if (paramRequired && parameter.length <= 0) {
           this.SendRescue(message, cmd.DMResponse, command);
         } else if (!paramRequired && parameter.length >= 0) {
@@ -42,7 +41,7 @@ export class ResponseHandler {
     });
   }
 
-  private SendRescue(message: Message, dm: boolean, command: ICommand): void {
+  private SendRescue(message: Message, dm: boolean, command: ICommand) {
     Container.MediaResult.SendInfo(message, RescueCenter.Embed(command), dm);
   }
 }

@@ -18,10 +18,10 @@ export class MessageHandler {
     console.log(`Constructed: "${MessageHandler.name}"`);
   }
 
-  public Init(): void {
-    const config: Config = this.Config;
-    const helper: MessageHelper = this.Helper;
-    const client: ClientManager = this.ClientManager;
+  public Init() {
+    const config = this.Config;
+    const helper = this.Helper;
+    const client = this.ClientManager;
     client.GetClient().on("message", message => {
       console.log({
         Message: {
@@ -32,7 +32,7 @@ export class MessageHandler {
         }
       });
 
-      const isDMChannel: boolean = helper.IsDMChannel(message);
+      const isDMChannel = helper.IsDMChannel(message);
       if (isDMChannel) {
         Container.MediaResult.SendInfo(
           message,
@@ -43,15 +43,15 @@ export class MessageHandler {
         );
         return;
       }
-      const isCommand: boolean = helper.IsCommand(config, message);
-      const cmdName: string = isCommand
+      const isCommand = helper.IsCommand(config, message);
+      const cmdName = isCommand
         ? helper.GetCommand(config, message).trim()
         : "";
-      const parameter: string = helper.GetParameter(config, message).trim();
+      const parameter = helper.GetParameter(config, message).trim();
       if (isCommand) {
-        const command: ICommand = new Command(cmdName, parameter);
+        const command = new Command(cmdName, parameter);
         console.log(command);
-        const response: ResponseHandler = Container.ResponseHandler;
+        const response = Container.ResponseHandler;
         response.Get(message, command);
       }
     });

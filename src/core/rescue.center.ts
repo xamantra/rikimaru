@@ -4,8 +4,8 @@ import { ICommand } from "../interfaces/command.interface";
 
 export class RescueCenter {
   // private static Color: Color = Container.Color;
-  public static Embed(command: ICommand): any {
-    const color: Color = Container.Color;
+  public static Embed(command: ICommand) {
+    const color = Container.Color;
     return {
       embed: {
         color: color.Random,

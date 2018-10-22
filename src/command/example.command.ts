@@ -71,10 +71,10 @@ export class ExampleCommand {
     console.log(`Constructed: "${ExampleCommand.name}"`);
   }
 
-  public MediaExample(command: ICommand, count: number): string {
-    let result: string = ``;
+  public MediaExample(command: ICommand, count: number) {
+    let result = ``;
     const picked: string[] = [];
-    for (let i: number = 0; i < this.media.length; i++) {
+    for (let i = 0; i < this.media.length; i++) {
       const item: string = this.media[
         Randomizer.randomInt(0, this.media.length - 1)
       ];

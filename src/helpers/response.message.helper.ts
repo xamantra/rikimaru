@@ -3,8 +3,6 @@ import {
   IDate,
   INextAiringEpisode
 } from "../interfaces/page.interface";
-import { EndDate } from "../models/end.date.model";
-import { NextAiringEpisode } from "../models/next.airing.episode.model";
 import { ResponseMessage } from "../models/response.message.model";
 import { TitleHelper } from "./title.helper";
 import { TimeHelper } from "./time.helper";
@@ -19,20 +17,16 @@ export class ResponseMessageHelper {
     console.log(`Constructed: "${ResponseMessageHelper.name}"`);
   }
 
-  public CreateMessage(
-    media: IMedia,
-    status: string,
-    color: number
-  ): ResponseMessage {
-    const timeHelper: TimeHelper = this.TimeHelper;
-    const titleHelper: TitleHelper = this.TitleHelper;
+  public CreateMessage(media: IMedia, status: string, color: number) {
+    const timeHelper = this.TimeHelper;
+    const titleHelper = this.TitleHelper;
     let responseMessage: ResponseMessage;
     let nextAiringEpisode: INextAiringEpisode;
     let episode: number;
     let start: IDate;
     let end: IDate;
     let countdown: string = null;
-    const lastUpdate: string = timeHelper.Elapsed(media.updatedAt);
+    const lastUpdate = timeHelper.Elapsed(media.updatedAt);
     if (media.startDate !== null) {
       start = media.startDate;
     }

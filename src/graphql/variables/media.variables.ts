@@ -3,7 +3,7 @@ export class MediaVariables {
     console.log(`Constructed: "${MediaVariables.name}"`);
   }
 
-  public Get(id: number, type: string): Object {
+  public Get(id: number, type: string) {
     return {
       id: id,
       type: type

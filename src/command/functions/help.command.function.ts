@@ -15,11 +15,11 @@ export class HelpFunction implements ICommandFunction {
     console.log(`Constructed: "${HelpFunction.name}"`);
   }
 
-  public Execute(message?: Message, command?: ICommand, dm?: boolean): void {
+  public Execute(message?: Message, command?: ICommand, dm?: boolean) {
     this.ShowHelp(message, dm);
   }
 
-  private ShowHelp(message: Message, dm: boolean): void {
+  private ShowHelp(message: Message, dm: boolean) {
     if (dm) {
       message.member.send(this.Embed(message));
     } else {
@@ -27,18 +27,18 @@ export class HelpFunction implements ICommandFunction {
     }
   }
 
-  private Embed(message: Message): any {
-    const commands: BotCommand[] = Container.CommandManager.Commands;
-    const client: ClientManager = this.ClientManager;
+  private Embed(message: Message) {
+    const commands = Container.CommandManager.Commands;
+    const client = this.ClientManager;
     const list: any[] = [];
-    const color: Color = this.Color;
+    const color = this.Color;
     commands.forEach(command => {
       list.push({
         name: `\n***-${command.Name}***`,
         value: `*${command.Description}*`
       });
     });
-    const embed: any = {
+    const embed = {
       embed: {
         color: color.Random,
         thumbnail: {

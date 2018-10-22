@@ -1,5 +1,5 @@
 export class EnvironmentVariables {
-  public static token: string =
+  public static token =
     "bareWithmeThisisArealTokenforAbot.IhackedDiscord.UsingmyMind";
-  public static prefix: string = "#";
+  public static prefix = "#";
 }

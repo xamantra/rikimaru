@@ -10,9 +10,9 @@ export class EmbedHelper {
     console.log(`Constructed: "${EmbedHelper.name}"`);
   }
 
-  public WelcomeEmbed(server: Guild, member: GuildMember): any {
-    const color: Color = this.Color;
-    const embed: any = {
+  public WelcomeEmbed(server: Guild, member: GuildMember) {
+    const color = this.Color;
+    const embed = {
       embed: {
         color: color.Random,
         thumbnail: {

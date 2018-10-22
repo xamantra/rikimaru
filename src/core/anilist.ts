@@ -12,17 +12,17 @@ export class Anilist {
     console.log(`Constructed: "${Anilist.name}"`);
   }
 
-  public async MediaSearch(search: string, type: string): Promise<object> {
-    const query: string = Container.GraphQL.SearchQL;
-    const vars: SearchVariables = this.SearchVariables;
-    const variables: any = vars.Get(search, 1, 100, type);
+  public async MediaSearch(search: string, type: string) {
+    const query = Container.GraphQL.SearchQL;
+    const vars = this.SearchVariables;
+    const variables = vars.Get(search, 1, 100, type);
     return await endeavor.queryAnilist({ query, variables });
   }
 
-  public async GetMedia(id: number, type: string): Promise<object> {
-    const query: string = Container.GraphQL.AnimeQL;
-    const vars: MediaVariables = this.MediaVariables;
-    const variables: any = vars.Get(id, type);
+  public async GetMedia(id: number, type: string) {
+    const query = Container.GraphQL.AnimeQL;
+    const vars = this.MediaVariables;
+    const variables = vars.Get(id, type);
     return await endeavor.queryAnilist({ query, variables });
   }
 }

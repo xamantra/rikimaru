@@ -16,11 +16,11 @@ export class Config {
     console.log(`Constructed: "${Config.name}"`);
   }
 
-  public get GetToken(): string {
+  public get GetToken() {
     return this.Token;
   }
 
-  public get GetPrefix(): string {
+  public get GetPrefix() {
     return this.Prefix;
   }
 }

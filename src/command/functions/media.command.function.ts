@@ -28,11 +28,11 @@ export class MediaFunction implements ICommandFunction {
     console.log(`Constructed: "${MediaFunction.name}: Type = ${type}"`);
   }
 
-  public get Type(): string {
+  public get Type() {
     return this.type;
   }
 
-  public Execute(message?: Message, command?: ICommand, dm?: boolean): void {
+  public Execute(message?: Message, command?: ICommand, dm?: boolean) {
     this.Handle(this.Anilist, message, command, dm);
   }
 
@@ -41,30 +41,22 @@ export class MediaFunction implements ICommandFunction {
     message: Message,
     command: ICommand,
     isDM: boolean
-  ): void {
-    const mediaHandler: MediaHandler = this.MediaHandler;
-    const color: Color = this.Color;
-    const mediaResult: MediaResult = this.MediaResult;
-    const responseHelper: ResponseMessageHelper = this.ResponseMessageHelper;
-    const result: Promise<object> = aniList.MediaSearch(
-      command.Parameter,
-      this.type
-    );
+  ) {
+    const mediaHandler = this.MediaHandler;
+    const color = this.Color;
+    const mediaResult = this.MediaResult;
+    const responseHelper = this.ResponseMessageHelper;
+    const result = aniList.MediaSearch(command.Parameter, this.type);
     let media: IMedia[] = [];
     result.then(async root => {
       media = await (JsonHelper.Converter.deserialize(root, Root) as Root).Data
         .Page.media;
 
-      const ongoing: IMedia[] = mediaHandler.OngoingMedia(media);
-      const unreleased: IMedia[] = mediaHandler.UnreleasedMedia(media);
-      const unreleasedNoDate: IMedia[] = mediaHandler.UnreleasedNoDateMedia(
-        media
-      );
-      const exactMedia: IMedia[] = mediaHandler.ExactMedia(
-        media,
-        command.Parameter
-      );
-      const completed: IMedia[] = mediaHandler.CompletedMedia(media);
+      const ongoing = mediaHandler.OngoingMedia(media);
+      const unreleased = mediaHandler.UnreleasedMedia(media);
+      const unreleasedNoDate = mediaHandler.UnreleasedNoDateMedia(media);
+      const exactMedia = mediaHandler.ExactMedia(media, command.Parameter);
+      const completed = mediaHandler.CompletedMedia(media);
 
       if (exactMedia.length > 0) {
         exactMedia.forEach(m => {
