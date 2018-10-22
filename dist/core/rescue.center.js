@@ -2,8 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const container_1 = require("./container");
 class RescueCenter {
+    // private static Color: Color = Container.Color;
     static Embed(command) {
-        const color = this.Color;
+        const color = container_1.Container.Color;
         return {
             embed: {
                 color: color.Random,
@@ -25,6 +26,5 @@ class RescueCenter {
         };
     }
 }
-RescueCenter.Color = container_1.Container.Color;
 exports.RescueCenter = RescueCenter;
 //# sourceMappingURL=rescue.center.js.map

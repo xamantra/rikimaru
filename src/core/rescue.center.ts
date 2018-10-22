@@ -3,9 +3,9 @@ import { Container } from "./container";
 import { ICommand } from "../interfaces/command.interface";
 
 export class RescueCenter {
-  private static Color: Color = Container.Color;
+  // private static Color: Color = Container.Color;
   public static Embed(command: ICommand): any {
-    const color: Color = this.Color;
+    const color: Color = Container.Color;
     return {
       embed: {
         color: color.Random,

@@ -18,13 +18,18 @@ export class MediaFunction implements ICommandFunction {
   private ResponseMessageHelper: ResponseMessageHelper;
   private Anilist: Anilist;
 
-  constructor() {
+  constructor(private type: string) {
     this.Color = Container.Color;
     this.MediaHandler = Container.MediaHandler;
     this.MediaResult = Container.MediaResult;
     this.ResponseMessageHelper = Container.ResponseMessageHelper;
     this.Anilist = Container.Anilist;
-    console.log(`Constructed: "${MediaFunction.name}"`);
+    type = type.toUpperCase();
+    console.log(`Constructed: "${MediaFunction.name}: Type = ${type}"`);
+  }
+
+  public get Type(): string {
+    return this.type;
   }
 
   public Execute(message?: Message, command?: ICommand, dm?: boolean): void {
@@ -43,7 +48,7 @@ export class MediaFunction implements ICommandFunction {
     const responseHelper: ResponseMessageHelper = this.ResponseMessageHelper;
     const result: Promise<object> = aniList.MediaSearch(
       command.Parameter,
-      "ANIME"
+      this.type
     );
     let media: IMedia[] = [];
     result.then(async root => {
@@ -105,7 +110,9 @@ export class MediaFunction implements ICommandFunction {
         } else {
           mediaResult.SendInfo(
             message,
-            `I found ***${completed.length}*** anime with your keyword ***${
+            `I found ***${
+              completed.length
+            }*** ${this.type.toLowerCase()} with your keyword ***${
               command.Parameter
             }*** and all of them is already completed.`,
             isDM
@@ -114,7 +121,7 @@ export class MediaFunction implements ICommandFunction {
       } else {
         mediaResult.SendInfo(
           message,
-          `Go me nasai!, I didn't find anime that matches your keyword ***"${
+          `Go me nasai!, I didn't find ${this.type.toLowerCase()} that matches your keyword ***"${
             command.Parameter
           }"***, try checking your spelling or another keyword.`,
           isDM

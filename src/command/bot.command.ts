@@ -4,23 +4,21 @@ export class BotCommand {
   public Name: string;
   public Description: string;
   public ParameterRequired: boolean;
-  public DMResponse: boolean;
+  public DMResponse: boolean = false;
   public Function: ICommandFunction;
 
   constructor(
     name: string,
     description: string,
     requireParameter: boolean,
-    dmResponse: boolean,
     commandFunction: ICommandFunction
   ) {
     this.Name = name;
     this.Description = description;
-    this.DMResponse = dmResponse;
     this.ParameterRequired = requireParameter;
     this.Function = commandFunction;
     if (this.DMResponse) {
-      this.Description += "\nIt DMs you with the result.";
+      this.Description += "\nIt DMs you with the response.";
     }
     if (!this.ParameterRequired) {
       this.Description += "\nNo Parameters.";
@@ -28,7 +26,10 @@ export class BotCommand {
       this.Description += "\nParameter is required.";
     }
 
+    if (name.substr(0, 2).toLowerCase() === "dm") {
+      this.DMResponse = true;
+    }
     this.Description += "\n.";
-    console.log(`Constructed: "${BotCommand.name}", Name: "${this.Name}"`);
+    console.log(`Constructed: "${this.Name}"`);
   }
 }
