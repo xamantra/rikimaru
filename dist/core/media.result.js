@@ -23,7 +23,7 @@ class MediaResult {
         let value = "";
         if (rsMessage.Status === "RELEASING") {
             name = `*Episode ${rsMessage.Current}*`;
-            value = `Will air in approximately **${rsMessage.Countdown}**\n Last update: *${rsMessage.UpdatedAt}*`;
+            value = `Will air in approximately **${rsMessage.Countdown}**\nLast update: *${rsMessage.UpdatedAt}*`;
         }
         else if (rsMessage.Status === "NOT_YET_RELEASED" &&
             rsMessage.Countdown !== null) {
@@ -33,7 +33,7 @@ class MediaResult {
         else if (rsMessage.Status === "NOT_YET_RELEASED" &&
             rsMessage.Countdown === null) {
             name = `*Not Yet Aired*`;
-            value = `Will be aired on **${rsMessage.StartDate}**\n Last update: *${rsMessage.UpdatedAt}*`;
+            value = `Will be aired on **${rsMessage.StartDate}**\nLast update: *${rsMessage.UpdatedAt}*`;
         }
         else if (rsMessage.Status === "FINISHED") {
             name = `*Already Completed!*`;

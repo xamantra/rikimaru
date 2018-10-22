@@ -10,9 +10,7 @@ class TimeHelper {
         console.log(`Constructed: "${TimeHelper.name}"`);
     }
     Countdown(seconds) {
-        let _countdown;
-        // countdown = moment.duration(seconds, "s").humanize();
-        _countdown = countdown_1.default(null, moment_1.default()
+        const _countdown = countdown_1.default(null, moment_1.default()
             .add(seconds, "s")
             .toDate(), countdown_1.default.DEFAULTS, 2);
         return _countdown.toString();

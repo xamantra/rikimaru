@@ -10,8 +10,8 @@ class OpenShiftUptimer {
     static AutoConfigure() {
         return new Promise((resolve, reject) => {
             OpenShiftUptimer.express_app = express();
-            var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
-            var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+            const ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
+            const port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
             OpenShiftUptimer.express_app.listen(port, ipaddress, () => {
                 OpenShiftUptimer.LogMessage("[openshift_uptimer Express] Ready! IP=" +
                     ipaddress +
