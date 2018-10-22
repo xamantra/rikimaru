@@ -36,7 +36,7 @@ class ResponseHandler {
         });
     }
     SendRescue(message, dm, command) {
-        container_1.Container.MediaResult.SendInfo(message, rescue_center_1.RescueCenter.Embed(command), dm);
+        container_1.Container.MediaResult.SendInfo(message, rescue_center_1.RescueCenter.RequireParameter(command), dm);
     }
 }
 exports.ResponseHandler = ResponseHandler;

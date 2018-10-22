@@ -1,10 +1,9 @@
-import { Color } from "./colors";
 import { Container } from "./container";
 import { ICommand } from "../interfaces/command.interface";
 
 export class RescueCenter {
   // private static Color: Color = Container.Color;
-  public static Embed(command: ICommand) {
+  public static RequireParameter(command: ICommand) {
     const color = Container.Color;
     return {
       embed: {

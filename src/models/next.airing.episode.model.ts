@@ -4,7 +4,7 @@ import { JsonObject, JsonProperty } from "json2typescript";
 @JsonObject("nextAiringEpisode")
 export class NextAiringEpisode implements INextAiringEpisode {
   @JsonProperty("episode", Number)
-  public episode: number = undefined;
+  public next: number = undefined;
   @JsonProperty("airingAt", Number)
   public airingAt: number = undefined;
   @JsonProperty("timeUntilAiring", Number)

@@ -42,6 +42,10 @@ export class ResponseHandler {
   }
 
   private SendRescue(message: Message, dm: boolean, command: ICommand) {
-    Container.MediaResult.SendInfo(message, RescueCenter.Embed(command), dm);
+    Container.MediaResult.SendInfo(
+      message,
+      RescueCenter.RequireParameter(command),
+      dm
+    );
   }
 }

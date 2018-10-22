@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const json2typescript_1 = require("json2typescript");
 let NextAiringEpisode = class NextAiringEpisode {
     constructor() {
-        this.episode = undefined;
+        this.next = undefined;
         this.airingAt = undefined;
         this.timeUntilAiring = undefined;
     }
@@ -20,7 +20,7 @@ let NextAiringEpisode = class NextAiringEpisode {
 __decorate([
     json2typescript_1.JsonProperty("episode", Number),
     __metadata("design:type", Number)
-], NextAiringEpisode.prototype, "episode", void 0);
+], NextAiringEpisode.prototype, "next", void 0);
 __decorate([
     json2typescript_1.JsonProperty("airingAt", Number),
     __metadata("design:type", Number)

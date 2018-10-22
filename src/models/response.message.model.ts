@@ -14,6 +14,7 @@ export class ResponseMessage
   Color: number;
   Thumbnail: string;
   Title: string;
+  Type: string;
   Status: string;
   Current: number;
   Countdown: string = null;
@@ -26,6 +27,7 @@ export class ResponseMessage
     $Color: number,
     $Thumbnail: string,
     $Title: string,
+    $Type: string,
     $Status: string,
     $Current: number,
     $Countdown: string = null,
@@ -37,6 +39,7 @@ export class ResponseMessage
     this.Color = $Color;
     this.Thumbnail = $Thumbnail;
     this.Title = $Title;
+    this.Type = $Type;
     this.Status = $Status;
     this.Current = $Current;
     this.Countdown = $Countdown;

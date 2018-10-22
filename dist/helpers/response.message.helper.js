@@ -13,7 +13,7 @@ class ResponseMessageHelper {
         const titleHelper = this.TitleHelper;
         let responseMessage;
         let nextAiringEpisode;
-        let episode;
+        let next;
         let start;
         let end;
         let countdown = null;
@@ -26,14 +26,14 @@ class ResponseMessageHelper {
         }
         if (media.nextAiringEpisode !== null) {
             nextAiringEpisode = media.nextAiringEpisode;
-            if (nextAiringEpisode.episode !== null) {
-                episode = nextAiringEpisode.episode;
+            if (nextAiringEpisode.next !== null) {
+                next = nextAiringEpisode.next;
             }
             if (nextAiringEpisode.timeUntilAiring !== null) {
                 countdown = timeHelper.Countdown(nextAiringEpisode.timeUntilAiring);
             }
         }
-        responseMessage = new response_message_model_1.ResponseMessage(media.idMal, color, media.coverImage.large, titleHelper.Get(media.title), status, episode, countdown, lastUpdate, timeHelper.YearMonthDay(start.year, start.month, start.day), timeHelper.YearMonthDay(end.year, end.month, end.day));
+        responseMessage = new response_message_model_1.ResponseMessage(media.idMal, color, media.coverImage.large, titleHelper.Get(media.title), media.type, status, next, countdown, lastUpdate, timeHelper.YearMonthDay(start.year, start.month, start.day), timeHelper.YearMonthDay(end.year, end.month, end.day));
         return responseMessage;
     }
 }

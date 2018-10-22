@@ -22,7 +22,7 @@ export class ResponseMessageHelper {
     const titleHelper = this.TitleHelper;
     let responseMessage: ResponseMessage;
     let nextAiringEpisode: INextAiringEpisode;
-    let episode: number;
+    let next: number;
     let start: IDate;
     let end: IDate;
     let countdown: string = null;
@@ -35,8 +35,8 @@ export class ResponseMessageHelper {
     }
     if (media.nextAiringEpisode !== null) {
       nextAiringEpisode = media.nextAiringEpisode;
-      if (nextAiringEpisode.episode !== null) {
-        episode = nextAiringEpisode.episode;
+      if (nextAiringEpisode.next !== null) {
+        next = nextAiringEpisode.next;
       }
       if (nextAiringEpisode.timeUntilAiring !== null) {
         countdown = timeHelper.Countdown(nextAiringEpisode.timeUntilAiring);
@@ -47,8 +47,9 @@ export class ResponseMessageHelper {
       color,
       media.coverImage.large,
       titleHelper.Get(media.title),
+      media.type,
       status,
-      episode,
+      next,
       countdown,
       lastUpdate,
       timeHelper.YearMonthDay(start.year, start.month, start.day),

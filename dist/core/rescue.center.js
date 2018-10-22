@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const container_1 = require("./container");
 class RescueCenter {
     // private static Color: Color = Container.Color;
-    static Embed(command) {
+    static RequireParameter(command) {
         const color = container_1.Container.Color;
         return {
             embed: {

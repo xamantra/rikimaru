@@ -34,7 +34,7 @@ export interface IDate {
 }
 
 export interface INextAiringEpisode {
-  episode: number;
+  next: number;
   airingAt: number;
   timeUntilAiring: number;
 }
