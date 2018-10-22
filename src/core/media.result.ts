@@ -35,35 +35,52 @@ export class MediaResult {
   private EmbedTemplate(rsMessage: ResponseMessage) {
     let name = "";
     let value = "";
-    if (rsMessage.Status === "RELEASING") {
-      name = `*Episode ${rsMessage.Current}*`;
-      value = `Will air in approximately **${
-        rsMessage.Countdown
-      }**\nLast update: *${rsMessage.UpdatedAt}*`;
-    } else if (
-      rsMessage.Status === "NOT_YET_RELEASED" &&
-      rsMessage.Countdown !== null
-    ) {
-      name = `*Not Yet Aired*`;
-      value = `Will air in approximately **${
-        rsMessage.Countdown
-      }**\nStarts airing at: **${rsMessage.StartDate}**\nLast update: *${
-        rsMessage.UpdatedAt
-      }*`;
-    } else if (
-      rsMessage.Status === "NOT_YET_RELEASED" &&
-      rsMessage.Countdown === null
-    ) {
-      name = `*Not Yet Aired*`;
-      value = `Will be aired on **${rsMessage.StartDate}**\nLast update: *${
-        rsMessage.UpdatedAt
-      }*`;
-    } else if (rsMessage.Status === "FINISHED") {
-      name = `*Already Completed!*`;
-      value = `Aired: From **${rsMessage.StartDate}**  to  **${
-        rsMessage.EndDate
-      }**`;
+    let type = "";
+
+    switch (rsMessage.Type) {
+      case "ANIME":
+        type = "Episode";
+        break;
+      case "MANGA":
+        type = "Chapter";
+        break;
+      default:
+        break;
     }
+
+    switch (rsMessage.Status) {
+      case "RELEASING":
+        name = `*${type} ${rsMessage.Current}*`;
+        value = `Will air in approximately **${
+          rsMessage.Countdown
+        }**\nLast update: *${rsMessage.UpdatedAt}*`;
+        break;
+      case "NOT_YET_RELEASED":
+        if (rsMessage.Countdown !== null) {
+          name = `*Not Yet Aired*`;
+          value = `Will air in approximately **${
+            rsMessage.Countdown
+          }**\nStarts airing at: **${rsMessage.StartDate}**\nLast update: *${
+            rsMessage.UpdatedAt
+          }*`;
+        }
+        if (rsMessage.Countdown === null) {
+          name = `*Not Yet Aired*`;
+          value = `Will be aired on **${rsMessage.StartDate}**\nLast update: *${
+            rsMessage.UpdatedAt
+          }*`;
+        }
+        break;
+      case "FINISHED":
+        name = `*Already Completed!*`;
+        value = `Aired: From **${rsMessage.StartDate}**  to  **${
+          rsMessage.EndDate
+        }**`;
+        break;
+      default:
+        break;
+    }
+
     return {
       embed: {
         color: rsMessage.Color,
