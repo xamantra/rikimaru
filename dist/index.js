@@ -1,6 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
+const subscription_data_1 = require("./data/subscription.data");
+const media_data_1 = require("./data/media.data");
+const user_data_1 = require("./data/user.data");
+const data_helper_1 = require("./helpers/data.helper");
 const response_message_helper_1 = require("./helpers/response.message.helper");
 const config_1 = require("./core/config");
 const client_1 = require("./core/client");
@@ -51,4 +55,8 @@ container_1.Container.ClientManager.Init();
 container_1.Container.MessageHandler.Init();
 container_1.Container.GraphQL.Init();
 container_1.Container.BotCommand.Init();
+data_helper_1.DataHelper.Init();
+user_data_1.UserData.Init();
+media_data_1.MediaData.Init();
+subscription_data_1.SubscriptionData.Init();
 //# sourceMappingURL=index.js.map

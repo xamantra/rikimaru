@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const helper_command_1 = require("./helper.command");
 const container_1 = require("./../core/container");
 const callback_command_1 = require("./callback.command");
 class BotCommand {
@@ -26,11 +27,21 @@ class BotCommand {
         commands.push(new callback_command_1.CallbackCommand("dmwhen", "Just similar with the* ***-when*** *command.", true, true, async (message, command, dm) => {
             helper.Handle(aniList, message, command, dm);
         }));
+        commands.push(new callback_command_1.CallbackCommand("subcribe", "", true, true, async (message, command, dm) => {
+            return;
+        }));
+        commands.push(new callback_command_1.CallbackCommand("viewsubs", "", true, true, async (message, command, dm) => {
+            return;
+        }));
         commands.push(new callback_command_1.CallbackCommand("ping", "Just check your ping and the API's ping.", false, false, async (message, command, dm) => {
-            ping.Get(message, dm);
+            if (helper_command_1.Helper.IsCommandValid(false, command)) {
+                ping.Get(message, dm);
+            }
         }));
         commands.push(new callback_command_1.CallbackCommand("dmping", "Just similar with* ***-ping*** *command.", false, true, async (message, command, dm) => {
-            ping.Get(message, dm);
+            if (helper_command_1.Helper.IsCommandValid(false, command)) {
+                ping.Get(message, dm);
+            }
         }));
     }
     get GetCommands() {

@@ -4,7 +4,7 @@ const container_1 = require("./../core/container");
 class MediaHandler {
     constructor() {
         this.TitleHelper = container_1.Container.TitleHelper;
-        console.log(`Constructed: ${MediaHandler.name}`);
+        console.log(`Constructed: "${MediaHandler.name}"`);
     }
     ExactMedia(mediaList, search) {
         const title = this.TitleHelper;

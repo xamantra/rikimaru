@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const json_helper_1 = require("./json.helper");
 const container_1 = require("./../core/container");
-const json2typescript_1 = require("json2typescript");
 const root_model_1 = require("../models/root.model");
 class MediaHelper {
     constructor() {
@@ -18,12 +18,9 @@ class MediaHelper {
         const responseHelper = this.ResponseMessageHelper;
         const result = aniList.MediaSearch(command.Parameter, "ANIME");
         let media = [];
-        const jsonConvert = new json2typescript_1.JsonConvert();
-        jsonConvert.ignorePrimitiveChecks = false;
-        jsonConvert.valueCheckingMode = json2typescript_1.ValueCheckingMode.ALLOW_NULL;
         result.then(async (root) => {
-            media = await jsonConvert.deserialize(root, root_model_1.Root).Data.Page
-                .media;
+            media = await json_helper_1.JsonHelper.Converter.deserialize(root, root_model_1.Root).Data
+                .Page.media;
             const ongoing = mediaHandler.OngoingMedia(media);
             const unreleased = mediaHandler.UnreleasedMedia(media);
             const unreleasedNoDate = mediaHandler.UnreleasedNoDateMedia(media);

@@ -28,9 +28,9 @@ class MessageHandler {
             }
             const isCommand = helper.IsCommand(config, message);
             const command = isCommand
-                ? helper.GetCommand(config, message)
+                ? helper.GetCommand(config, message).trim()
                 : "";
-            const parameter = helper.GetParameter(config, message);
+            const parameter = helper.GetParameter(config, message).trim();
             if (isCommand) {
                 const _command = new command_model_1.Command(command, parameter);
                 console.log(_command);

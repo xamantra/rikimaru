@@ -45,9 +45,9 @@ export class MessageHandler {
       }
       const isCommand: boolean = helper.IsCommand(config, message);
       const command: string = isCommand
-        ? helper.GetCommand(config, message)
+        ? helper.GetCommand(config, message).trim()
         : "";
-      const parameter: string = helper.GetParameter(config, message);
+      const parameter: string = helper.GetParameter(config, message).trim();
       if (isCommand) {
         const _command: ICommand = new Command(command, parameter);
         console.log(_command);

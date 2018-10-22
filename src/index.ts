@@ -1,4 +1,8 @@
 import { Client } from "discord.js";
+import { SubscriptionData } from "./data/subscription.data";
+import { MediaData } from "./data/media.data";
+import { UserData } from "./data/user.data";
+import { DataHelper } from "./helpers/data.helper";
 import { ResponseMessageHelper } from "./helpers/response.message.helper";
 import { Config } from "./core/config";
 import { ClientManager } from "./core/client";
@@ -22,6 +26,7 @@ import { MediaHandler } from "./handlers/media.handler";
 import { MediaHelper } from "./helpers/media.helper";
 import { TimeHelper } from "./helpers/time.helper";
 import { TitleHelper } from "./helpers/title.helper";
+import { setInterval } from "timers";
 
 OpenShiftUptimer.Log(true);
 OpenShiftUptimer.AutoConfigure();
@@ -52,3 +57,7 @@ Container.ClientManager.Init();
 Container.MessageHandler.Init();
 Container.GraphQL.Init();
 Container.BotCommand.Init();
+DataHelper.Init();
+UserData.Init();
+MediaData.Init();
+SubscriptionData.Init();

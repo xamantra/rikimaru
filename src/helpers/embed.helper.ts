@@ -6,7 +6,7 @@ export class EmbedHelper {
   private Color: Color;
 
   constructor() {
-    this.Color == Container.Color;
+    this.Color = Container.Color;
     console.log(`Constructed: "${EmbedHelper.name}"`);
   }
 

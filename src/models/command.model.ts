@@ -4,7 +4,7 @@ export class Command implements ICommand {
   public Name: string;
   public Parameter: string;
   constructor(name: string, parameter: string) {
-    this.Name = name;
-    this.Parameter = parameter;
+    this.Name = name.trim();
+    this.Parameter = parameter.trim();
   }
 }

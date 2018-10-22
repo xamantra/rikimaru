@@ -6,7 +6,7 @@ export class MediaHandler {
   private TitleHelper: TitleHelper;
   constructor() {
     this.TitleHelper = Container.TitleHelper;
-    console.log(`Constructed: ${MediaHandler.name}`);
+    console.log(`Constructed: "${MediaHandler.name}"`);
   }
 
   public ExactMedia(mediaList: IMedia[], search: string): IMedia[] {

@@ -1,4 +1,5 @@
 import { Anilist } from "../core/anilist";
+import { Helper } from "./helper.command";
 import { Container } from "./../core/container";
 import { Ping } from "./../core/ping";
 import { CallbackCommand } from "./callback.command";
@@ -61,12 +62,36 @@ export class BotCommand {
     );
     commands.push(
       new CallbackCommand(
+        "subcribe",
+        "",
+        true,
+        true,
+        async (message, command, dm) => {
+          return;
+        }
+      )
+    );
+    commands.push(
+      new CallbackCommand(
+        "viewsubs",
+        "",
+        true,
+        true,
+        async (message, command, dm) => {
+          return;
+        }
+      )
+    );
+    commands.push(
+      new CallbackCommand(
         "ping",
         "Just check your ping and the API's ping.",
         false,
         false,
         async (message, command, dm) => {
-          ping.Get(message, dm);
+          if (Helper.IsCommandValid(false, command)) {
+            ping.Get(message, dm);
+          }
         }
       )
     );
@@ -77,7 +102,9 @@ export class BotCommand {
         false,
         true,
         async (message, command, dm) => {
-          ping.Get(message, dm);
+          if (Helper.IsCommandValid(false, command)) {
+            ping.Get(message, dm);
+          }
         }
       )
     );

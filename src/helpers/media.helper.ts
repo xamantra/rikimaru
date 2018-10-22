@@ -1,4 +1,5 @@
 import { Anilist } from "../core/anilist";
+import { JsonHelper } from "./json.helper";
 import { ICommand } from "./../interfaces/command.interface";
 import { Container } from "./../core/container";
 import { MediaResult } from "./../core/media.result";
@@ -38,12 +39,9 @@ export class MediaHelper {
       "ANIME"
     );
     let media: IMedia[] = [];
-    const jsonConvert: JsonConvert = new JsonConvert();
-    jsonConvert.ignorePrimitiveChecks = false;
-    jsonConvert.valueCheckingMode = ValueCheckingMode.ALLOW_NULL;
     result.then(async root => {
-      media = await (jsonConvert.deserialize(root, Root) as Root).Data.Page
-        .media;
+      media = await (JsonHelper.Converter.deserialize(root, Root) as Root).Data
+        .Page.media;
 
       const ongoing: IMedia[] = mediaHandler.OngoingMedia(media);
       const unreleased: IMedia[] = mediaHandler.UnreleasedMedia(media);
