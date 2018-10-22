@@ -1,7 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class TitleHelper {
-    static Get(title) {
+    constructor() {
+        console.log(`Constructed: "${TitleHelper.name}"`);
+    }
+    Get(title) {
         if (title.english !== null) {
             return title.english;
         }
@@ -12,7 +15,7 @@ class TitleHelper {
             return title.native;
         }
     }
-    static Match(title, search) {
+    Match(title, search) {
         if (title.english !== null &&
             title.english.toLowerCase() === search.toLowerCase()) {
             return true;

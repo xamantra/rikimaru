@@ -3,9 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
 require("class-transformer");
 const container_1 = require("../core/container");
-const colors_1 = require("../core/colors");
 class ResponseHandler {
+    constructor() {
+        this.Color = container_1.Container.Color;
+        console.log(`Constructed: "${ResponseHandler.name}"`);
+    }
     Get(config, message, command) {
+        const color = this.Color;
         const commands = container_1.Container.BotCommand.GetCommands;
         let iteration = 1;
         commands.forEach(callbackCommand => {
@@ -15,7 +19,7 @@ class ResponseHandler {
                 if (callbackCommand.ParameterRequired && parameter.trim().length <= 0) {
                     container_1.Container.MediaResult.SendInfo(message, {
                         embed: {
-                            color: colors_1.Color.Random,
+                            color: color.Random,
                             title: `**Rikimaru Rescue Center**`,
                             description: `The command ***-${commandString}*** requires a *parameter*.`,
                             fields: [

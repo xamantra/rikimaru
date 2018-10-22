@@ -3,7 +3,7 @@ import { Message, Permissions, DMChannel } from "discord.js";
 
 export class MessageHelper {
   constructor() {
-    console.log("Helper has been constructed.");
+    console.log(`Constructed: "${MessageHelper.name}"`);
   }
 
   public IsCommand(config: Config, message: Message): boolean {

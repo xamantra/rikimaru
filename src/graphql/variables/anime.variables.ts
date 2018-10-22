@@ -1,7 +1,9 @@
 export class AnimeVariables {
-  private static Variables: Object;
+  constructor() {
+    console.log(`Constructed: "${AnimeVariables.name}"`);
+  }
 
-  public static Get(id: number): Object {
+  public Get(id: number): Object {
     return {
       id: id
     };

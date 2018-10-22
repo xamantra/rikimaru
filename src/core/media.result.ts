@@ -6,11 +6,10 @@ import {
   IUnreleasedNoDate,
   ICompleted
 } from "../interfaces/message.response.interface";
-import { ResponseMessageHelper } from "../helpers/response.message.helper";
 
 export class MediaResult {
   constructor() {
-    console.log(`Discord is ready...`);
+    console.log(`Constructed: "${MediaResult.name}"`);
   }
 
   public SendMessage(

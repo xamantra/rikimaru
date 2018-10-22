@@ -79,6 +79,7 @@ class GraphQL {
       }
     }
     `;
+        console.log(`Constructed: "${GraphQL.name}"`);
     }
     Init() {
         if (this.Page !== null && this.Anime !== null) {

@@ -7,10 +7,13 @@ class MessageHandler {
         this.Config = container_1.Container.Config;
         this.Helper = container_1.Container.MessageHelper;
         this.ClientManager = container_1.Container.ClientManager;
+        console.log(`Constructed: "${MessageHandler.name}"`);
     }
     Init() {
+        const config = this.Config;
         const helper = this.Helper;
-        this.ClientManager.GetClient().on("message", message => {
+        const client = this.ClientManager;
+        client.GetClient().on("message", message => {
             console.log({
                 Message: {
                     Server: message.guild !== null ? message.guild.name : "Direct Message",
@@ -23,7 +26,6 @@ class MessageHandler {
                 container_1.Container.MediaResult.SendInfo(message, `Go me nasai! ***${message.author.username}***, I don't talk to strangers.`, true);
                 return;
             }
-            const config = this.Config;
             const isCommand = helper.IsCommand(config, message);
             const command = isCommand
                 ? helper.GetCommand(config, message)

@@ -2,7 +2,11 @@ import moment from "moment";
 import countdown from "countdown";
 
 export class TimeHelper {
-  public static Countdown(seconds: number): string {
+  constructor() {
+    console.log(`Constructed: "${TimeHelper.name}"`);
+  }
+
+  public Countdown(seconds: number): string {
     let _countdown: any;
     // countdown = moment.duration(seconds, "s").humanize();
     _countdown = countdown(
@@ -16,12 +20,12 @@ export class TimeHelper {
     return _countdown.toString();
   }
 
-  public static Elapsed(timestamp: number): string {
+  public Elapsed(timestamp: number): string {
     const elapsed: string = moment(moment.unix(timestamp)).fromNow();
     return elapsed;
   }
 
-  public static YearMonthDay(y: number, m: number, d: number): string {
+  public YearMonthDay(y: number, m: number, d: number): string {
     let yearmonthday: string;
     if (y !== null && m !== null && d !== null) {
       yearmonthday = moment(`${y}-${m}-${m}`).format("YYYY MMM D");

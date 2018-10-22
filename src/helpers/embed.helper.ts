@@ -3,10 +3,18 @@ import { Color } from "./../core/colors";
 import { GuildMember, Guild } from "discord.js";
 
 export class EmbedHelper {
+  private Color: Color;
+
+  constructor() {
+    this.Color == Container.Color;
+    console.log(`Constructed: "${EmbedHelper.name}"`);
+  }
+
   public WelcomeEmbed(server: Guild, member: GuildMember): any {
+    const color: Color = this.Color;
     const embed: any = {
       embed: {
-        color: Color.Random,
+        color: color.Random,
         thumbnail: {
           url: member.user.avatarURL
         },

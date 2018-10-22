@@ -30,5 +30,6 @@ export class CallbackCommand {
     }
 
     this.Description += "\n.";
+    console.log(`Constructed: "${CallbackCommand.name}", Name: "${this.Name}"`);
   }
 }

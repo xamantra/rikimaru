@@ -5,20 +5,31 @@ import { ResponseMessage } from "../models/response.message.model";
 import { StartDate } from "../models/start.date.model";
 import { TitleHelper } from "./title.helper";
 import { TimeHelper } from "./time.helper";
+import { Container } from "../core/container";
 
 export class ResponseMessageHelper {
-  public static CreateMessage(
+  private TimeHelper: TimeHelper;
+  private TitleHelper: TitleHelper;
+  constructor() {
+    this.TimeHelper = Container.TimeHelper;
+    this.TitleHelper = Container.TitleHelper;
+    console.log(`Constructed: "${ResponseMessageHelper.name}"`);
+  }
+
+  public CreateMessage(
     media: IMedia,
     status: string,
     color: number
   ): ResponseMessage {
+    const timeHelper: TimeHelper = this.TimeHelper;
+    const titleHelper: TitleHelper = this.TitleHelper;
     let responseMessage: ResponseMessage;
     let nextAiringEpisode: NextAiringEpisode;
     let episode: number;
     let start: StartDate;
     let end: EndDate;
     let countdown: string = null;
-    const lastUpdate: string = TimeHelper.Elapsed(media.updatedAt);
+    const lastUpdate: string = timeHelper.Elapsed(media.updatedAt);
     if (media.startDate !== null) {
       start = media.startDate;
     }
@@ -31,20 +42,20 @@ export class ResponseMessageHelper {
         episode = nextAiringEpisode.episode;
       }
       if (nextAiringEpisode.timeUntilAiring !== null) {
-        countdown = TimeHelper.Countdown(nextAiringEpisode.timeUntilAiring);
+        countdown = timeHelper.Countdown(nextAiringEpisode.timeUntilAiring);
       }
     }
     responseMessage = new ResponseMessage(
       media.idMal,
       color,
       media.coverImage.large,
-      TitleHelper.Get(media.title),
+      titleHelper.Get(media.title),
       status,
       episode,
       countdown,
       lastUpdate,
-      TimeHelper.YearMonthDay(start.year, start.month, start.day),
-      TimeHelper.YearMonthDay(end.year, end.month, end.day)
+      timeHelper.YearMonthDay(start.year, start.month, start.day),
+      timeHelper.YearMonthDay(end.year, end.month, end.day)
     );
     return responseMessage;
   }

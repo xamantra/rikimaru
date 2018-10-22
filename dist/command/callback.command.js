@@ -17,6 +17,7 @@ class CallbackCommand {
             this.Description += "\nParameter is required.";
         }
         this.Description += "\n.";
+        console.log(`Constructed: "${CallbackCommand.name}", Name: "${this.Name}"`);
     }
 }
 exports.CallbackCommand = CallbackCommand;

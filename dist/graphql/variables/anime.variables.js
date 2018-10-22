@@ -1,7 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class AnimeVariables {
-    static Get(id) {
+    constructor() {
+        console.log(`Constructed: "${AnimeVariables.name}"`);
+    }
+    Get(id) {
         return {
             id: id
         };

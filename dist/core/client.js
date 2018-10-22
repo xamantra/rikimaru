@@ -5,6 +5,7 @@ class ClientManager {
     constructor(client) {
         client.login(container_1.Container.Config.GetToken);
         this.Client = client;
+        console.log(`Constructed: "${ClientManager.name}", Client: "${this.Client}"`);
     }
     Init() {
         const client = this.Client;

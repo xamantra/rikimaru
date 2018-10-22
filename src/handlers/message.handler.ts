@@ -15,11 +15,14 @@ export class MessageHandler {
     this.Config = Container.Config;
     this.Helper = Container.MessageHelper;
     this.ClientManager = Container.ClientManager;
+    console.log(`Constructed: "${MessageHandler.name}"`);
   }
 
   public Init(): void {
+    const config: Config = this.Config;
     const helper: MessageHelper = this.Helper;
-    this.ClientManager.GetClient().on("message", message => {
+    const client: ClientManager = this.ClientManager;
+    client.GetClient().on("message", message => {
       console.log({
         Message: {
           Server:
@@ -40,7 +43,6 @@ export class MessageHandler {
         );
         return;
       }
-      const config: Config = this.Config;
       const isCommand: boolean = helper.IsCommand(config, message);
       const command: string = isCommand
         ? helper.GetCommand(config, message)

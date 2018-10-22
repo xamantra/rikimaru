@@ -2,7 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const container_1 = require("./container");
 class Ping {
-    static async Get(message, isDM) {
+    constructor() {
+        console.log(`Constructed: "${Ping.name}"`);
+    }
+    async Get(message, isDM) {
         const m = isDM
             ? (await message.author.send("Ping?"))
             : (await message.reply("Ping?"));

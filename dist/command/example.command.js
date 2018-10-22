@@ -25,6 +25,7 @@ class ExampleCommand {
             "asobi asobase",
             "goblin slayer"
         ];
+        console.log(`Constructed: "${ExampleCommand.name}"`);
     }
     MediaExample(command, count) {
         let result = ``;

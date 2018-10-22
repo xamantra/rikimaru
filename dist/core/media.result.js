@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class MediaResult {
     constructor() {
-        console.log(`Discord is ready...`);
+        console.log(`Constructed: "${MediaResult.name}"`);
     }
     SendMessage(message, isDM = false, responseMessage) {
         this.Send(message, this.EmbedTemplate(responseMessage), isDM);

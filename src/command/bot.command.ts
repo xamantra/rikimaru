@@ -1,77 +1,83 @@
 import { Anilist } from "../core/anilist";
-
+import { Container } from "./../core/container";
+import { Ping } from "./../core/ping";
 import { CallbackCommand } from "./callback.command";
-
-import { Container } from "../core/container";
-
 import { MediaHelper } from "../helpers/media.helper";
-
-import { Ping } from "../core/ping";
 import { HelpCommand } from "./help.command";
 
 export class BotCommand {
   private Anilist: Anilist;
   private CallbackCommands: CallbackCommand[] = [];
+  private HelpCommand: HelpCommand;
+  private Ping: Ping;
+  private MediaHelper: MediaHelper;
 
   constructor() {
     this.Anilist = Container.Anilist;
-    console.log(`Response is ready...`);
+    this.HelpCommand = Container.HelpCommand;
+    this.Ping = Container.Ping;
+    this.MediaHelper = Container.MediaHelper;
+    console.log(`Constructed: "${BotCommand.name}"`);
   }
 
   public Init(): void {
     const aniList: Anilist = this.Anilist;
-    this.CallbackCommands.push(
+    const commands: CallbackCommand[] = this.CallbackCommands;
+    const help: HelpCommand = this.HelpCommand;
+    const ping: Ping = this.Ping;
+    const helper: MediaHelper = this.MediaHelper;
+    commands.push(
       new CallbackCommand(
         "help",
         "Show all my command list.",
         false,
         false,
         (message, command, dm) => {
-          HelpCommand.ShowHelp(message);
+          help.ShowHelp(message);
         }
       )
     );
-    this.CallbackCommands.push(
+    commands.push(
       new CallbackCommand(
         "when",
         "Search for an anime that matches the keyword/parameter.\nYou can either put the exact anime title or just a keyword.",
         true,
         false,
         async (message, command, dm) => {
-          MediaHelper.Handle(aniList, message, command, dm);
+          helper.Handle(aniList, message, command, dm);
         }
       )
     );
-    this.CallbackCommands.push(
+    commands.push(
       new CallbackCommand(
         "dmwhen",
         "Just similar with the* ***-when*** *command.",
         true,
         true,
         async (message, command, dm) => {
-          MediaHelper.Handle(aniList, message, command, dm);
+          helper.Handle(aniList, message, command, dm);
         }
       )
     );
-    this.CallbackCommands.push(
+    commands.push(
       new CallbackCommand(
         "ping",
         "Just check your ping and the API's ping.",
         false,
         false,
         async (message, command, dm) => {
-          Ping.Get(message, dm);
+          ping.Get(message, dm);
         }
       )
     );
-    this.CallbackCommands.push(
+    commands.push(
       new CallbackCommand(
         "dmping",
         "Just similar with* ***-ping*** *command.",
         false,
         true,
         async (message, command, dm) => {
-          Ping.Get(message, dm);
+          ping.Get(message, dm);
         }
       )
     );

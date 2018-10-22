@@ -80,6 +80,7 @@ export class GraphQL {
       }
     }
     `;
+    console.log(`Constructed: "${GraphQL.name}"`);
   }
 
   public Init(): void {

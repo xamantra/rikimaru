@@ -26,6 +26,7 @@ export class ExampleCommand {
       "asobi asobase",
       "goblin slayer"
     ];
+    console.log(`Constructed: "${ExampleCommand.name}"`);
   }
 
   public MediaExample(command: Command, count: number): string {

@@ -6,6 +6,9 @@ export class ClientManager {
   constructor(client: Client) {
     client.login(Container.Config.GetToken);
     this.Client = client;
+    console.log(
+      `Constructed: "${ClientManager.name}", Client: "${this.Client}"`
+    );
   }
 
   public Init(): void {

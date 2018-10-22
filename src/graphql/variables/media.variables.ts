@@ -1,7 +1,9 @@
 export class MediaVariables {
-  private static Variables: Object;
+  constructor() {
+    console.log(`Constructed: "${MediaVariables.name}"`);
+  }
 
-  public static Get(
+  public Get(
     search: string,
     page: number = 1,
     perPage: number = 100,

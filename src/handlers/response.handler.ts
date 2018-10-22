@@ -1,16 +1,21 @@
 import "reflect-metadata";
-import { BotCommand } from "./../command/bot.command";
-import { Ping } from "../core/ping";
+import { Color } from "./../core/colors";
 import { Config } from "../core/config";
 import "class-transformer";
 import { ICommand } from "../interfaces/command.interface";
 import { Message } from "discord.js";
 import { Container } from "../core/container";
 import { CallbackCommand } from "../command/callback.command";
-import { Color } from "../core/colors";
 
 export class ResponseHandler {
+  private Color: Color;
+  constructor() {
+    this.Color = Container.Color;
+    console.log(`Constructed: "${ResponseHandler.name}"`);
+  }
+
   public Get(config: Config, message: Message, command: ICommand): void {
+    const color: Color = this.Color;
     const commands: CallbackCommand[] = Container.BotCommand.GetCommands;
     let iteration: number = 1;
     commands.forEach(callbackCommand => {
@@ -22,7 +27,7 @@ export class ResponseHandler {
             message,
             {
               embed: {
-                color: Color.Random,
+                color: color.Random,
                 title: `**Rikimaru Rescue Center**`,
                 description: `The command ***-${commandString}*** requires a *parameter*.`,
                 fields: [

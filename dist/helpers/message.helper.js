@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 class MessageHelper {
     constructor() {
-        console.log("Helper has been constructed.");
+        console.log(`Constructed: "${MessageHelper.name}"`);
     }
     IsCommand(config, message) {
         return message.content.indexOf(config.GetPrefix) === 0;
