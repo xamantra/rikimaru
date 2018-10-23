@@ -34,7 +34,7 @@ http
     res.write("Hello! I am Rikimaru!");
     res.end();
 })
-    .listen(80);
+    .listen(process.env.PORT || 8080);
 setTimeout(() => {
     media_data_1.MediaData.LoadFromApi();
 }, 1000);
