@@ -13,10 +13,4 @@ export class RikimaruHelper {
       }
     });
   }
-
-  public static GetPath() {
-    fs.realpath(DataHelper.DBPath, err => {
-      console.log(err);
-    });
-  }
 }

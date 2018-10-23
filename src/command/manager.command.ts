@@ -10,7 +10,8 @@ import {
   dmping,
   logall,
   dmmysubs,
-  unsub
+  unsub,
+  tweak
 } from "./commands";
 
 export class CommandManager {
@@ -30,6 +31,7 @@ export class CommandManager {
     cmds.push(ping);
     cmds.push(dmping);
     cmds.push(logall);
+    cmds.push(tweak);
 
     this.BotCommands = cmds;
   }

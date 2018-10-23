@@ -1,4 +1,5 @@
 import { BotCommand } from "./bot.command";
+import { tweakFunction } from "./functions";
 import { Response } from "../core/enums";
 import {
   helpFunction,
@@ -91,6 +92,15 @@ export const logall = new BotCommand(
   false,
   Response.DirectMessage,
   logAllFunction,
+  null,
+  true
+);
+export const tweak = new BotCommand(
+  "tweak",
+  "Developer only...",
+  false,
+  Response.DirectMessage,
+  tweakFunction,
   null,
   true
 );

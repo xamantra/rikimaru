@@ -15,6 +15,7 @@ class CommandManager {
         cmds.push(commands_1.ping);
         cmds.push(commands_1.dmping);
         cmds.push(commands_1.logall);
+        cmds.push(commands_1.tweak);
         this.BotCommands = cmds;
     }
     static get Commands() {

@@ -6,6 +6,7 @@ import { Message } from "discord.js";
 import { RescueCenter } from "../core/rescue.center";
 import { MediaResult } from "../core/media.result";
 import { CommandManager } from "../command/manager.command";
+import { Bot } from "../core/bot";
 
 export class ResponseHandler {
   public static Get(message: Message, command: ICommand) {
@@ -28,7 +29,8 @@ export class ResponseHandler {
               cmd.Function.Execute(message, command, cmd.DMResponse);
               return;
             }
-            cmd.Function.Execute(message, command, cmd.DMResponse);
+            if (Bot.IsActive === true)
+              cmd.Function.Execute(message, command, cmd.DMResponse);
           }
         }
         return;

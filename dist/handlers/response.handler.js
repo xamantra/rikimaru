@@ -5,6 +5,7 @@ require("class-transformer");
 const rescue_center_1 = require("../core/rescue.center");
 const media_result_1 = require("../core/media.result");
 const manager_command_1 = require("../command/manager.command");
+const bot_1 = require("../core/bot");
 class ResponseHandler {
     static Get(message, command) {
         const commands = manager_command_1.CommandManager.Commands;
@@ -26,7 +27,8 @@ class ResponseHandler {
                             cmd.Function.Execute(message, command, cmd.DMResponse);
                             return;
                         }
-                        cmd.Function.Execute(message, command, cmd.DMResponse);
+                        if (bot_1.Bot.IsActive === true)
+                            cmd.Function.Execute(message, command, cmd.DMResponse);
                     }
                 }
                 return;

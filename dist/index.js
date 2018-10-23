@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
+const bot_1 = require("./core/bot");
 const rikimaru_helper_1 = require("./helpers/rikimaru.helper");
 const subscription_data_1 = require("./data/subscription.data");
 const media_data_1 = require("./data/media.data");
@@ -11,6 +12,7 @@ const manager_command_1 = require("./command/manager.command");
 const message_handler_1 = require("./handlers/message.handler");
 // OpenShiftUptimer.Log(true);
 // OpenShiftUptimer.AutoConfigure();
+bot_1.Bot.Init();
 client_1.ClientManager.Init(new discord_js_1.Client());
 message_handler_1.MessageHandler.Init();
 manager_command_1.CommandManager.Init();

@@ -5,6 +5,8 @@ import { ICommand } from "../../interfaces/command.interface";
 
 export class LogAllFunction implements ICommandFunction {
   Execute(message?: Message, command?: ICommand, dm?: boolean): void {
-    console.log(MediaData.LogAll());
+    if (message.author.id === "442621672714010625") {
+      console.log(MediaData.LogAll());
+    }
   }
 }
