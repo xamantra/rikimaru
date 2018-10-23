@@ -45,7 +45,7 @@ export class ViewSubsFunction implements ICommandFunction {
       );
       list.push({
         name: `\n***${title}***`,
-        value: `*[Episode ${episode} :* **${countdown}**](https://myanimelist.net/anime/${
+        value: `*Episode ${episode} :* **${countdown}** - [MAL Link](https://myanimelist.net/anime/${
           media.idMal
         }/)\n|`
       });

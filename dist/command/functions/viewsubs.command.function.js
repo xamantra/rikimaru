@@ -37,7 +37,7 @@ class ViewSubsFunction {
             const countdown = time_helper_1.TimeHelper.Countdown(media.nextAiringEpisode.timeUntilAiring);
             list.push({
                 name: `\n***${title}***`,
-                value: `*[Episode ${episode} :* **${countdown}**](https://myanimelist.net/anime/${media.idMal}/)\n|`
+                value: `*Episode ${episode} :* **${countdown}** - [MAL Link](https://myanimelist.net/anime/${media.idMal}/)\n|`
             });
         });
         const embed = {
