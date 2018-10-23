@@ -1,4 +1,5 @@
 import sqlite3 from "sqlite3";
+import * as fs from "fs";
 
 export class DataHelper {
   public static Init() {
@@ -32,5 +33,9 @@ export class DataHelper {
   public static get DevDBPath() {
     const database = "data/rikimaru-dev.db";
     return database;
+  }
+
+  public static get RealPath() {
+    return fs.realpathSync(this.DBPath);
   }
 }

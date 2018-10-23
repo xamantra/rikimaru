@@ -9,10 +9,9 @@ import { ClientManager } from "./core/client";
 import { CommandManager } from "./command/manager.command";
 import { MessageHandler } from "./handlers/message.handler";
 import { OpenShiftUptimer } from "./others/openshift";
-import * as http from "http";
 
-// OpenShiftUptimer.Log(true);
-// OpenShiftUptimer.AutoConfigure();
+OpenShiftUptimer.Log(true);
+OpenShiftUptimer.AutoConfigure();
 
 Bot.Init();
 ClientManager.Init(new Client());
@@ -23,13 +22,6 @@ DataHelper.Init();
 UserData.Init();
 MediaData.Init();
 SubscriptionData.Init();
-
-http
-  .createServer(function(req, res) {
-    res.write("Hello! I am Rikimaru!");
-    res.end();
-  })
-  .listen(process.env.PORT || 8080);
 
 setTimeout(() => {
   MediaData.LoadFromApi();
