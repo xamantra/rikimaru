@@ -1,19 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const message_helper_1 = require("../helpers/message.helper");
 const command_model_1 = require("../models/command.model");
-const container_1 = require("../core/container");
+const client_1 = require("../core/client");
+const config_1 = require("../core/config");
+const media_result_1 = require("../core/media.result");
+const response_handler_1 = require("./response.handler");
 class MessageHandler {
-    constructor() {
-        this.Config = container_1.Container.Config;
-        this.Helper = container_1.Container.MessageHelper;
-        this.ClientManager = container_1.Container.ClientManager;
-        console.log(`Constructed: "${MessageHandler.name}"`);
-    }
-    Init() {
-        const config = this.Config;
-        const helper = this.Helper;
-        const client = this.ClientManager;
-        client.GetClient().on("message", message => {
+    static Init() {
+        const client = client_1.ClientManager.GetClient;
+        client.on("message", message => {
             console.log({
                 Message: {
                     Server: message.guild !== null ? message.guild.name : "Direct Message",
@@ -21,21 +17,20 @@ class MessageHandler {
                     Message: message.content
                 }
             });
-            const isDMChannel = helper.IsDMChannel(message);
+            const isDMChannel = message_helper_1.MessageHelper.IsDMChannel(message);
             if (isDMChannel) {
-                container_1.Container.MediaResult.SendInfo(message, `Go me nasai! ***${message.author.username}***, I don't talk to strangers.`, true);
+                media_result_1.MediaResult.SendInfo(message, `Go me nasai! ***${message.author.username}***, I don't talk to strangers.`, true);
                 return;
             }
-            const isCommand = helper.IsCommand(config, message);
+            const isCommand = message_helper_1.MessageHelper.IsCommand(config_1.Config, message);
             const cmdName = isCommand
-                ? helper.GetCommand(config, message).trim()
+                ? message_helper_1.MessageHelper.GetCommand(config_1.Config, message).trim()
                 : "";
-            const parameter = helper.GetParameter(config, message).trim();
+            const parameter = message_helper_1.MessageHelper.GetParameter(config_1.Config, message).trim();
             if (isCommand) {
                 const command = new command_model_1.Command(cmdName, parameter);
                 console.log(command);
-                const response = container_1.Container.ResponseHandler;
-                response.Get(message, command);
+                response_handler_1.ResponseHandler.Get(message, command);
             }
         });
     }

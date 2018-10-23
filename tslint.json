@@ -59,7 +59,7 @@
     ],
     "prefer-const": true,
     "quotemark": [false, "single"],
-    "radix": true,
+    "radix": false,
     "semicolon": [true, "always"],
     "triple-equals": [true, "allow-null-check"],
     "typedef-whitespace": [

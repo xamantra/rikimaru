@@ -1,19 +1,13 @@
 import { Client } from "discord.js";
-import { Container } from "./container";
+import { Config } from "./config";
 
 export class ClientManager {
-  private Client: Client;
+  private static Client: Client;
 
-  constructor(client: Client) {
-    client.login(Container.Config.GetToken);
-    this.Client = client;
-    console.log(
-      `Constructed: "${ClientManager.name}", Client: "${this.Client}"`
-    );
-  }
-
-  public Init() {
-    const client = this.Client;
+  public static Init(botClient: Client) {
+    this.Client = botClient;
+    botClient.login(Config.GetToken);
+    const client = botClient;
     client.on("ready", () => {
       console.log(
         `Bot has started, with ${client.users.size} users, in ${
@@ -32,7 +26,7 @@ export class ClientManager {
     });
   }
 
-  public GetClient() {
+  public static get GetClient() {
     return this.Client;
   }
 }

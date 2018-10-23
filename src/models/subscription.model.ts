@@ -10,16 +10,10 @@ export class User {
 
 @JsonObject("")
 export class Media {
-  @JsonProperty("id", Number)
-  public Id: number = undefined;
   @JsonProperty("mal_id", Number)
   public MalId: number = undefined;
   @JsonProperty("title", String)
   public Title: string = undefined;
-  @JsonProperty("next_airing_episode", Number)
-  public NextAiringEpisode: number = undefined;
-  @JsonProperty("time_until_airing", Number)
-  public TimeUntilAiring: number = undefined;
 }
 
 @JsonObject("")

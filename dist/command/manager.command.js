@@ -2,26 +2,25 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const commands_1 = require("./commands");
 class CommandManager {
-    constructor() {
-        this.BotCommands = [];
-        console.log(`Constructed: "${CommandManager.name}"`);
+    static Init() {
+        const cmds = [];
+        cmds.push(commands_1.help);
+        cmds.push(commands_1.dmhelp);
+        cmds.push(commands_1.when);
+        cmds.push(commands_1.dmwhen);
+        cmds.push(commands_1.subscribe);
+        cmds.push(commands_1.mysubs);
+        cmds.push(commands_1.dmmysubs);
+        cmds.push(commands_1.unsub);
+        cmds.push(commands_1.ping);
+        cmds.push(commands_1.dmping);
+        cmds.push(commands_1.logall);
+        this.BotCommands = cmds;
     }
-    Init() {
-        const commands = this.BotCommands;
-        commands.push(commands_1.help);
-        commands.push(commands_1.dmhelp);
-        commands.push(commands_1.when);
-        commands.push(commands_1.dmwhen);
-        commands.push(commands_1.whenmanga);
-        commands.push(commands_1.dmwhenmanga);
-        commands.push(commands_1.subscribe);
-        commands.push(commands_1.mysubs);
-        commands.push(commands_1.ping);
-        commands.push(commands_1.dmping);
-    }
-    get Commands() {
+    static get Commands() {
         return this.BotCommands;
     }
 }
+CommandManager.BotCommands = [];
 exports.CommandManager = CommandManager;
 //# sourceMappingURL=manager.command.js.map

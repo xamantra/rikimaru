@@ -2,41 +2,46 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
 require("class-transformer");
-const container_1 = require("../core/container");
 const rescue_center_1 = require("../core/rescue.center");
+const media_result_1 = require("../core/media.result");
+const manager_command_1 = require("../command/manager.command");
 class ResponseHandler {
-    constructor() {
-        console.log(`Constructed: "${ResponseHandler.name}"`);
-    }
-    Get(message, command) {
-        const commands = container_1.Container.CommandManager.Commands;
+    static Get(message, command) {
+        const commands = manager_command_1.CommandManager.Commands;
         let iteration = 1;
         commands.forEach(cmd => {
             if (cmd.Name === command.Name) {
                 const parameter = command.Parameter;
                 const paramRequired = cmd.ParameterRequired;
-                if (paramRequired && parameter.length <= 0) {
+                if (parameter.length === 0 && paramRequired) {
                     this.SendRescue(message, cmd.DMResponse, cmd, command);
                 }
-                else if (!paramRequired && parameter.length >= 0) {
+                else if (parameter.length > 0 && !paramRequired) {
                     this.SendRescue(message, cmd.DMResponse, cmd, command);
                 }
                 else {
-                    cmd.Function.Execute(message, command, cmd.DMResponse);
+                    if (cmd.Function !== null) {
+                        if (cmd.DevOnly === true &&
+                            message.author.id === "442621672714010625") {
+                            cmd.Function.Execute(message, command, cmd.DMResponse);
+                            return;
+                        }
+                        cmd.Function.Execute(message, command, cmd.DMResponse);
+                    }
                 }
                 return;
             }
             else {
                 if (iteration === commands.length) {
-                    container_1.Container.MediaResult.SendInfo(message, `The command ***${command.Name}*** doesn't exists. Type the command: ***-help***  to see all commands.`, cmd.DMResponse);
+                    media_result_1.MediaResult.SendInfo(message, `The command ***${command.Name}*** doesn't exists. Type the command: ***-help***  to see all commands.`, false);
                     return;
                 }
             }
             iteration++;
         });
     }
-    SendRescue(message, dm, botCommand, command) {
-        container_1.Container.MediaResult.SendInfo(message, rescue_center_1.RescueCenter.RequireParameter(botCommand, command), dm);
+    static SendRescue(message, dm, botCommand, command) {
+        media_result_1.MediaResult.SendInfo(message, rescue_center_1.RescueCenter.RequireParameter(botCommand, command), dm);
     }
 }
 exports.ResponseHandler = ResponseHandler;

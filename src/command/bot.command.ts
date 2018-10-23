@@ -6,8 +6,9 @@ export class BotCommand {
   public Name: string;
   public Description: string;
   public ParameterRequired: boolean;
+  public DevOnly = false;
   public Function: ICommandFunction;
-  public DMResponse: boolean;
+  public DMResponse = false;
   public Example: ICommandExample;
 
   constructor(
@@ -16,13 +17,15 @@ export class BotCommand {
     requireParameter: boolean,
     private responseType: Response,
     commandFunction: ICommandFunction,
-    example?: ICommandExample
+    example?: ICommandExample,
+    devOnly: boolean = false
   ) {
     this.Name = name;
     this.Description = description;
     this.ParameterRequired = requireParameter;
     this.Function = commandFunction;
     this.Example = example;
+    this.DevOnly = devOnly;
 
     switch (this.responseType) {
       case Response.ChannelReply:

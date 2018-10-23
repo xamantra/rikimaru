@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const page_model_1 = require("./page.model");
 const json2typescript_1 = require("json2typescript");
+const media_model_1 = require("./media.model");
 let Data = class Data {
     constructor() {
         this.Page = undefined;
@@ -24,4 +25,17 @@ Data = __decorate([
     json2typescript_1.JsonObject("data")
 ], Data);
 exports.Data = Data;
+let MData = class MData {
+    constructor() {
+        this.Media = undefined;
+    }
+};
+__decorate([
+    json2typescript_1.JsonProperty("Media", media_model_1.Media),
+    __metadata("design:type", Object)
+], MData.prototype, "Media", void 0);
+MData = __decorate([
+    json2typescript_1.JsonObject("data")
+], MData);
+exports.MData = MData;
 //# sourceMappingURL=data.model.js.map

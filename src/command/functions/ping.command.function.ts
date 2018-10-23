@@ -1,7 +1,7 @@
 import { Message } from "discord.js";
 import { ICommandFunction } from "../../interfaces/command.function.interface";
-import { Container } from "../../core/container";
 import { ICommand } from "../../interfaces/command.interface";
+import { ClientManager } from "../../core/client";
 
 export class PingFunction implements ICommandFunction {
   constructor() {
@@ -19,7 +19,7 @@ export class PingFunction implements ICommandFunction {
     m.edit(
       `Pingga!, Pongga! Latency is ${m.createdTimestamp -
         message.createdTimestamp}ms. API Latency is ${Math.round(
-        Container.ClientManager.GetClient().ping
+        ClientManager.GetClient.ping
       )}ms`
     );
   }

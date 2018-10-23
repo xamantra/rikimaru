@@ -1,23 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const response_message_model_1 = require("../models/response.message.model");
-const container_1 = require("../core/container");
+const title_helper_1 = require("./title.helper");
+const time_helper_1 = require("./time.helper");
 class ResponseMessageHelper {
     constructor() {
-        this.TimeHelper = container_1.Container.TimeHelper;
-        this.TitleHelper = container_1.Container.TitleHelper;
         console.log(`Constructed: "${ResponseMessageHelper.name}"`);
     }
-    CreateMessage(media, status, color) {
-        const timeHelper = this.TimeHelper;
-        const titleHelper = this.TitleHelper;
+    static CreateMessage(media, status, color) {
         let responseMessage;
         let nextAiringEpisode;
         let next;
         let start;
         let end;
         let countdown = null;
-        const lastUpdate = timeHelper.Elapsed(media.updatedAt);
+        const lastUpdate = time_helper_1.TimeHelper.Elapsed(media.updatedAt);
         if (media.startDate !== null) {
             start = media.startDate;
         }
@@ -30,10 +27,10 @@ class ResponseMessageHelper {
                 next = nextAiringEpisode.next;
             }
             if (nextAiringEpisode.timeUntilAiring !== null) {
-                countdown = timeHelper.Countdown(nextAiringEpisode.timeUntilAiring);
+                countdown = time_helper_1.TimeHelper.Countdown(nextAiringEpisode.timeUntilAiring);
             }
         }
-        responseMessage = new response_message_model_1.ResponseMessage(media.idMal, color, media.coverImage.large, titleHelper.Get(media.title), media.type, status, next, countdown, lastUpdate, timeHelper.YearMonthDay(start.year, start.month, start.day), timeHelper.YearMonthDay(end.year, end.month, end.day));
+        responseMessage = new response_message_model_1.ResponseMessage(media.idMal, color, media.coverImage.large, title_helper_1.TitleHelper.Get(media.title), media.type, status, next, countdown, lastUpdate, time_helper_1.TimeHelper.YearMonthDay(start.year, start.month, start.day), time_helper_1.TimeHelper.YearMonthDay(end.year, end.month, end.day));
         return responseMessage;
     }
 }

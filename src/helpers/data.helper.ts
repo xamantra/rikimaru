@@ -8,7 +8,7 @@ export class DataHelper {
     );
     db.run(
       // tslint:disable-next-line:max-line-length
-      "CREATE TABLE IF NOT EXISTS media (id INTEGER PRIMARY KEY AUTOINCREMENT, mal_id INTEGER, title Text, next_airing_episode INTEGER, time_until_airing INTEGER)"
+      "CREATE TABLE IF NOT EXISTS media (mal_id INTEGER PRIMARY KEY, title Text)"
     );
     db.run(
       "CREATE TABLE IF NOT EXISTS subscription (id INTEGER PRIMARY KEY AUTOINCREMENT, media_id INTEGER, user_id INTEGER)"

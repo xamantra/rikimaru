@@ -1,26 +1,15 @@
 export class Config {
-  private Token: string;
-  private Prefix: string;
+  private static Token =
+    process.env.botToken || require("../extras/env").ConfigVariables.token;
+  private static Prefix =
+    process.env.commandPrefix ||
+    require("../extras/env").ConfigVariables.prefix;
 
-  constructor() {
-    this.Token =
-      process.env.botToken || require("../extras/env").ConfigVariables.token;
-    this.Prefix =
-      process.env.commandPrefix ||
-      require("../extras/env").ConfigVariables.prefix;
-    console.log(
-      `Config :: BotToken = ${this.Token.substr(0, 14)}..., CommandPrefix = ${
-        this.Prefix
-      }`
-    );
-    console.log(`Constructed: "${Config.name}"`);
-  }
-
-  public get GetToken() {
+  public static get GetToken() {
     return this.Token;
   }
 
-  public get GetPrefix() {
+  public static get GetPrefix() {
     return this.Prefix;
   }
 }

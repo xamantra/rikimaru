@@ -2,13 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const enums_1 = require("./../core/enums");
 class BotCommand {
-    constructor(name, description, requireParameter, responseType, commandFunction, example) {
+    constructor(name, description, requireParameter, responseType, commandFunction, example, devOnly = false) {
         this.responseType = responseType;
+        this.DevOnly = false;
+        this.DMResponse = false;
         this.Name = name;
         this.Description = description;
         this.ParameterRequired = requireParameter;
         this.Function = commandFunction;
         this.Example = example;
+        this.DevOnly = devOnly;
         switch (this.responseType) {
             case enums_1.Response.ChannelReply:
                 this.DMResponse = false;

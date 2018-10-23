@@ -2,27 +2,13 @@ import { MessageHelper } from "../helpers/message.helper";
 import { Command } from "../models/command.model";
 import { ClientManager } from "../core/client";
 import { Config } from "../core/config";
-import { ICommand } from "../interfaces/command.interface";
+import { MediaResult } from "../core/media.result";
 import { ResponseHandler } from "./response.handler";
-import { Container } from "../core/container";
 
 export class MessageHandler {
-  private Config: Config;
-  private ClientManager: ClientManager;
-  private Helper: MessageHelper;
-
-  constructor() {
-    this.Config = Container.Config;
-    this.Helper = Container.MessageHelper;
-    this.ClientManager = Container.ClientManager;
-    console.log(`Constructed: "${MessageHandler.name}"`);
-  }
-
-  public Init() {
-    const config = this.Config;
-    const helper = this.Helper;
-    const client = this.ClientManager;
-    client.GetClient().on("message", message => {
+  public static Init() {
+    const client = ClientManager.GetClient;
+    client.on("message", message => {
       console.log({
         Message: {
           Server:
@@ -32,9 +18,9 @@ export class MessageHandler {
         }
       });
 
-      const isDMChannel = helper.IsDMChannel(message);
+      const isDMChannel = MessageHelper.IsDMChannel(message);
       if (isDMChannel) {
-        Container.MediaResult.SendInfo(
+        MediaResult.SendInfo(
           message,
           `Go me nasai! ***${
             message.author.username
@@ -43,16 +29,15 @@ export class MessageHandler {
         );
         return;
       }
-      const isCommand = helper.IsCommand(config, message);
+      const isCommand = MessageHelper.IsCommand(Config, message);
       const cmdName = isCommand
-        ? helper.GetCommand(config, message).trim()
+        ? MessageHelper.GetCommand(Config, message).trim()
         : "";
-      const parameter = helper.GetParameter(config, message).trim();
+      const parameter = MessageHelper.GetParameter(Config, message).trim();
       if (isCommand) {
         const command = new Command(cmdName, parameter);
         console.log(command);
-        const response = Container.ResponseHandler;
-        response.Get(message, command);
+        ResponseHandler.Get(message, command);
       }
     });
   }

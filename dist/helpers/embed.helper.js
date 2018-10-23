@@ -1,16 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const container_1 = require("../core/container");
+const colors_1 = require("./../core/colors");
+const client_1 = require("../core/client");
 class EmbedHelper {
-    constructor() {
-        this.Color = container_1.Container.Color;
-        console.log(`Constructed: "${EmbedHelper.name}"`);
-    }
     WelcomeEmbed(server, member) {
-        const color = this.Color;
         const embed = {
             embed: {
-                color: color.Random,
+                color: colors_1.Color.Random,
                 thumbnail: {
                     url: member.user.avatarURL
                 },
@@ -27,7 +23,7 @@ class EmbedHelper {
                 ],
                 timestamp: new Date(),
                 footer: {
-                    icon_url: container_1.Container.ClientManager.GetClient().user.avatarURL,
+                    icon_url: client_1.ClientManager.GetClient.user.avatarURL,
                     text: "© Rikimaru"
                 }
             }

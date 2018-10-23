@@ -8,11 +8,7 @@ import {
 } from "../interfaces/message.response.interface";
 
 export class MediaResult {
-  constructor() {
-    console.log(`Constructed: "${MediaResult.name}"`);
-  }
-
-  public SendMessage(
+  public static SendMessage(
     message: Message,
     isDM: boolean = false,
     responseMessage: ResponseMessage
@@ -20,7 +16,7 @@ export class MediaResult {
     this.Send(message, this.EmbedTemplate(responseMessage), isDM);
   }
 
-  private Send(message: Message, content: any, isDM: boolean = false) {
+  private static Send(message: Message, content: any, isDM: boolean = false) {
     if (isDM) {
       message.author.send(content);
     } else {
@@ -28,29 +24,21 @@ export class MediaResult {
     }
   }
 
-  public SendInfo(message: Message, content: any, isDM: boolean = false) {
+  public static SendInfo(
+    message: Message,
+    content: any,
+    isDM: boolean = false
+  ) {
     this.Send(message, content, isDM);
   }
 
-  private EmbedTemplate(rsMessage: ResponseMessage) {
+  private static EmbedTemplate(rsMessage: ResponseMessage) {
     let name = "";
     let value = "";
-    let type = "";
-
-    switch (rsMessage.Type) {
-      case "ANIME":
-        type = "Episode";
-        break;
-      case "MANGA":
-        type = "Chapter";
-        break;
-      default:
-        break;
-    }
 
     switch (rsMessage.Status) {
       case "RELEASING":
-        name = `*${type} ${rsMessage.Current}*`;
+        name = `*Episode ${rsMessage.Current}*`;
         value = `Will air in approximately **${
           rsMessage.Countdown
         }**\nLast update: *${rsMessage.UpdatedAt}*`;

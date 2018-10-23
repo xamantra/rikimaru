@@ -3,8 +3,11 @@ import { Response } from "../core/enums";
 import {
   helpFunction,
   whenAnimeFunction,
-  whenMangaFunction,
-  pingFunction
+  pingFunction,
+  subscribeFunction,
+  logAllFunction,
+  viewSubsFunction,
+  unsubFunction
 } from "./functions";
 import { mediaExample } from "./examples";
 
@@ -38,35 +41,35 @@ export const dmwhen = new BotCommand(
   whenAnimeFunction,
   mediaExample
 );
-export const whenmanga = new BotCommand(
-  "whenmanga",
-  `Search for a schedule of a manga that matches the keyword/parameter.\nYou can either put the exact manga title or just a keyword.`,
-  true,
-  Response.ChannelReply,
-  whenMangaFunction,
-  mediaExample
-);
-export const dmwhenmanga = new BotCommand(
-  "dmwhenmanga",
-  `Just similar with the* ***-whenmanga*** *command.`,
-  true,
-  Response.DirectMessage,
-  whenMangaFunction,
-  mediaExample
-);
 export const subscribe = new BotCommand(
   "subscribe",
-  "",
+  "Subscribe to an ongoing anime. You can provide keyword or anime title.",
   true,
   Response.DirectMessage,
-  null
+  subscribeFunction,
+  mediaExample
 );
 export const mysubs = new BotCommand(
-  "viewsubs",
-  "",
+  "mysubs",
+  "View your own subscription list.",
+  false,
+  Response.ChannelReply,
+  viewSubsFunction
+);
+export const dmmysubs = new BotCommand(
+  "dmmysubs",
+  "Just similar with ***-mysubs***.",
+  false,
+  Response.DirectMessage,
+  viewSubsFunction
+);
+export const unsub = new BotCommand(
+  "unsub",
+  "Unsubscribe to an ongoing anime. You can provide keyword or anime title.",
   true,
   Response.DirectMessage,
-  null
+  unsubFunction,
+  mediaExample
 );
 export const ping = new BotCommand(
   "ping",
@@ -81,4 +84,13 @@ export const dmping = new BotCommand(
   false,
   Response.DirectMessage,
   pingFunction
+);
+export const logall = new BotCommand(
+  "logall",
+  "Developer only..",
+  false,
+  Response.DirectMessage,
+  logAllFunction,
+  null,
+  true
 );

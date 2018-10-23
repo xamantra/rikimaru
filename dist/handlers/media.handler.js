@@ -1,52 +1,48 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const container_1 = require("./../core/container");
+const title_helper_1 = require("./../helpers/title.helper");
+const media_status_1 = require("./../core/media.status");
 class MediaHandler {
-    constructor() {
-        this.TitleHelper = container_1.Container.TitleHelper;
-        console.log(`Constructed: "${MediaHandler.name}"`);
-    }
-    ExactMedia(mediaList, search) {
-        const title = this.TitleHelper;
+    static ExactMedia(mediaList, search) {
         const filteredMedia = [];
         mediaList.forEach(m => {
-            if (title.Match(m.title, search)) {
+            if (title_helper_1.TitleHelper.Match(m.title, search)) {
                 filteredMedia.push(m);
             }
         });
         return filteredMedia;
     }
-    OngoingMedia(mediaList) {
+    static OngoingMedia(mediaList) {
         const filteredMedia = [];
         mediaList.forEach(m => {
-            if (m.status === "RELEASING" && m.nextAiringEpisode !== null) {
+            if (media_status_1.MediaStatus.Ongoing(m)) {
                 filteredMedia.push(m);
             }
         });
         return filteredMedia;
     }
-    UnreleasedMedia(mediaList) {
+    static UnreleasedMedia(mediaList) {
         const filteredMedia = [];
         mediaList.forEach(m => {
-            if (m.status === "NOT_YET_RELEASED" && m.nextAiringEpisode !== null) {
+            if (media_status_1.MediaStatus.NotYetAired(m)) {
                 filteredMedia.push(m);
             }
         });
         return filteredMedia;
     }
-    UnreleasedNoDateMedia(mediaList) {
+    static UnreleasedNoDateMedia(mediaList) {
         const filteredMedia = [];
         mediaList.forEach(m => {
-            if (m.status === "NOT_YET_RELEASED" && m.nextAiringEpisode === null) {
+            if (media_status_1.MediaStatus.NotYetAiredNoDate(m)) {
                 filteredMedia.push(m);
             }
         });
         return filteredMedia;
     }
-    CompletedMedia(mediaList) {
+    static CompletedMedia(mediaList) {
         const filteredMedia = [];
         mediaList.forEach(m => {
-            if (m.status === "FINISHED") {
+            if (media_status_1.MediaStatus.Completed(m)) {
                 filteredMedia.push(m);
             }
         });

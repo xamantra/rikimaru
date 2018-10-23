@@ -1,17 +1,12 @@
 import { Message } from "discord.js";
 import { ICommandFunction } from "../../interfaces/command.function.interface";
-import { Color } from "../../core/colors";
 import { ClientManager } from "../../core/client";
-import { BotCommand } from "../bot.command";
-import { Container } from "../../core/container";
 import { ICommand } from "../../interfaces/command.interface";
+import { CommandManager } from "../manager.command";
+import { Color } from "../../core/colors";
 
 export class HelpFunction implements ICommandFunction {
-  private ClientManager: ClientManager;
-  private Color: Color;
   constructor() {
-    this.ClientManager = Container.ClientManager;
-    this.Color = Container.Color;
     console.log(`Constructed: "${HelpFunction.name}"`);
   }
 
@@ -28,21 +23,22 @@ export class HelpFunction implements ICommandFunction {
   }
 
   private Embed(message: Message) {
-    const commands = Container.CommandManager.Commands;
-    const client = this.ClientManager;
+    const commands = CommandManager.Commands;
+    const client = ClientManager.GetClient;
     const list: any[] = [];
-    const color = this.Color;
     commands.forEach(command => {
-      list.push({
-        name: `\n***-${command.Name}***`,
-        value: `*${command.Description}*`
-      });
+      if (command.DevOnly === false) {
+        list.push({
+          name: `\n***-${command.Name}***`,
+          value: `*${command.Description}*`
+        });
+      }
     });
     const embed = {
       embed: {
-        color: color.Random,
+        color: Color.Random,
         thumbnail: {
-          url: client.GetClient().user.avatarURL
+          url: client.user.avatarURL
         },
         title: `***Rikimaru Help Center***`,
         description: `Hey **${
@@ -51,7 +47,7 @@ export class HelpFunction implements ICommandFunction {
         fields: list,
         timestamp: new Date(),
         footer: {
-          icon_url: client.GetClient().user.avatarURL,
+          icon_url: client.user.avatarURL,
           text: "© Rikimaru"
         }
       }

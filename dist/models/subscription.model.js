@@ -30,17 +30,10 @@ User = __decorate([
 exports.User = User;
 let Media = class Media {
     constructor() {
-        this.Id = undefined;
         this.MalId = undefined;
         this.Title = undefined;
-        this.NextAiringEpisode = undefined;
-        this.TimeUntilAiring = undefined;
     }
 };
-__decorate([
-    json2typescript_1.JsonProperty("id", Number),
-    __metadata("design:type", Number)
-], Media.prototype, "Id", void 0);
 __decorate([
     json2typescript_1.JsonProperty("mal_id", Number),
     __metadata("design:type", Number)
@@ -49,14 +42,6 @@ __decorate([
     json2typescript_1.JsonProperty("title", String),
     __metadata("design:type", String)
 ], Media.prototype, "Title", void 0);
-__decorate([
-    json2typescript_1.JsonProperty("next_airing_episode", Number),
-    __metadata("design:type", Number)
-], Media.prototype, "NextAiringEpisode", void 0);
-__decorate([
-    json2typescript_1.JsonProperty("time_until_airing", Number),
-    __metadata("design:type", Number)
-], Media.prototype, "TimeUntilAiring", void 0);
 Media = __decorate([
     json2typescript_1.JsonObject("")
 ], Media);

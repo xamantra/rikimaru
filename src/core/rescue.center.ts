@@ -1,34 +1,40 @@
-import { Container } from "./container";
 import { BotCommand } from "./../command/bot.command";
 import { ICommand } from "../interfaces/command.interface";
+import { Color } from "./colors";
+import { ClientManager } from "./client";
 
 export class RescueCenter {
-  // private static Color: Color = Container.Color;
   public static RequireParameter(cmd: BotCommand, command: ICommand) {
-    const color = Container.Color;
-    const msg: any = cmd.ParameterRequired
-      ? {
-          embed: {
-            color: color.Random,
-            title: `**Rikimaru Rescue Center**`,
-            description: `The command ***-${
-              command.Name
-            }*** requires a parameter.`,
-            fields: [
-              {
-                name: `Example|s for ***-${command.Name}*** : `,
-                // tslint:disable-next-line:max-line-length
-                value: cmd.Example.Get(command, cmd.Example.Count)
+    let example: any = cmd.Example;
+    if (example === undefined) {
+      example = "";
+    } else {
+      example = cmd.Example.Get(command, cmd.Example.Count);
+    }
+    const msg: any =
+      cmd.ParameterRequired && command.Parameter.length === 0
+        ? {
+            embed: {
+              color: Color.Random,
+              title: `**Rikimaru Rescue Center**`,
+              description: `The command ***-${
+                command.Name
+              }*** requires a parameter.`,
+              fields: [
+                {
+                  name: `Example|s for ***-${command.Name}*** : `,
+                  // tslint:disable-next-line:max-line-length
+                  value: example
+                }
+              ],
+              timestamp: new Date(),
+              footer: {
+                icon_url: ClientManager.GetClient.user.avatarURL,
+                text: "© Rikimaru"
               }
-            ],
-            timestamp: new Date(),
-            footer: {
-              icon_url: Container.ClientManager.GetClient().user.avatarURL,
-              text: "© Rikimaru"
             }
           }
-        }
-      : `The command ***-${command.Name}*** doesn't need a parameter.`;
+        : `The command ***-${command.Name}*** doesn't need a parameter.`;
     return msg;
   }
 }

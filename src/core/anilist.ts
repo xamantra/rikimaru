@@ -1,28 +1,11 @@
 import endeavor = require("endeavor");
 import { SearchVariables } from "../graphql/variables/search.variables";
-import { MediaVariables } from "../graphql/variables/media.variables";
-import { Container } from "./container";
+import { GraphQL } from "../graphql/graphql";
 
 export class Anilist {
-  private MediaVariables: MediaVariables;
-  private SearchVariables: SearchVariables;
-  constructor() {
-    this.MediaVariables = Container.AnimeVariables;
-    this.SearchVariables = Container.MediaVariables;
-    console.log(`Constructed: "${Anilist.name}"`);
-  }
-
-  public async MediaSearch(search: string, type: string) {
-    const query = Container.GraphQL.SearchQL;
-    const vars = this.SearchVariables;
-    const variables = vars.Get(search, 1, 100, type);
-    return await endeavor.queryAnilist({ query, variables });
-  }
-
-  public async GetMedia(id: number, type: string) {
-    const query = Container.GraphQL.AnimeQL;
-    const vars = this.MediaVariables;
-    const variables = vars.Get(id, type);
+  public static async MediaQuery(search: string) {
+    const query = GraphQL.SearchQL;
+    const variables = SearchVariables.Get(search, 1, 100, "ANIME");
     return await endeavor.queryAnilist({ query, variables });
   }
 }

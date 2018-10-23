@@ -1,39 +1,37 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const config_1 = require("../core/config");
 const discord_js_1 = require("discord.js");
 class MessageHelper {
-    constructor() {
-        console.log(`Constructed: "${MessageHelper.name}"`);
+    static IsCommand(config, message) {
+        return message.content.indexOf(config_1.Config.GetPrefix) === 0;
     }
-    IsCommand(config, message) {
-        return message.content.indexOf(config.GetPrefix) === 0;
-    }
-    IsDMChannel(message) {
+    static IsDMChannel(message) {
         return message.channel instanceof discord_js_1.DMChannel || message.guild === null;
     }
-    HasPermission(message) {
+    static HasPermission(message) {
         const roles = ["Ōnā", "Botto"];
         return message.member.roles.some(r => roles.includes(r.name));
     }
-    GetPermissions(message, log = false) {
+    static GetPermissions(message, log = false) {
         const permissions = message.member.permissions;
         if (log === true) {
             console.log(permissions.toArray());
         }
         return permissions;
     }
-    GetArgs(config, message) {
+    static GetArgs(config, message) {
         return message.content
-            .slice(config.GetPrefix.length)
+            .slice(config_1.Config.GetPrefix.length)
             .trim()
             .split(/ +/g);
     }
-    GetCommand(config, message) {
+    static GetCommand(config, message) {
         return this.GetArgs(config, message)
             .shift()
             .toLowerCase();
     }
-    GetParameter(config, message) {
+    static GetParameter(config, message) {
         const args = this.GetArgs(config, message);
         return args.slice(1, args.length).join(" ");
     }

@@ -2,11 +2,7 @@ import { Title } from "../models/title.model";
 import { ITitle } from "../interfaces/page.interface";
 
 export class TitleHelper {
-  constructor() {
-    console.log(`Constructed: "${TitleHelper.name}"`);
-  }
-
-  public Get(title: ITitle) {
+  public static Get(title: ITitle) {
     if (title.english !== null) {
       return title.english;
     } else if (title.romaji !== null) {
@@ -16,7 +12,7 @@ export class TitleHelper {
     }
   }
 
-  public Match(title: ITitle, search: string) {
+  public static Match(title: ITitle, search: string) {
     if (
       title.english !== null &&
       title.english.toLowerCase() === search.toLowerCase()

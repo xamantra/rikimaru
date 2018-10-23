@@ -1,20 +1,12 @@
-import { Container } from "../core/container";
 import { Color } from "./../core/colors";
 import { GuildMember, Guild } from "discord.js";
+import { ClientManager } from "../core/client";
 
 export class EmbedHelper {
-  private Color: Color;
-
-  constructor() {
-    this.Color = Container.Color;
-    console.log(`Constructed: "${EmbedHelper.name}"`);
-  }
-
   public WelcomeEmbed(server: Guild, member: GuildMember) {
-    const color = this.Color;
     const embed = {
       embed: {
-        color: color.Random,
+        color: Color.Random,
         thumbnail: {
           url: member.user.avatarURL
         },
@@ -33,7 +25,7 @@ export class EmbedHelper {
         ],
         timestamp: new Date(),
         footer: {
-          icon_url: Container.ClientManager.GetClient().user.avatarURL,
+          icon_url: ClientManager.GetClient.user.avatarURL,
           text: "© Rikimaru"
         }
       }

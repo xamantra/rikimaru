@@ -1,9 +1,7 @@
-export class SearchVariables {
-  constructor() {
-    console.log(`Constructed: "${SearchVariables.name}"`);
-  }
+import { MediaType } from "./../../core/enums";
 
-  public Get(
+export class SearchVariables {
+  public static Get(
     search: string,
     page: number = 1,
     perPage: number = 100,

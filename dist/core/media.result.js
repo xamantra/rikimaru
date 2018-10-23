@@ -1,13 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class MediaResult {
-    constructor() {
-        console.log(`Constructed: "${MediaResult.name}"`);
-    }
-    SendMessage(message, isDM = false, responseMessage) {
+    static SendMessage(message, isDM = false, responseMessage) {
         this.Send(message, this.EmbedTemplate(responseMessage), isDM);
     }
-    Send(message, content, isDM = false) {
+    static Send(message, content, isDM = false) {
         if (isDM) {
             message.author.send(content);
         }
@@ -15,26 +12,15 @@ class MediaResult {
             message.reply(content);
         }
     }
-    SendInfo(message, content, isDM = false) {
+    static SendInfo(message, content, isDM = false) {
         this.Send(message, content, isDM);
     }
-    EmbedTemplate(rsMessage) {
+    static EmbedTemplate(rsMessage) {
         let name = "";
         let value = "";
-        let type = "";
-        switch (rsMessage.Type) {
-            case "ANIME":
-                type = "Episode";
-                break;
-            case "MANGA":
-                type = "Chapter";
-                break;
-            default:
-                break;
-        }
         switch (rsMessage.Status) {
             case "RELEASING":
-                name = `*${type} ${rsMessage.Current}*`;
+                name = `*Episode ${rsMessage.Current}*`;
                 value = `Will air in approximately **${rsMessage.Countdown}**\nLast update: *${rsMessage.UpdatedAt}*`;
                 break;
             case "NOT_YET_RELEASED":
