@@ -1,13 +1,8 @@
-declare global {
-  interface Array<T> {
-    remove(value: any): [];
+export class ArrayHelper {
+  public static remove(array: any[], element: any) {
+    const index = array.indexOf(element);
+    if (index !== -1) {
+      array.splice(index, 1);
+    }
   }
 }
-Array.prototype.remove = function(value: any): [] {
-  const idx = this.indexOf(value);
-  if (idx !== -1) {
-    return this.splice(idx, 1); // The second parameter is the number of elements to remove.
-  }
-  return this;
-};
-export {};

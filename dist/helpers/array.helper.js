@@ -1,10 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-Array.prototype.remove = function (value) {
-    const idx = this.indexOf(value);
-    if (idx !== -1) {
-        return this.splice(idx, 1); // The second parameter is the number of elements to remove.
+class ArrayHelper {
+    static remove(array, element) {
+        const index = array.indexOf(element);
+        if (index !== -1) {
+            array.splice(index, 1);
+        }
     }
-    return this;
-};
+}
+exports.ArrayHelper = ArrayHelper;
 //# sourceMappingURL=array.helper.js.map

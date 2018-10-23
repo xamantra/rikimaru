@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const array_helper_1 = require("./../helpers/array.helper");
 const user_data_1 = require("./user.data");
 const subscription_model_1 = require("./../models/subscription.model");
 const json_helper_1 = require("../helpers/json.helper");
@@ -50,7 +51,7 @@ class SubscriptionData {
                 }
                 else {
                     const sub = this.SubscriptionList.find(x => x.MediaId === mediaId && x.UserId === userId);
-                    this.SubscriptionList = this.SubscriptionList.remove(sub);
+                    array_helper_1.ArrayHelper.remove(this.SubscriptionList, sub);
                     callback();
                 }
             });

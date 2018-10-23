@@ -1,4 +1,5 @@
 import { RunResult } from "sqlite3";
+import { ArrayHelper } from "./../helpers/array.helper";
 import { UserData } from "./user.data";
 import { Subscription } from "./../models/subscription.model";
 import { JsonHelper } from "../helpers/json.helper";
@@ -70,7 +71,7 @@ export class SubscriptionData {
             const sub = this.SubscriptionList.find(
               x => x.MediaId === mediaId && x.UserId === userId
             );
-            this.SubscriptionList = this.SubscriptionList.remove(sub);
+            ArrayHelper.remove(this.SubscriptionList, sub);
             callback();
           }
         }
