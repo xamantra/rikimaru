@@ -45,7 +45,7 @@ export class ViewSubsFunction implements ICommandFunction {
       );
       list.push({
         name: `\n***${title}***`,
-        value: `*Episode ${episode}*\nAiring in: *${countdown}*\n|`
+        value: `*Episode ${episode} :* **${countdown}**\n|`
       });
     });
     const embed = {
@@ -54,7 +54,7 @@ export class ViewSubsFunction implements ICommandFunction {
         thumbnail: {
           url: message.author.avatarURL
         },
-        title: `***${message.author.username}'s Subscription List***`,
+        title: `***${message.author.username}***'s *Subscription List*`,
         description: `**${mediaSubs.length} Anime**`,
         fields: list,
         timestamp: new Date(),

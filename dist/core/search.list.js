@@ -8,6 +8,9 @@ class SearchList {
             embed: {
                 color: colors_1.Color.Random,
                 title: `**Rikimaru Subscription Center**`,
+                thumbnail: {
+                    url: client_1.ClientManager.GetClient.user.avatarURL
+                },
                 description: `*Please select an anime you want to subscribe/unsubscribe by its exact title.`,
                 fields: fields,
                 timestamp: new Date(),

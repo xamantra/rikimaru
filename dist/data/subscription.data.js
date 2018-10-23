@@ -44,6 +44,7 @@ class SubscriptionData {
     static Delete(mediaId, discordId, callback) {
         const db = data_helper_1.DataHelper.DB;
         const userId = user_data_1.UserData.All.find(x => x.DiscordId === discordId).Id;
+        let called = false;
         db.serialize(() => {
             db.run(`DELETE FROM subscription WHERE media_id=${mediaId} AND user_id=${userId}`, (result, err) => {
                 if (err !== undefined) {
@@ -52,7 +53,7 @@ class SubscriptionData {
                 else {
                     const sub = this.SubscriptionList.find(x => x.MediaId === mediaId && x.UserId === userId);
                     array_helper_1.ArrayHelper.remove(this.SubscriptionList, sub);
-                    callback();
+                    !called ? callback() : (called = true);
                 }
             });
         });

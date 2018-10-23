@@ -7,10 +7,11 @@ export class MediaSearch {
   public static All(title: string, callback?: (res: IMedia[]) => void) {
     const result = Anilist.MediaQuery(title);
     let media: IMedia[] = [];
+    let called = false;
     result.then(async root => {
       media = await (JsonHelper.Converter.deserialize(root, Root) as Root).Data
         .Page.media;
-      callback(media);
+      !called ? callback(media) : (called = true);
     });
   }
 }

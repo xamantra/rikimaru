@@ -37,7 +37,7 @@ class ViewSubsFunction {
             const countdown = time_helper_1.TimeHelper.Countdown(media.nextAiringEpisode.timeUntilAiring);
             list.push({
                 name: `\n***${title}***`,
-                value: `*Episode ${episode}*\nAiring in: *${countdown}*\n|`
+                value: `*Episode ${episode} :* **${countdown}**\n|`
             });
         });
         const embed = {
@@ -46,7 +46,7 @@ class ViewSubsFunction {
                 thumbnail: {
                     url: message.author.avatarURL
                 },
-                title: `***${message.author.username}'s Subscription List***`,
+                title: `***${message.author.username}***'s *Subscription List*`,
                 description: `**${mediaSubs.length} Anime**`,
                 fields: list,
                 timestamp: new Date(),

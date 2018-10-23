@@ -7,10 +7,11 @@ class MediaSearch {
     static All(title, callback) {
         const result = anilist_1.Anilist.MediaQuery(title);
         let media = [];
+        let called = false;
         result.then(async (root) => {
             media = await json_helper_1.JsonHelper.Converter.deserialize(root, root_model_1.Root).Data
                 .Page.media;
-            callback(media);
+            !called ? callback(media) : (called = true);
         });
     }
 }

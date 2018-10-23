@@ -61,6 +61,7 @@ export class SubscriptionData {
   ) {
     const db = DataHelper.DB;
     const userId = UserData.All.find(x => x.DiscordId === discordId).Id;
+    let called = false;
     db.serialize(() => {
       db.run(
         `DELETE FROM subscription WHERE media_id=${mediaId} AND user_id=${userId}`,
@@ -72,7 +73,7 @@ export class SubscriptionData {
               x => x.MediaId === mediaId && x.UserId === userId
             );
             ArrayHelper.remove(this.SubscriptionList, sub);
-            callback();
+            !called ? callback() : (called = true);
           }
         }
       );
