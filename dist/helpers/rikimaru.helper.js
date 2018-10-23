@@ -22,6 +22,11 @@ class RikimaruHelper {
             }
         });
     }
+    static GetPath() {
+        fs.realpath(data_helper_1.DataHelper.DBPath, err => {
+            console.log(err);
+        });
+    }
 }
 exports.RikimaruHelper = RikimaruHelper;
 //# sourceMappingURL=rikimaru.helper.js.map
