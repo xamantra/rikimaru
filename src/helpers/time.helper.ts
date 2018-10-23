@@ -19,6 +19,11 @@ export class TimeHelper {
     return elapsed;
   }
 
+  public static Date(timestamp: number) {
+    const date = moment(moment.unix(timestamp)).toDate();
+    return date;
+  }
+
   public static YearMonthDay(y: number, m: number, d: number) {
     let yearmonthday: string;
     if (y !== null && m !== null && d !== null) {

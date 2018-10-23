@@ -16,6 +16,10 @@ class TimeHelper {
         const elapsed = moment_1.default(moment_1.default.unix(timestamp)).fromNow();
         return elapsed;
     }
+    static Date(timestamp) {
+        const date = moment_1.default(moment_1.default.unix(timestamp)).toDate();
+        return date;
+    }
     static YearMonthDay(y, m, d) {
         let yearmonthday;
         if (y !== null && m !== null && d !== null) {

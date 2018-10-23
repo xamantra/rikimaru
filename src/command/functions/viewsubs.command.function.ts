@@ -44,7 +44,9 @@ export class ViewSubsFunction implements ICommandFunction {
         media.nextAiringEpisode.timeUntilAiring
       );
       list.push({
-        name: `\n***${title}***`,
+        name: `\n***[${title}](https://myanimelist.net/anime/${
+          media.idMal
+        }/)***`,
         value: `*Episode ${episode} :* **${countdown}**\n|`
       });
     });
