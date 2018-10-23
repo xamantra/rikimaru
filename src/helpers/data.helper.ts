@@ -1,4 +1,4 @@
-import sqlite3, { Database, Statement } from "sqlite3";
+import sqlite3 from "sqlite3";
 
 export class DataHelper {
   public static Init() {
