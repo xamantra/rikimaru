@@ -29,8 +29,15 @@ export class ResponseHandler {
               cmd.Function.Execute(message, command, cmd.DMResponse);
               return;
             }
+
             if (Bot.IsActive === true)
               cmd.Function.Execute(message, command, cmd.DMResponse);
+            else
+              MediaResult.SendInfo(
+                message,
+                `I am currently on tweak mode. Please try again later. My creator is trying to do something on me.`,
+                false
+              );
           }
         }
         return;

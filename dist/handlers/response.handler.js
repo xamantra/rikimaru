@@ -29,6 +29,8 @@ class ResponseHandler {
                         }
                         if (bot_1.Bot.IsActive === true)
                             cmd.Function.Execute(message, command, cmd.DMResponse);
+                        else
+                            media_result_1.MediaResult.SendInfo(message, `I am currently on tweak mode. Please try again later. My creator is trying to do something on me.`, false);
                     }
                 }
                 return;
