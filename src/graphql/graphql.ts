@@ -83,12 +83,6 @@ export class GraphQL {
     console.log(`Constructed: "${GraphQL.name}"`);
   }
 
-  public Init() {
-    if (this.Search !== null && this.Media !== null) {
-      console.log("GraphQL Queries are ready!");
-    }
-  }
-
   public get SearchQL() {
     return this.Search;
   }

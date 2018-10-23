@@ -47,7 +47,6 @@ Container.EmbedHelper = new EmbedHelper();
 
 Container.ClientManager.Init();
 Container.MessageHandler.Init();
-Container.GraphQL.Init();
 Container.CommandManager.Init();
 DataHelper.Init();
 UserData.Init();
