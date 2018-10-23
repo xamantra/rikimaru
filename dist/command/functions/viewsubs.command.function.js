@@ -23,7 +23,7 @@ class ViewSubsFunction {
         console.log(discordId);
         const client = client_1.ClientManager.GetClient;
         const list = [];
-        const userId = user_data_1.UserData.All.find(x => x.DiscordId === discordId).Id;
+        const userId = user_data_1.UserData.GetUser(discordId).Id;
         const mediaSubs = [];
         const mediaList = media_data_1.MediaData.GetMediaList;
         subscription_data_1.SubscriptionData.All.forEach(sub => {

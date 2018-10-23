@@ -15,7 +15,8 @@ class DataHelper {
         console.log(`Constructed: "${DataHelper.name}"`);
     }
     static get DB() {
-        return new sqlite3_1.default.Database("data/rikimaru.db", function (err) {
+        const database = process.env.database || require("../extras/env").ConfigVariables.database;
+        return new sqlite3_1.default.Database(database, function (err) {
             if (err !== null) {
                 console.log(err);
             }
