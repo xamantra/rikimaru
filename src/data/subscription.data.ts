@@ -72,8 +72,11 @@ export class SubscriptionData {
             const sub = this.SubscriptionList.find(
               x => x.MediaId === mediaId && x.UserId === userId
             );
-            ArrayHelper.remove(this.SubscriptionList, sub);
-            !called ? callback() : (called = true);
+            if (sub !== null || sub !== undefined) {
+              ArrayHelper.remove(this.SubscriptionList, sub, () => {
+                !called ? callback() : (called = true);
+              });
+            }
           }
         }
       );

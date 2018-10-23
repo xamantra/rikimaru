@@ -52,8 +52,11 @@ class SubscriptionData {
                 }
                 else {
                     const sub = this.SubscriptionList.find(x => x.MediaId === mediaId && x.UserId === userId);
-                    array_helper_1.ArrayHelper.remove(this.SubscriptionList, sub);
-                    !called ? callback() : (called = true);
+                    if (sub !== null || sub !== undefined) {
+                        array_helper_1.ArrayHelper.remove(this.SubscriptionList, sub, () => {
+                            !called ? callback() : (called = true);
+                        });
+                    }
                 }
             });
         });
