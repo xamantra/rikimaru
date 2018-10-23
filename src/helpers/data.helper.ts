@@ -17,12 +17,20 @@ export class DataHelper {
   }
 
   public static get DB() {
-    const database =
-      process.env.database || require("../extras/env").ConfigVariables.database;
-    return new sqlite3.Database(database, function(err: Error): void {
+    return new sqlite3.Database(this.DBPath, function(err: Error): void {
       if (err !== null) {
         console.log(err);
       }
     });
+  }
+
+  public static get DBPath() {
+    const database = "data/rikimaru.db";
+    return database;
+  }
+
+  public static get DevDBPath() {
+    const database = "data/rikimaru-dev.db";
+    return database;
   }
 }

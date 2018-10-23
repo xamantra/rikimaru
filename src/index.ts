@@ -1,4 +1,5 @@
 import { Client } from "discord.js";
+import { RikimaruHelper } from "./helpers/rikimaru.helper";
 import { SubscriptionData } from "./data/subscription.data";
 import { MediaData } from "./data/media.data";
 import { UserData } from "./data/user.data";
@@ -14,6 +15,7 @@ import { MessageHandler } from "./handlers/message.handler";
 ClientManager.Init(new Client());
 MessageHandler.Init();
 CommandManager.Init();
+RikimaruHelper.Init();
 DataHelper.Init();
 UserData.Init();
 MediaData.Init();

@@ -15,12 +15,19 @@ class DataHelper {
         console.log(`Constructed: "${DataHelper.name}"`);
     }
     static get DB() {
-        const database = process.env.database || require("../extras/env").ConfigVariables.database;
-        return new sqlite3_1.default.Database(database, function (err) {
+        return new sqlite3_1.default.Database(this.DBPath, function (err) {
             if (err !== null) {
                 console.log(err);
             }
         });
+    }
+    static get DBPath() {
+        const database = "data/rikimaru.db";
+        return database;
+    }
+    static get DevDBPath() {
+        const database = "data/rikimaru-dev.db";
+        return database;
     }
 }
 exports.DataHelper = DataHelper;
