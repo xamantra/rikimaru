@@ -11,8 +11,8 @@ import { MessageHandler } from "./handlers/message.handler";
 import { OpenShiftUptimer } from "./others/openshift";
 import * as http from "http";
 
-OpenShiftUptimer.Log(true);
-OpenShiftUptimer.AutoConfigure();
+// OpenShiftUptimer.Log(true);
+// OpenShiftUptimer.AutoConfigure();
 
 Bot.Init();
 ClientManager.Init(new Client());
