@@ -17,7 +17,9 @@ export class DataHelper {
   }
 
   public static get DB() {
-    return new sqlite3.Database("data/rikimaru.db", function(err: Error): void {
+    const database =
+      process.env.database || require("../extras/env").ConfigVariables.database;
+    return new sqlite3.Database(database, function(err: Error): void {
       if (err !== null) {
         console.log(err);
       }
