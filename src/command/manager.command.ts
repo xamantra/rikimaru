@@ -20,18 +20,20 @@ export class CommandManager {
   }
 
   public Init(): void {
-    const commands = this.BotCommands;
+    const cmds: BotCommand[] = [];
 
-    commands.push(help);
-    commands.push(dmhelp);
-    commands.push(when);
-    commands.push(dmwhen);
-    commands.push(whenmanga);
-    commands.push(dmwhenmanga);
-    commands.push(subscribe);
-    commands.push(mysubs);
-    commands.push(ping);
-    commands.push(dmping);
+    cmds.push(help);
+    cmds.push(dmhelp);
+    cmds.push(when);
+    cmds.push(dmwhen);
+    cmds.push(whenmanga);
+    cmds.push(dmwhenmanga);
+    cmds.push(subscribe);
+    cmds.push(mysubs);
+    cmds.push(ping);
+    cmds.push(dmping);
+
+    this.BotCommands = cmds;
   }
 
   public get Commands() {
