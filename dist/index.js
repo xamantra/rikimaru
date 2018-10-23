@@ -34,7 +34,7 @@ http
     res.write("Hello! I am Rikimaru!");
     res.end();
 })
-    .listen(8080);
+    .listen(8080, "https://rikimaru-dev.herokuapp.com");
 setTimeout(() => {
     media_data_1.MediaData.LoadFromApi();
 }, 1000);
