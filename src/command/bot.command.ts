@@ -1,4 +1,5 @@
 import { ICommandFunction } from "../interfaces/command.function.interface";
+import { ICommandExample } from "./../interfaces/command.example.interface";
 import { Response } from "./../core/enums";
 
 export class BotCommand {
@@ -7,18 +8,21 @@ export class BotCommand {
   public ParameterRequired: boolean;
   public Function: ICommandFunction;
   public DMResponse: boolean;
+  public Example: ICommandExample;
 
   constructor(
     name: string,
     description: string,
     requireParameter: boolean,
     private responseType: Response,
-    commandFunction: ICommandFunction
+    commandFunction: ICommandFunction,
+    example?: ICommandExample
   ) {
     this.Name = name;
     this.Description = description;
     this.ParameterRequired = requireParameter;
     this.Function = commandFunction;
+    this.Example = example;
 
     switch (this.responseType) {
       case Response.ChannelReply:

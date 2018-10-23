@@ -16,10 +16,10 @@ class ResponseHandler {
                 const parameter = command.Parameter;
                 const paramRequired = cmd.ParameterRequired;
                 if (paramRequired && parameter.length <= 0) {
-                    this.SendRescue(message, cmd.DMResponse, command);
+                    this.SendRescue(message, cmd.DMResponse, cmd, command);
                 }
                 else if (!paramRequired && parameter.length >= 0) {
-                    this.SendRescue(message, cmd.DMResponse, command);
+                    this.SendRescue(message, cmd.DMResponse, cmd, command);
                 }
                 else {
                     cmd.Function.Execute(message, command, cmd.DMResponse);
@@ -28,15 +28,15 @@ class ResponseHandler {
             }
             else {
                 if (iteration === commands.length) {
-                    container_1.Container.MediaResult.SendInfo(message, `The command ***${command.Name}*** doesn't exists. Type the command: ***-help***  to see all commands.`, false);
+                    container_1.Container.MediaResult.SendInfo(message, `The command ***${command.Name}*** doesn't exists. Type the command: ***-help***  to see all commands.`, cmd.DMResponse);
                     return;
                 }
             }
             iteration++;
         });
     }
-    SendRescue(message, dm, command) {
-        container_1.Container.MediaResult.SendInfo(message, rescue_center_1.RescueCenter.RequireParameter(command), dm);
+    SendRescue(message, dm, botCommand, command) {
+        container_1.Container.MediaResult.SendInfo(message, rescue_center_1.RescueCenter.RequireParameter(botCommand, command), dm);
     }
 }
 exports.ResponseHandler = ResponseHandler;

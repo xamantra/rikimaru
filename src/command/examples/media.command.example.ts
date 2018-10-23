@@ -1,10 +1,13 @@
-import { Randomizer } from "./../helpers/random.helper";
-import { ICommand } from "../interfaces/command.interface";
+import { Randomizer } from "../../helpers/random.helper";
+import { ICommandExample } from "../../interfaces/command.example.interface";
+import { ICommand } from "../../interfaces/command.interface";
 
-export class ExampleCommand {
+export class MediaExample implements ICommandExample {
+  public Count: number;
   private media: string[] = [];
 
-  constructor() {
+  constructor(count: number) {
+    this.Count = count;
     this.media = [
       "blood lad",
       "canaan",
@@ -68,10 +71,10 @@ export class ExampleCommand {
       "asobi asobase",
       "goblin slayer"
     ];
-    console.log(`Constructed: "${ExampleCommand.name}"`);
+    console.log(`Constructed: "${MediaExample.name}"`);
   }
 
-  public MediaExample(command: ICommand, count: number) {
+  public Get(command: ICommand, count: number) {
     let result = ``;
     const picked: string[] = [];
     for (let i = 0; i < this.media.length; i++) {

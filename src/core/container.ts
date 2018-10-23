@@ -15,7 +15,6 @@ import { Anilist } from "./anilist";
 import { ResponseHandler } from "../handlers/response.handler";
 import { MediaResult } from "./media.result";
 import { ClientManager } from "./client";
-import { ExampleCommand } from "../command/example.command";
 
 export class Container {
   public static Config: Config;
@@ -28,7 +27,6 @@ export class Container {
   public static MessageHandler: MessageHandler;
   public static ResponseHandler: ResponseHandler;
   public static MediaHandler: MediaHandler;
-  public static CommandExample: ExampleCommand;
   public static CommandManager: CommandManager;
   public static MediaVariables: SearchVariables;
   public static AnimeVariables: MediaVariables;
