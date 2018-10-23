@@ -49,8 +49,9 @@ class SubscribeFunction {
                     media_data_1.MediaData.Add(mediaId, title);
                 }
                 if (!subscription_data_1.SubscriptionData.Exists(mediaId, user.Id)) {
-                    subscription_data_1.SubscriptionData.Add(mediaId, user.Id);
-                    media_result_1.MediaResult.SendInfo(message, `You are now subscribed to: ***${title}***. I will DM you when a new episode is aired!\nEnter the command: ***-mysubs*** to view your subscriptions.`, dm);
+                    subscription_data_1.SubscriptionData.Add(mediaId, user.Id, () => {
+                        media_result_1.MediaResult.SendInfo(message, `You are now subscribed to: ***${title}***. I will DM you when a new episode is aired!\nEnter the command: ***-mysubs*** to view your subscriptions.`, dm);
+                    });
                 }
                 else {
                     media_result_1.MediaResult.SendInfo(message, `Cool! You are already subscribed to ***${title}***.\nEnter the command ***-unsub ${title}***  to unsubscribe to this anime.`, dm);

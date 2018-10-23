@@ -4,7 +4,6 @@ import { UserData } from "./user.data";
 import { Subscription } from "./../models/subscription.model";
 import { JsonHelper } from "../helpers/json.helper";
 import { DataHelper } from "../helpers/data.helper";
-const Enumerable = require("node-enumerable");
 
 export class SubscriptionData {
   private static SubscriptionList: Subscription[] = [];
@@ -30,7 +29,7 @@ export class SubscriptionData {
     });
   }
 
-  public static Add(mediaId: number, userId: number) {
+  public static Add(mediaId: number, userId: number, callback?: () => void) {
     const db = DataHelper.DB;
     const converter = JsonHelper.Converter;
     db.serialize(() => {
@@ -46,6 +45,7 @@ export class SubscriptionData {
                 this.SubscriptionList.push(
                   converter.deserialize(row, Subscription)
                 );
+                callback();
               }
             );
           }

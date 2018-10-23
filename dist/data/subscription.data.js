@@ -5,7 +5,6 @@ const user_data_1 = require("./user.data");
 const subscription_model_1 = require("./../models/subscription.model");
 const json_helper_1 = require("../helpers/json.helper");
 const data_helper_1 = require("../helpers/data.helper");
-const Enumerable = require("node-enumerable");
 class SubscriptionData {
     static Init() {
         const db = data_helper_1.DataHelper.DB;
@@ -25,7 +24,7 @@ class SubscriptionData {
             });
         });
     }
-    static Add(mediaId, userId) {
+    static Add(mediaId, userId, callback) {
         const db = data_helper_1.DataHelper.DB;
         const converter = json_helper_1.JsonHelper.Converter;
         db.serialize(() => {
@@ -36,6 +35,7 @@ class SubscriptionData {
                 else {
                     db.each(`SELECT * FROM subscription WHERE media_id=${mediaId} AND user_id=${userId}`, (e, row) => {
                         this.SubscriptionList.push(converter.deserialize(row, subscription_model_1.Subscription));
+                        callback();
                     });
                 }
             });

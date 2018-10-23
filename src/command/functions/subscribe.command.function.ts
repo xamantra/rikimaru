@@ -60,12 +60,13 @@ export class SubscribeFunction implements ICommandFunction {
           MediaData.Add(mediaId, title);
         }
         if (!SubscriptionData.Exists(mediaId, user.Id)) {
-          SubscriptionData.Add(mediaId, user.Id);
-          MediaResult.SendInfo(
-            message,
-            `You are now subscribed to: ***${title}***. I will DM you when a new episode is aired!\nEnter the command: ***-mysubs*** to view your subscriptions.`,
-            dm
-          );
+          SubscriptionData.Add(mediaId, user.Id, () => {
+            MediaResult.SendInfo(
+              message,
+              `You are now subscribed to: ***${title}***. I will DM you when a new episode is aired!\nEnter the command: ***-mysubs*** to view your subscriptions.`,
+              dm
+            );
+          });
         } else {
           MediaResult.SendInfo(
             message,
