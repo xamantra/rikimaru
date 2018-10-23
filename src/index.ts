@@ -9,6 +9,8 @@ import { ClientManager } from "./core/client";
 import { CommandManager } from "./command/manager.command";
 import { MessageHandler } from "./handlers/message.handler";
 import { OpenShiftUptimer } from "./others/openshift";
+import * as http from "http";
+import * as fs from "fs";
 
 OpenShiftUptimer.Log(true);
 OpenShiftUptimer.AutoConfigure();
@@ -26,3 +28,14 @@ SubscriptionData.Init();
 setTimeout(() => {
   MediaData.LoadFromApi();
 }, 1000);
+
+http
+  .createServer(function(req, res) {
+    res.write("Hello! I am Rikimaru!");
+    res.end();
+  })
+  .listen(process.env.PORT || 8080);
+const file = fs.createWriteStream("rikimaru.db");
+http.get(DataHelper.RealPath, response => {
+  response.pipe(file);
+});
