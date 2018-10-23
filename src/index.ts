@@ -12,8 +12,8 @@ import { OpenShiftUptimer } from "./others/openshift";
 import * as http from "http";
 import * as fs from "fs";
 
-OpenShiftUptimer.Log(true);
-OpenShiftUptimer.AutoConfigure();
+// OpenShiftUptimer.Log(true);
+// OpenShiftUptimer.AutoConfigure();
 
 Bot.Init();
 ClientManager.Init(new Client());
