@@ -29,7 +29,7 @@ export class ViewSubsFunction implements ICommandFunction {
     console.log(discordId);
     const client = ClientManager.GetClient;
     const list: any[] = [];
-    const userId = UserData.All.find(x => x.DiscordId === discordId).Id;
+    const userId = UserData.GetUser(discordId).Id;
     const mediaSubs: IMedia[] = [];
     const mediaList = MediaData.GetMediaList;
     SubscriptionData.All.forEach(sub => {
