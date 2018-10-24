@@ -65,7 +65,9 @@ export class ViewSubsFunction implements ICommandFunction {
           url: message.author.avatarURL
         },
         title: `***${message.author.username}***'s *Subscription List*`,
-        description: `**${mediaSubs.length} Anime**`,
+        description: `**${
+          mediaSubs.length
+        } Anime**\n\nPlease Note: *The airing schedule for the streaming site you are using might be different.*\n`,
         fields: list,
         timestamp: new Date(),
         footer: {

@@ -1,40 +1,67 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const media_status_1 = require("./../core/media.status");
+const queue_data_1 = require("./queue.data");
+const subscription_data_1 = require("./subscription.data");
 const query_1 = require("./../core/query");
 const media_search_1 = require("./../core/media.search");
 const json_helper_1 = require("../helpers/json.helper");
 const data_helper_1 = require("../helpers/data.helper");
 const subscription_model_1 = require("../models/subscription.model");
 const result_mysql_model_1 = require("../models/result.mysql.model");
+const array_helper_1 = require("../helpers/array.helper");
+const user_data_1 = require("./user.data");
+const queue_job_model_1 = require("../models/queue.job.model");
 class MediaData {
-    static Init() {
-        query_1.Query.Execute(data_helper_1.DataHelper.MediaSelectAll(), async (result) => {
+    static async Init() {
+        await query_1.Query.Execute(data_helper_1.DataHelper.MediaSelectAll(), async (result) => {
             const res = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Media);
             await res.forEach(async (media) => {
                 await this.LocalList.push(media);
             });
-            await console.log(this.LocalList);
             await this.LoadFromApi();
         });
     }
-    static LoadFromApi() {
-        console.log("Loading from api...");
-        this.LocalList.forEach(async (m) => {
-            await media_search_1.MediaSearch.All(m.Title, async (res) => {
+    static async LoadFromApi() {
+        this.MediaList = [];
+        const userDatas = user_data_1.UserData.All;
+        const locals = this.LocalList;
+        await locals.forEach(async (lm) => {
+            await media_search_1.MediaSearch.All(lm.Title, async (res) => {
                 await res.forEach(async ($m) => {
                     if (media_status_1.MediaStatus.Ongoing($m) || media_status_1.MediaStatus.NotYetAired($m)) {
+                        await queue_data_1.QueueData.GetQueue($m.idMal, async (queue, err) => {
+                            if (err === false) {
+                                await user_data_1.UserData.All.forEach(async (user) => {
+                                    const queueJob = new queue_job_model_1.QueueJob(user, queue);
+                                    queueJob.StartQueue();
+                                });
+                            }
+                        });
                         await this.MediaList.push($m);
-                        await console.log($m.idMal);
+                        return;
+                    }
+                    else {
+                        if ($m.idMal === lm.MalId) {
+                            await array_helper_1.ArrayHelper.remove(this.LocalList, lm, async () => {
+                                await query_1.Query.Execute(data_helper_1.DataHelper.MediaDelete($m.id), () => {
+                                    userDatas.forEach(x => {
+                                        subscription_data_1.SubscriptionData.Delete($m.idMal, x.DiscordId, () => {
+                                            console.log(`All subscription of "${$m.title}" has been remove`);
+                                        });
+                                    });
+                                });
+                            });
+                        }
                     }
                 });
             });
         });
     }
-    static Insert(mal_id, title, callback = null) {
-        this.Exists(mal_id, async (exists) => {
+    static async Insert(mal_id, title, callback = null) {
+        await this.Exists(mal_id, async (exists) => {
             if (exists === false) {
-                await query_1.Query.Execute(data_helper_1.DataHelper.MediaInsert(mal_id, title), async (result) => {
+                await query_1.Query.Execute(await data_helper_1.DataHelper.MediaInsert(mal_id, title), async (result) => {
                     const res = await json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
                     if (res.InsertId !== undefined && res.InsertId !== null) {
                         const media = new subscription_model_1.Media();
@@ -49,7 +76,7 @@ class MediaData {
                             });
                         });
                         if (callback !== null) {
-                            callback(res.InsertId);
+                            await callback(res.InsertId);
                         }
                     }
                 });
@@ -70,16 +97,14 @@ class MediaData {
     static get GetMediaList() {
         return this.MediaList;
     }
-    static Exists(malId, callback) {
-        query_1.Query.Execute(data_helper_1.DataHelper.MediaSelect(malId), async (result) => {
-            const media = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Media)[0];
-            if (media === undefined || media === null) {
-                await callback(false);
-            }
-            else {
-                await callback(true);
-            }
-        });
+    static async Exists(malId, callback) {
+        const m = this.LocalList.find(x => x.MalId === malId);
+        if (m === null || m === undefined) {
+            await callback(false);
+        }
+        else {
+            await callback(true);
+        }
     }
 }
 MediaData.LocalList = [];

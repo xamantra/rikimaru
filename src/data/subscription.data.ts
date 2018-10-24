@@ -36,11 +36,15 @@ export class SubscriptionData {
     }
   }
 
-  public static Insert(mediaId: number, userId: number, callback?: () => void) {
-    this.Exists(mediaId, userId, async exists => {
+  public static async Insert(
+    mediaId: number,
+    userId: number,
+    callback?: () => void
+  ) {
+    await this.Exists(mediaId, userId, async exists => {
       if (exists === false) {
         await Query.Execute(
-          DataHelper.SubsInsert(mediaId, userId),
+          await DataHelper.SubsInsert(mediaId, userId),
           async result => {
             const res = await JsonHelper.Convert<MySqlResult>(
               result,
@@ -96,17 +100,14 @@ export class SubscriptionData {
     userId: number,
     callback?: (exists: boolean) => void
   ) {
-    Query.Execute(DataHelper.SubsSelect(mediaId, userId), async result => {
-      const sub = await JsonHelper.ArrayConvert<Subscription>(
-        result,
-        Subscription
-      )[0];
-      if (sub === undefined || sub === null) {
-        await callback(false);
-      } else {
-        await callback(true);
-      }
-    });
+    const sub = this.All.find(
+      x => x.MediaId === mediaId && x.UserId === userId
+    );
+    if (sub === null || sub === undefined) {
+      callback(false);
+    } else {
+      callback(true);
+    }
   }
 
   public static get All() {

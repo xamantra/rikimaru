@@ -1,4 +1,6 @@
 import { ICommandFunction } from "./../../interfaces/command.function.interface";
+import { QueueData } from "./../../data/queue.data";
+import { QueueJob } from "./../../models/queue.job.model";
 import { MediaSearch } from "./../../core/media.search";
 import { SubscriptionData } from "./../../data/subscription.data";
 import { TitleHelper } from "./../../helpers/title.helper";
@@ -11,6 +13,7 @@ import { IMedia } from "./../../interfaces/page.interface";
 import { Message } from "discord.js";
 import { ICommand } from "../../interfaces/command.interface";
 import { MediaHandler } from "../../handlers/media.handler";
+import { Queue } from "../../models/subscription.model";
 
 export class SubscribeFunction implements ICommandFunction {
   public async Execute(
@@ -45,34 +48,55 @@ export class SubscribeFunction implements ICommandFunction {
       });
       if (results.length === 1) {
         const discordId = message.author.id;
-        const mediaId = results[0].idMal;
+        const media = results[0];
         const title = TitleHelper.Get(results[0].title);
-        await MediaData.Exists(mediaId, async exists => {
+        await MediaData.Exists(media.idMal, async exists => {
           if (exists === false) {
-            await MediaData.Insert(mediaId, title, async insertId => {
+            await MediaData.Insert(media.idMal, title, async insertId => {
               await console.log(insertId);
             });
           }
         });
         await UserData.GetUser(discordId, async (user, err) => {
           if (err === false) {
-            await SubscriptionData.Exists(mediaId, user.Id, async exists => {
-              if (exists === false) {
-                await SubscriptionData.Insert(mediaId, user.Id, async () => {
+            await SubscriptionData.Exists(
+              media.idMal,
+              user.Id,
+              async exists => {
+                if (exists === false) {
+                  await SubscriptionData.Insert(
+                    media.idMal,
+                    user.Id,
+                    async () => {
+                      await MediaResult.SendInfo(
+                        message,
+                        `You are now subscribed to: ***${title}***. I will DM you when a new episode is aired!\nEnter the command: \`-mysubs\` to view your subscriptions.\nEnter the command: \`-unsub ${title}\` to unsubscribe to this anime.`,
+                        dm
+                      ).then(async () => {
+                        await QueueData.Insert(
+                          media.idMal,
+                          media.nextAiringEpisode.next,
+                          async insertId => {
+                            const q = new Queue();
+                            q.Id = insertId;
+                            q.MediaId = media.idMal;
+                            q.NextEpisode = media.nextAiringEpisode.next;
+                            const queueJob = new QueueJob(user, q);
+                            await queueJob.StartQueue();
+                          }
+                        );
+                      });
+                    }
+                  );
+                } else {
                   await MediaResult.SendInfo(
                     message,
-                    `You are now subscribed to: ***${title}***. I will DM you when a new episode is aired!\nEnter the command: \`-mysubs\` to view your subscriptions.\nEnter the command: \`-unsub ${title}\` to unsubscribe to this anime.`,
+                    `Cool! You are already subscribed to ***${title}***.\nEnter the command \`-unsub ${title}\`  to unsubscribe to this anime.`,
                     dm
                   );
-                });
-              } else {
-                await MediaResult.SendInfo(
-                  message,
-                  `Cool! You are already subscribed to ***${title}***.\nEnter the command \`-unsub ${title}\`  to unsubscribe to this anime.`,
-                  dm
-                );
+                }
               }
-            });
+            );
           }
         });
         return;

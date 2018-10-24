@@ -24,12 +24,12 @@ export class MediaResult {
     }
   }
 
-  public static SendInfo(
+  public static async SendInfo(
     message: Message,
     content: any,
     isDM: boolean = false
   ) {
-    this.Send(message, content, isDM);
+    await this.Send(message, content, isDM);
   }
 
   private static EmbedTemplate(rsMessage: ResponseMessage) {

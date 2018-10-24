@@ -3,43 +3,34 @@ import { MySqlResult } from "./../models/result.mysql.model";
 import { JsonHelper } from "./../helpers/json.helper";
 import { Query } from "./../core/query";
 import { DataHelper } from "../helpers/data.helper";
+import { ArrayHelper } from "../helpers/array.helper";
 
 export class QueueData {
   private static Queues: Queue[] = [];
 
-  public static Init() {
-    Query.Execute(DataHelper.QueueSelectAll(), async result => {
-      const queue = await JsonHelper.ArrayConvert<Queue>(result, Queue);
-      await queue.forEach(async q => {
-        await this.Queues.push(q);
-      });
-      await console.log(this.Queues);
-    });
-  }
+  public static async Init() {}
 
-  public static GetQueue(
+  public static async GetQueue(
     mediaId: number,
-    callback?: (queue: Queue, err: boolean) => {}
+    callback?: (queue: Queue, err: boolean) => void
   ) {
-    Query.Execute(DataHelper.QueueSelect(mediaId), async result => {
-      const queue = await JsonHelper.ArrayConvert<Queue>(result, Queue)[0];
-      if (queue !== undefined || queue !== null) {
-        await callback(queue, false);
-      } else {
-        await callback(null, true);
-      }
-    });
+    const q = await this.All.find(x => x.MediaId === mediaId);
+    if (q !== null && q !== undefined) {
+      await callback(q, false);
+    } else {
+      await callback(null, true);
+    }
   }
 
-  public static Insert(
+  public static async Insert(
     mediaId: number,
     next_episode: number,
     callback?: (insertId: number) => void
   ) {
-    this.Exists(mediaId, async exists => {
+    await this.Exists(mediaId, async exists => {
       if (exists === false) {
         await Query.Execute(
-          DataHelper.QueueInsert(mediaId, next_episode),
+          await DataHelper.QueueInsert(mediaId, next_episode),
           async result => {
             const res = await JsonHelper.ArrayConvert<MySqlResult>(
               result,
@@ -51,7 +42,7 @@ export class QueueData {
               q.MediaId = mediaId;
               q.NextEpisode = next_episode;
               await this.Queues.push(q);
-              callback(q.Id);
+              await callback(q.Id);
             }
           }
         );
@@ -59,30 +50,37 @@ export class QueueData {
     });
   }
 
-  public static Update(
+  public static async Update(
     mediaId: number,
     nextEpisode: number,
     callback?: () => void
   ) {
-    Query.Execute(
-      DataHelper.QueueUpdate(mediaId, nextEpisode),
-      async result => {
-        const res = await JsonHelper.Convert<MySqlResult>(result, MySqlResult);
-        await console.log(res);
-        await callback();
+    const oldQueue = this.All.find(x => x.MediaId === mediaId);
+    await Query.Execute(
+      await DataHelper.QueueUpdate(mediaId, nextEpisode),
+      async () => {
+        await this.GetQueue(mediaId, async (q, err) => {
+          if (err === false) {
+            await ArrayHelper.remove(this.All, oldQueue, async () => {
+              await this.Queues.push(q);
+              await callback();
+            });
+          }
+        });
       }
     );
   }
 
-  public static Exists(mediaId: number, callback?: (exists: boolean) => void) {
-    Query.Execute(DataHelper.QueueSelect(mediaId), async result => {
-      const q = await JsonHelper.ArrayConvert<Queue>(result, Queue)[0];
-      if (q === undefined || q === null) {
-        await callback(false);
-      } else {
-        await callback(true);
-      }
-    });
+  public static async Exists(
+    mediaId: number,
+    callback?: (exists: boolean) => void
+  ) {
+    const q = this.All.find(x => x.MediaId === mediaId);
+    if (q === null || q === undefined) {
+      await callback(false);
+    } else {
+      await callback(true);
+    }
   }
 
   public static get All() {

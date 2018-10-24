@@ -52,16 +52,14 @@ class UserData {
     static get All() {
         return this.UserList;
     }
-    static Exists(discordId, callback) {
-        query_1.Query.Execute(data_helper_1.DataHelper.UserSelect(discordId), async (result) => {
-            const user = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.User)[0];
-            if (user === undefined || user === null) {
-                await callback(false);
-            }
-            else {
-                await callback(true);
-            }
-        });
+    static async Exists(discordId, callback) {
+        const u = this.All.find(x => x.DiscordId === discordId);
+        if (u === undefined || u === null) {
+            await callback(false);
+        }
+        else {
+            await callback(true);
+        }
     }
     static LogAll() {
         this.All.forEach(async (user) => {

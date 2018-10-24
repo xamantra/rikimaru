@@ -12,8 +12,8 @@ class MediaResult {
             message.reply(content);
         }
     }
-    static SendInfo(message, content, isDM = false) {
-        this.Send(message, content, isDM);
+    static async SendInfo(message, content, isDM = false) {
+        await this.Send(message, content, isDM);
     }
     static EmbedTemplate(rsMessage) {
         let name = "";

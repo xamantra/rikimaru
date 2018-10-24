@@ -25,10 +25,10 @@ class SubscriptionData {
             callback(null, true);
         }
     }
-    static Insert(mediaId, userId, callback) {
-        this.Exists(mediaId, userId, async (exists) => {
+    static async Insert(mediaId, userId, callback) {
+        await this.Exists(mediaId, userId, async (exists) => {
             if (exists === false) {
-                await query_1.Query.Execute(data_helper_1.DataHelper.SubsInsert(mediaId, userId), async (result) => {
+                await query_1.Query.Execute(await data_helper_1.DataHelper.SubsInsert(mediaId, userId), async (result) => {
                     const res = await json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
                     if (res.InsertId !== undefined && res.InsertId !== null) {
                         const sub = new subscription_model_1.Subscription();
@@ -65,15 +65,13 @@ class SubscriptionData {
         });
     }
     static Exists(mediaId, userId, callback) {
-        query_1.Query.Execute(data_helper_1.DataHelper.SubsSelect(mediaId, userId), async (result) => {
-            const sub = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Subscription)[0];
-            if (sub === undefined || sub === null) {
-                await callback(false);
-            }
-            else {
-                await callback(true);
-            }
-        });
+        const sub = this.All.find(x => x.MediaId === mediaId && x.UserId === userId);
+        if (sub === null || sub === undefined) {
+            callback(false);
+        }
+        else {
+            callback(true);
+        }
     }
     static get All() {
         return this.SubscriptionList;

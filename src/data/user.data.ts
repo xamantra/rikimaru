@@ -64,18 +64,16 @@ export class UserData {
     return this.UserList;
   }
 
-  public static Exists(
+  public static async Exists(
     discordId: string,
     callback?: (exists: boolean) => void
   ) {
-    Query.Execute(DataHelper.UserSelect(discordId), async result => {
-      const user = await JsonHelper.ArrayConvert<User>(result, User)[0];
-      if (user === undefined || user === null) {
-        await callback(false);
-      } else {
-        await callback(true);
-      }
-    });
+    const u = this.All.find(x => x.DiscordId === discordId);
+    if (u === undefined || u === null) {
+      await callback(false);
+    } else {
+      await callback(true);
+    }
   }
 
   public static LogAll() {

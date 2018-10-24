@@ -61,6 +61,10 @@ export class DataHelper {
     } (mal_id, title) VALUES(${mal_id}, '${title}')`;
   }
 
+  public static MediaDelete(mediaId: number) {
+    return `DELETE FROM ${this.media} WHERE mal_id=${mediaId}`;
+  }
+
   public static MediaSelect(mal_id: number) {
     return `SELECT * FROM ${this.media} WHERE mal_id=${mal_id} LIMIT 1`;
   }
