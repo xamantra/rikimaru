@@ -22,7 +22,14 @@ export class UnsubFunction implements ICommandFunction {
     const title = command.Parameter;
     let media: IMedia[] = [];
     const discordId = message.author.id;
-    const userId = UserData.GetUser(discordId).Id;
+    let userId: number;
+    UserData.GetUser(discordId, async (user, err) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      userId = await user.Id;
+    });
     const userMedia: number[] = [];
     const filteredMedia: IMedia[] = [];
     const formattedResults: any[] = [];

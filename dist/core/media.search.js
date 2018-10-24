@@ -11,7 +11,7 @@ class MediaSearch {
         result.then(async (root) => {
             media = await json_helper_1.JsonHelper.Converter.deserialize(root, root_model_1.Root).Data
                 .Page.media;
-            !called ? callback(media) : (called = true);
+            !called ? await callback(media) : (called = true);
         });
     }
 }

@@ -15,7 +15,14 @@ class UnsubFunction {
         const title = command.Parameter;
         let media = [];
         const discordId = message.author.id;
-        const userId = user_data_1.UserData.GetUser(discordId).Id;
+        let userId;
+        user_data_1.UserData.GetUser(discordId, async (user, err) => {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            userId = await user.Id;
+        });
         const userMedia = [];
         const filteredMedia = [];
         const formattedResults = [];

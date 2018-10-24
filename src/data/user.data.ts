@@ -1,63 +1,66 @@
-import { RunResult } from "sqlite3";
 import { User } from "../models/subscription.model";
 import { JsonHelper } from "../helpers/json.helper";
 import { DataHelper } from "../helpers/data.helper";
+import { Query } from "../core/query";
+import { MySqlResult } from "../models/result.mysql.model";
 
 export class UserData {
   private static UserList: User[] = [];
   public static Init() {
-    const db = DataHelper.DB;
-    const converter = JsonHelper.Converter;
-    db.serialize(() => {
-      db.each(`SELECT * FROM user`, (err: Error, row: any) => {
-        if (row !== null) {
-          try {
-            const user = converter.deserialize(row, User) as User;
-            this.UserList.push(user);
-            console.log(user);
-          } catch (error) {
-            console.log(err);
-          }
-        }
+    Query.Execute(DataHelper.UserSelectAll(), async result => {
+      const users = await JsonHelper.ArrayConvert<User>(result, User);
+      await users.forEach(async user => {
+        await this.UserList.push(user);
       });
+      await console.log(`User List: ${this.UserList}`);
     });
   }
 
-  public static GetUser(discordId: string) {
-    let u: User;
-    if (this.UserList.length === 0) {
-      u = new User();
-      u.Id = 1;
-      u.DiscordId = discordId;
-    } else {
-      this.UserList.forEach(user => {
-        if (user.DiscordId === discordId) {
-          u = user;
+  public static GetUser(
+    discordId: string,
+    callback?: (user?: User, err?: boolean) => void
+  ) {
+    Query.Execute(DataHelper.UserSelect(discordId), async result => {
+      try {
+        const user = await JsonHelper.ArrayConvert<User>(result, User)[0];
+        if (user !== null && user !== undefined) {
+          await callback(user, false);
         }
-      });
-    }
-    return u;
+      } catch (error) {
+        await callback(null, true);
+      }
+    });
   }
 
-  public static Add(discordId: string) {
-    const db = DataHelper.DB;
-    const converter = JsonHelper.Converter;
-    db.serialize(() => {
-      db.run(
-        `INSERT OR IGNORE INTO user (discord_id) VALUES('${discordId}')`,
-        (result: RunResult, err: Error) => {
-          if (err !== undefined) {
-            console.log(err);
-          } else {
-            db.each(
-              `SELECT * FROM user WHERE discord_id='${discordId}'`,
-              (e: Error, row: any) => {
-                this.UserList.push(converter.deserialize(row, User));
-              }
+  public static Insert(
+    discordId: string,
+    callback: (insertId: number) => void = null
+  ) {
+    this.Exists(discordId, async exists => {
+      if (exists === false) {
+        await Query.Execute(DataHelper.UserInsert(discordId), async result => {
+          try {
+            const res = await JsonHelper.Convert<MySqlResult>(
+              result,
+              MySqlResult
             );
+            if (
+              res !== null &&
+              res !== undefined &&
+              res.InsertId !== null &&
+              res.InsertId !== undefined
+            ) {
+              const user = new User();
+              user.Id = res.InsertId;
+              user.DiscordId = discordId;
+              await this.UserList.push(user);
+              if (callback !== null) await callback(res.InsertId);
+            }
+          } catch (error) {
+            await console.log(error);
           }
-        }
-      );
+        });
+      }
     });
   }
 
@@ -65,19 +68,23 @@ export class UserData {
     return this.UserList;
   }
 
-  public static Exists(id: string) {
-    let e = false;
-    this.UserList.forEach(async user => {
-      if (user.DiscordId === id) {
-        e = true;
+  public static Exists(
+    discordId: string,
+    callback?: (exists: boolean) => void
+  ) {
+    Query.Execute(DataHelper.UserSelect(discordId), async result => {
+      const user = await JsonHelper.ArrayConvert<User>(result, User)[0];
+      if (user === undefined || user === null) {
+        await callback(false);
+      } else {
+        await callback(true);
       }
     });
-    return e;
   }
 
   public static LogAll() {
-    this.All.forEach(user => {
-      console.log(user);
+    this.All.forEach(async user => {
+      await console.log(user);
     });
   }
 }

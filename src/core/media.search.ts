@@ -11,7 +11,7 @@ export class MediaSearch {
     result.then(async root => {
       media = await (JsonHelper.Converter.deserialize(root, Root) as Root).Data
         .Page.media;
-      !called ? callback(media) : (called = true);
+      !called ? await callback(media) : (called = true);
     });
   }
 }

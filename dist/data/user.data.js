@@ -3,72 +3,73 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const subscription_model_1 = require("../models/subscription.model");
 const json_helper_1 = require("../helpers/json.helper");
 const data_helper_1 = require("../helpers/data.helper");
+const query_1 = require("../core/query");
+const result_mysql_model_1 = require("../models/result.mysql.model");
 class UserData {
     static Init() {
-        const db = data_helper_1.DataHelper.DB;
-        const converter = json_helper_1.JsonHelper.Converter;
-        db.serialize(() => {
-            db.each(`SELECT * FROM user`, (err, row) => {
-                if (row !== null) {
-                    try {
-                        const user = converter.deserialize(row, subscription_model_1.User);
-                        this.UserList.push(user);
-                        console.log(user);
-                    }
-                    catch (error) {
-                        console.log(err);
-                    }
-                }
+        query_1.Query.Execute(data_helper_1.DataHelper.UserSelectAll(), async (result) => {
+            const users = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.User);
+            await users.forEach(async (user) => {
+                await this.UserList.push(user);
             });
+            await console.log(`User List: ${this.UserList}`);
         });
     }
-    static GetUser(discordId) {
-        let u;
-        if (this.UserList.length === 0) {
-            u = new subscription_model_1.User();
-            u.Id = 1;
-            u.DiscordId = discordId;
-        }
-        else {
-            this.UserList.forEach(user => {
-                if (user.DiscordId === discordId) {
-                    u = user;
+    static GetUser(discordId, callback) {
+        query_1.Query.Execute(data_helper_1.DataHelper.UserSelect(discordId), async (result) => {
+            try {
+                const user = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.User)[0];
+                if (user !== null && user !== undefined) {
+                    await callback(user, false);
                 }
-            });
-        }
-        return u;
+            }
+            catch (error) {
+                await callback(null, true);
+            }
+        });
     }
-    static Add(discordId) {
-        const db = data_helper_1.DataHelper.DB;
-        const converter = json_helper_1.JsonHelper.Converter;
-        db.serialize(() => {
-            db.run(`INSERT OR IGNORE INTO user (discord_id) VALUES('${discordId}')`, (result, err) => {
-                if (err !== undefined) {
-                    console.log(err);
-                }
-                else {
-                    db.each(`SELECT * FROM user WHERE discord_id='${discordId}'`, (e, row) => {
-                        this.UserList.push(converter.deserialize(row, subscription_model_1.User));
-                    });
-                }
-            });
+    static Insert(discordId, callback = null) {
+        this.Exists(discordId, async (exists) => {
+            if (exists === false) {
+                await query_1.Query.Execute(data_helper_1.DataHelper.UserInsert(discordId), async (result) => {
+                    try {
+                        const res = await json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
+                        if (res !== null &&
+                            res !== undefined &&
+                            res.InsertId !== null &&
+                            res.InsertId !== undefined) {
+                            const user = new subscription_model_1.User();
+                            user.Id = res.InsertId;
+                            user.DiscordId = discordId;
+                            await this.UserList.push(user);
+                            if (callback !== null)
+                                await callback(res.InsertId);
+                        }
+                    }
+                    catch (error) {
+                        await console.log(error);
+                    }
+                });
+            }
         });
     }
     static get All() {
         return this.UserList;
     }
-    static Exists(id) {
-        let e = false;
-        this.UserList.forEach(async (user) => {
-            if (user.DiscordId === id) {
-                e = true;
+    static Exists(discordId, callback) {
+        query_1.Query.Execute(data_helper_1.DataHelper.UserSelect(discordId), async (result) => {
+            const user = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.User)[0];
+            if (user === undefined || user === null) {
+                await callback(false);
+            }
+            else {
+                await callback(true);
             }
         });
-        return e;
     }
     static LogAll() {
-        this.All.forEach(user => {
-            console.log(user);
+        this.All.forEach(async (user) => {
+            await console.log(user);
         });
     }
 }

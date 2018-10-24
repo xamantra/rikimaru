@@ -1,6 +1,6 @@
+import { QueueData } from "./data/queue.data";
 import { Client } from "discord.js";
 import { Bot } from "./core/bot";
-import { RikimaruHelper } from "./helpers/rikimaru.helper";
 import { SubscriptionData } from "./data/subscription.data";
 import { MediaData } from "./data/media.data";
 import { UserData } from "./data/user.data";
@@ -13,16 +13,17 @@ import { OpenShiftUptimer } from "./others/openshift";
 OpenShiftUptimer.Log(true);
 OpenShiftUptimer.AutoConfigure();
 
-Bot.Init();
+Bot.Instance.Init();
 ClientManager.Init(new Client());
 MessageHandler.Init();
 CommandManager.Init();
-RikimaruHelper.Init();
 DataHelper.Init();
 UserData.Init();
 MediaData.Init();
 SubscriptionData.Init();
+QueueData.Init();
 
-setTimeout(() => {
-  MediaData.LoadFromApi();
-}, 1000);
+UserData.Insert("161616166");
+MediaData.Insert(5423, "Sample Anime");
+SubscriptionData.Insert(424, 163);
+QueueData.Insert(5423, 5);

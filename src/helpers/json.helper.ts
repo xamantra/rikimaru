@@ -7,4 +7,16 @@ export class JsonHelper {
     jsonConvert.valueCheckingMode = ValueCheckingMode.ALLOW_NULL;
     return jsonConvert;
   }
+
+  public static Convert<T>(json: any, t: any) {
+    const jsonString = JSON.stringify(json);
+    const result = this.Converter.deserialize(JSON.parse(jsonString), t);
+    return result as T;
+  }
+
+  public static ArrayConvert<T>(json: any, t: any) {
+    const jsonString = JSON.stringify(json);
+    const result = this.Converter.deserialize(JSON.parse(jsonString), t);
+    return result as T[];
+  }
 }

@@ -6,7 +6,6 @@ import { Message } from "discord.js";
 import { RescueCenter } from "../core/rescue.center";
 import { MediaResult } from "../core/media.result";
 import { CommandManager } from "../command/manager.command";
-import { Bot } from "../core/bot";
 
 export class ResponseHandler {
   public static Get(message: Message, command: ICommand) {
@@ -29,15 +28,8 @@ export class ResponseHandler {
               cmd.Function.Execute(message, command, cmd.DMResponse);
               return;
             }
-
-            if (Bot.IsActive === true)
-              cmd.Function.Execute(message, command, cmd.DMResponse);
-            else
-              MediaResult.SendInfo(
-                message,
-                `I am currently on tweak mode. Please try again later. My creator is trying to do something on me.`,
-                false
-              );
+            cmd.Function.Execute(message, command, cmd.DMResponse);
+            return;
           }
         }
         return;

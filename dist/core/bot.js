@@ -1,17 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Bot {
-    static Init() {
-        this.Active = true;
+    constructor() {
+        this.Status = "off";
     }
-    static SetActive(status, callback) {
-        this.Active = status;
+    static get Instance() {
+        return this._instance || (this._instance = new this());
+    }
+    Init() {
+        this.Status = "on";
+    }
+    SetStatus(status, callback) {
+        this.Status = status;
         callback(status);
     }
-    static get IsActive() {
-        return this.Active;
+    get GetStatus() {
+        return this.Status;
     }
 }
-Bot.Active = false;
 exports.Bot = Bot;
 //# sourceMappingURL=bot.js.map

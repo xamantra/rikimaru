@@ -1,19 +1,23 @@
 export class Bot {
-  private static Active = false;
+  private static _instance: Bot;
+  private Status = "off";
 
-  public static Init() {
-    this.Active = true;
+  private constructor() {}
+
+  public static get Instance() {
+    return this._instance || (this._instance = new this());
   }
 
-  public static SetActive(
-    status: boolean,
-    callback?: (status: boolean) => void
-  ) {
-    this.Active = status;
+  public Init() {
+    this.Status = "on";
+  }
+
+  public SetStatus(status: string, callback?: (status: string) => void) {
+    this.Status = status;
     callback(status);
   }
 
-  public static get IsActive() {
-    return this.Active;
+  public get GetStatus() {
+    return this.Status;
   }
 }

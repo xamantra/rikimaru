@@ -8,6 +8,16 @@ class JsonHelper {
         jsonConvert.valueCheckingMode = json2typescript_1.ValueCheckingMode.ALLOW_NULL;
         return jsonConvert;
     }
+    static Convert(json, t) {
+        const jsonString = JSON.stringify(json);
+        const result = this.Converter.deserialize(JSON.parse(jsonString), t);
+        return result;
+    }
+    static ArrayConvert(json, t) {
+        const jsonString = JSON.stringify(json);
+        const result = this.Converter.deserialize(JSON.parse(jsonString), t);
+        return result;
+    }
 }
 exports.JsonHelper = JsonHelper;
 //# sourceMappingURL=json.helper.js.map

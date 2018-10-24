@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const help_command_function_1 = require("./functions/help.command.function");
-const tweak_command_function_1 = require("./functions/tweak.command.function");
 const unsub_command_function_1 = require("./functions/unsub.command.function");
 const viewsubs_command_function_1 = require("./functions/viewsubs.command.function");
 const logall_command_function_1 = require("./functions/logall.command.function");
@@ -15,5 +14,4 @@ exports.subscribeFunction = new subscribe_command_function_1.SubscribeFunction()
 exports.viewSubsFunction = new viewsubs_command_function_1.ViewSubsFunction();
 exports.unsubFunction = new unsub_command_function_1.UnsubFunction();
 exports.logAllFunction = new logall_command_function_1.LogAllFunction();
-exports.tweakFunction = new tweak_command_function_1.TweakFunction();
 //# sourceMappingURL=functions.js.map
