@@ -22,8 +22,4 @@ user_data_1.UserData.Init();
 media_data_1.MediaData.Init();
 subscription_data_1.SubscriptionData.Init();
 queue_data_1.QueueData.Init();
-user_data_1.UserData.Insert("161616166");
-media_data_1.MediaData.Insert(5423, "Sample Anime");
-subscription_data_1.SubscriptionData.Insert(424, 163);
-queue_data_1.QueueData.Insert(5423, 5);
 //# sourceMappingURL=index.js.map
