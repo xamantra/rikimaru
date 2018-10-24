@@ -20,16 +20,12 @@ export class UserData {
     discordId: string,
     callback?: (user?: User, err?: boolean) => void
   ) {
-    Query.Execute(DataHelper.UserSelect(discordId), async result => {
-      try {
-        const user = await JsonHelper.ArrayConvert<User>(result, User)[0];
-        if (user !== null && user !== undefined) {
-          await callback(user, false);
-        }
-      } catch (error) {
-        await callback(null, true);
-      }
-    });
+    const user = this.All.find(x => x.DiscordId === discordId);
+    if (user !== null && user !== undefined) {
+      callback(user, false);
+    } else {
+      callback(null, true);
+    }
   }
 
   public static Insert(

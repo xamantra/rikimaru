@@ -16,61 +16,65 @@ export class MediaFunction implements ICommandFunction {
     console.log(`Constructed: "${MediaFunction.name}"`);
   }
 
-  public Execute(message?: Message, command?: ICommand, dm?: boolean) {
-    this.Handle(message, command, dm);
+  public async Execute(message?: Message, command?: ICommand, dm?: boolean) {
+    await this.Handle(message, command, dm);
   }
 
-  public Handle(message: Message, command: ICommand, isDM: boolean) {
-    MediaSearch.All(command.Parameter, (res: IMedia[]) => {
-      const ongoing = MediaHandler.OngoingMedia(res);
-      const unreleased = MediaHandler.UnreleasedMedia(res);
-      const unreleasedNoDate = MediaHandler.UnreleasedNoDateMedia(res);
-      const completed = MediaHandler.CompletedMedia(res);
-      const exactMedia = MediaHandler.ExactMedia(res, command.Parameter);
+  public async Handle(message: Message, command: ICommand, isDM: boolean) {
+    await MediaSearch.All(command.Parameter, async (res: IMedia[]) => {
+      const ongoing = await MediaHandler.OngoingMedia(res);
+      const unreleased = await MediaHandler.UnreleasedMedia(res);
+      const unreleasedNoDate = await MediaHandler.UnreleasedNoDateMedia(res);
+      const completed = await MediaHandler.CompletedMedia(res);
+      const exactMedia = await MediaHandler.ExactMedia(res, command.Parameter);
 
       if (exactMedia.length > 0) {
-        exactMedia.forEach(m => {
-          MediaResult.SendMessage(
+        exactMedia.forEach(async m => {
+          await MediaResult.SendMessage(
             message,
             isDM,
-            ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
+            await ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
           );
         });
       } else if (ongoing.length > 0) {
-        ongoing.forEach(m => {
+        await ongoing.forEach(async m => {
           MediaResult.SendMessage(
             message,
             isDM,
-            ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
+            await ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
           );
         });
       } else if (unreleased.length > 0) {
-        unreleased.forEach(m => {
+        await unreleased.forEach(async m => {
           MediaResult.SendMessage(
             message,
             isDM,
-            ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
+            await ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
           );
         });
       } else if (unreleasedNoDate.length > 0) {
-        unreleasedNoDate.forEach(m => {
+        await unreleasedNoDate.forEach(async m => {
           MediaResult.SendMessage(
             message,
             isDM,
-            ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
+            await ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
           );
         });
       } else if (completed.length > 0) {
         if (completed.length === 1) {
-          completed.forEach(m => {
-            MediaResult.SendMessage(
+          await completed.forEach(async m => {
+            await MediaResult.SendMessage(
               message,
               isDM,
-              ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
+              await ResponseMessageHelper.CreateMessage(
+                m,
+                m.status,
+                Color.Random
+              )
             );
           });
         } else {
-          MediaResult.SendInfo(
+          await MediaResult.SendInfo(
             message,
             `I found ***${completed.length}*** anime with your keyword ***${
               command.Parameter
@@ -79,7 +83,7 @@ export class MediaFunction implements ICommandFunction {
           );
         }
       } else {
-        MediaResult.SendInfo(
+        await MediaResult.SendInfo(
           message,
           `Go me nasai!, I didn't find anime that matches your keyword ***"${
             command.Parameter

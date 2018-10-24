@@ -7,24 +7,25 @@ class HelpFunction {
     constructor() {
         console.log(`Constructed: "${HelpFunction.name}"`);
     }
-    Execute(message, command, dm) {
-        this.ShowHelp(message, dm);
+    async Execute(message, command, dm) {
+        await this.ShowHelp(message, dm);
     }
-    ShowHelp(message, dm) {
-        if (dm) {
-            message.member.send(this.Embed(message));
-        }
-        else {
-            message.reply(this.Embed(message));
-        }
+    async ShowHelp(message, dm) {
+        this.Embed(message).then(async (embed) => {
+            if (dm) {
+                await message.member.send(embed);
+                return;
+            }
+            await message.reply(embed);
+        });
     }
-    Embed(message) {
+    async Embed(message) {
         const commands = manager_command_1.CommandManager.Commands;
         const client = client_1.ClientManager.GetClient;
         const list = [];
-        commands.forEach(command => {
+        await commands.forEach(async (command) => {
             if (command.DevOnly === false) {
-                list.push({
+                await list.push({
                     name: `\n***-${command.Name}***`,
                     value: `*${command.Description}*`
                 });

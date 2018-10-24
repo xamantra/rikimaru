@@ -9,48 +9,48 @@ class MediaFunction {
     constructor() {
         console.log(`Constructed: "${MediaFunction.name}"`);
     }
-    Execute(message, command, dm) {
-        this.Handle(message, command, dm);
+    async Execute(message, command, dm) {
+        await this.Handle(message, command, dm);
     }
-    Handle(message, command, isDM) {
-        media_search_1.MediaSearch.All(command.Parameter, (res) => {
-            const ongoing = media_handler_1.MediaHandler.OngoingMedia(res);
-            const unreleased = media_handler_1.MediaHandler.UnreleasedMedia(res);
-            const unreleasedNoDate = media_handler_1.MediaHandler.UnreleasedNoDateMedia(res);
-            const completed = media_handler_1.MediaHandler.CompletedMedia(res);
-            const exactMedia = media_handler_1.MediaHandler.ExactMedia(res, command.Parameter);
+    async Handle(message, command, isDM) {
+        await media_search_1.MediaSearch.All(command.Parameter, async (res) => {
+            const ongoing = await media_handler_1.MediaHandler.OngoingMedia(res);
+            const unreleased = await media_handler_1.MediaHandler.UnreleasedMedia(res);
+            const unreleasedNoDate = await media_handler_1.MediaHandler.UnreleasedNoDateMedia(res);
+            const completed = await media_handler_1.MediaHandler.CompletedMedia(res);
+            const exactMedia = await media_handler_1.MediaHandler.ExactMedia(res, command.Parameter);
             if (exactMedia.length > 0) {
-                exactMedia.forEach(m => {
-                    media_result_1.MediaResult.SendMessage(message, isDM, response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random));
+                exactMedia.forEach(async (m) => {
+                    await media_result_1.MediaResult.SendMessage(message, isDM, await response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random));
                 });
             }
             else if (ongoing.length > 0) {
-                ongoing.forEach(m => {
-                    media_result_1.MediaResult.SendMessage(message, isDM, response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random));
+                await ongoing.forEach(async (m) => {
+                    media_result_1.MediaResult.SendMessage(message, isDM, await response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random));
                 });
             }
             else if (unreleased.length > 0) {
-                unreleased.forEach(m => {
-                    media_result_1.MediaResult.SendMessage(message, isDM, response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random));
+                await unreleased.forEach(async (m) => {
+                    media_result_1.MediaResult.SendMessage(message, isDM, await response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random));
                 });
             }
             else if (unreleasedNoDate.length > 0) {
-                unreleasedNoDate.forEach(m => {
-                    media_result_1.MediaResult.SendMessage(message, isDM, response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random));
+                await unreleasedNoDate.forEach(async (m) => {
+                    media_result_1.MediaResult.SendMessage(message, isDM, await response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random));
                 });
             }
             else if (completed.length > 0) {
                 if (completed.length === 1) {
-                    completed.forEach(m => {
-                        media_result_1.MediaResult.SendMessage(message, isDM, response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random));
+                    await completed.forEach(async (m) => {
+                        await media_result_1.MediaResult.SendMessage(message, isDM, await response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random));
                     });
                 }
                 else {
-                    media_result_1.MediaResult.SendInfo(message, `I found ***${completed.length}*** anime with your keyword ***${command.Parameter}*** and all of them is already completed.`, isDM);
+                    await media_result_1.MediaResult.SendInfo(message, `I found ***${completed.length}*** anime with your keyword ***${command.Parameter}*** and all of them is already completed.`, isDM);
                 }
             }
             else {
-                media_result_1.MediaResult.SendInfo(message, `Go me nasai!, I didn't find anime that matches your keyword ***"${command.Parameter}"***, try checking your spelling or another keyword.`, isDM);
+                await media_result_1.MediaResult.SendInfo(message, `Go me nasai!, I didn't find anime that matches your keyword ***"${command.Parameter}"***, try checking your spelling or another keyword.`, isDM);
             }
         });
     }

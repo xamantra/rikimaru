@@ -26,17 +26,14 @@ export class SubscriptionData {
     userId: number,
     callback?: (sub: Subscription, err: boolean) => void
   ) {
-    Query.Execute(DataHelper.SubsSelect(mediaId, userId), async result => {
-      const sub = await JsonHelper.ArrayConvert<Subscription>(
-        result,
-        Subscription
-      )[0];
-      if (sub !== undefined || sub !== null) {
-        callback(sub, false);
-      } else {
-        callback(null, false);
-      }
-    });
+    const sub = this.All.find(
+      x => x.MediaId === mediaId && x.UserId === userId
+    );
+    if (sub !== null && sub !== undefined) {
+      callback(sub, false);
+    } else {
+      callback(null, true);
+    }
   }
 
   public static Insert(mediaId: number, userId: number, callback?: () => void) {
@@ -55,7 +52,9 @@ export class SubscriptionData {
               sub.MediaId = mediaId;
               sub.UserId = userId;
               await this.SubscriptionList.push(sub);
-              await callback();
+              if (callback !== null) {
+                await callback();
+              }
             }
           }
         );
@@ -63,12 +62,12 @@ export class SubscriptionData {
     });
   }
 
-  public static Delete(
+  public static async Delete(
     mediaId: number,
     discordId: string,
     callback?: () => void
   ) {
-    UserData.GetUser(discordId, async (user, err) => {
+    await UserData.GetUser(discordId, async (user, err) => {
       if (err === false) {
         await Query.Execute(
           DataHelper.SubsDelete(mediaId, user.Id),
@@ -78,8 +77,11 @@ export class SubscriptionData {
               x => x.MediaId === mediaId && x.UserId === user.Id
             );
             if (sub !== null || sub !== undefined) {
-              await ArrayHelper.remove(this.SubscriptionList, sub);
-              await callback();
+              await ArrayHelper.remove(this.SubscriptionList, sub, async () => {
+                if (callback !== null) {
+                  await callback();
+                }
+              });
             }
           }
         );

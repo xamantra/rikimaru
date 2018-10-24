@@ -11,21 +11,24 @@ import { IMedia } from "./../../interfaces/page.interface";
 import { Message } from "discord.js";
 import { ICommand } from "../../interfaces/command.interface";
 import { MediaHandler } from "../../handlers/media.handler";
-import { User } from "../../models/subscription.model";
 
 export class SubscribeFunction implements ICommandFunction {
-  public Execute(message?: Message, command?: ICommand, dm?: boolean): void {
-    this.Search(message, command, dm);
+  public async Execute(
+    message?: Message,
+    command?: ICommand,
+    dm?: boolean
+  ): Promise<void> {
+    await this.Search(message, command, dm);
   }
 
-  private Search(message: Message, command: ICommand, dm: boolean) {
-    MediaSearch.All(command.Parameter, async (res: IMedia[]) => {
+  private async Search(message: Message, command: ICommand, dm: boolean) {
+    await MediaSearch.All(command.Parameter, async (res: IMedia[]) => {
       const ongoing = await MediaHandler.OngoingMedia(res);
       const unreleased = await MediaHandler.UnreleasedMedia(res);
       if (ongoing.length === 0 && unreleased.length === 0) {
         await MediaResult.SendInfo(
           message,
-          "There is nothing to subscribe. The anime you search might be already completed or it is not yet aired and the release date is currently unknown.",
+          "There is nothing to subscribe. The anime you search might be already completed or it is not yet aired and the release date is currently unknown, or try another keyword.",
           dm
         );
         return;
@@ -42,27 +45,8 @@ export class SubscribeFunction implements ICommandFunction {
       });
       if (results.length === 1) {
         const discordId = message.author.id;
-        let user: User = null;
-        await UserData.GetUser(discordId, u => {
-          user = u;
-        });
-        if (user === null || user === undefined) {
-          await MediaResult.SendInfo(
-            message,
-            `I've got some error!!. I couldn't apprehend. Please try again.`,
-            dm
-          );
-          return;
-        }
         const mediaId = results[0].idMal;
         const title = TitleHelper.Get(results[0].title);
-        await UserData.Exists(discordId, async exists => {
-          if (exists === false) {
-            await UserData.Insert(discordId, async insertId => {
-              await console.log(insertId);
-            });
-          }
-        });
         await MediaData.Exists(mediaId, async exists => {
           if (exists === false) {
             await MediaData.Insert(mediaId, title, async insertId => {
@@ -70,28 +54,32 @@ export class SubscribeFunction implements ICommandFunction {
             });
           }
         });
-        await SubscriptionData.Exists(mediaId, user.Id, async exists => {
-          if (exists === false) {
-            await SubscriptionData.Insert(mediaId, user.Id, async () => {
-              await MediaResult.SendInfo(
-                message,
-                `You are now subscribed to: ***${title}***. I will DM you when a new episode is aired!\nEnter the command: ***-mysubs*** to view your subscriptions.`,
-                dm
-              );
+        await UserData.GetUser(discordId, async (user, err) => {
+          if (err === false) {
+            await SubscriptionData.Exists(mediaId, user.Id, async exists => {
+              if (exists === false) {
+                await SubscriptionData.Insert(mediaId, user.Id, async () => {
+                  await MediaResult.SendInfo(
+                    message,
+                    `You are now subscribed to: ***${title}***. I will DM you when a new episode is aired!\nEnter the command: \`-mysubs\` to view your subscriptions.\nEnter the command: \`-unsub ${title}\` to unsubscribe to this anime.`,
+                    dm
+                  );
+                });
+              } else {
+                await MediaResult.SendInfo(
+                  message,
+                  `Cool! You are already subscribed to ***${title}***.\nEnter the command \`-unsub ${title}\`  to unsubscribe to this anime.`,
+                  dm
+                );
+              }
             });
-          } else {
-            await MediaResult.SendInfo(
-              message,
-              `Cool! You are already subscribed to ***${title}***.\nEnter the command ***-unsub ${title}***  to unsubscribe to this anime.`,
-              dm
-            );
           }
         });
         return;
       } else {
         await MediaResult.SendInfo(
           message,
-          SearchList.Embed(command, formattedResults),
+          await SearchList.Embed(command, formattedResults),
           dm
         );
       }

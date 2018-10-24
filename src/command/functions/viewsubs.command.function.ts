@@ -13,48 +13,49 @@ import { IMedia } from "../../interfaces/page.interface";
 export class ViewSubsFunction implements ICommandFunction {
   constructor() {}
 
-  public Execute(message?: Message, command?: ICommand, dm?: boolean): void {
-    dm
-      ? message.author.send(this.Embed(message))
-      : message.reply(this.Embed(message));
+  public async Execute(message?: Message, command?: ICommand, dm?: boolean) {
+    await this.Embed(message).then(async embed => {
+      if (dm === true) {
+        await message.author.send(embed);
+      } else {
+        await message.reply(embed);
+      }
+    });
   }
 
-  private Embed(message: Message) {
+  private async Embed(message: Message) {
     let mentionId: string = null;
     if (message.mentions.members.size === 1) {
       mentionId = message.mentions.members.first().id;
     }
     const discordId: string =
       mentionId === null ? message.author.id : mentionId;
-    console.log(discordId);
     const client = ClientManager.GetClient;
     const list: any[] = [];
-    let userId: number;
-    UserData.GetUser(discordId, async (user, err) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      userId = await user.Id;
-    });
     const mediaSubs: IMedia[] = [];
     const mediaList = MediaData.GetMediaList;
-    SubscriptionData.All.forEach(sub => {
-      if (userId === sub.UserId) {
-        mediaSubs.push(mediaList.find(x => x.idMal === sub.MediaId));
+    await UserData.GetUser(discordId, async (user, err) => {
+      if (err) {
+        await console.log(err);
+        return;
       }
+      await SubscriptionData.All.forEach(async sub => {
+        if (user.Id === sub.UserId) {
+          await mediaSubs.push(mediaList.find(x => x.idMal === sub.MediaId));
+        }
+      });
     });
-    mediaSubs.forEach(media => {
+    await mediaSubs.forEach(async media => {
       const title = TitleHelper.Get(media.title);
       const episode = media.nextAiringEpisode.next;
-      const countdown = TimeHelper.Countdown(
+      const countdown = await TimeHelper.Countdown(
         media.nextAiringEpisode.timeUntilAiring
       );
-      list.push({
-        name: `\n***${title}***`,
-        value: `*Episode ${episode} :* **${countdown}** - [MAL Link](https://myanimelist.net/anime/${
+      await list.push({
+        name: `\n:tv:  ***${title}***`,
+        value: `:alarm_clock:  \`Episode ${episode} : ${countdown}\` - [MAL Link](https://myanimelist.net/anime/${
           media.idMal
-        }/)\n|`
+        }/)\n  -`
       });
     });
     const embed = {

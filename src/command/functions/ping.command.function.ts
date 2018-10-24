@@ -8,15 +8,15 @@ export class PingFunction implements ICommandFunction {
     console.log(`Constructed: "${PingFunction.name}"`);
   }
 
-  public Execute(message?: Message, command?: ICommand, dm?: boolean) {
-    this.Get(message, dm);
+  public async Execute(message?: Message, command?: ICommand, dm?: boolean) {
+    await this.Get(message, dm);
   }
 
   public async Get(message: Message, isDM: boolean) {
     const m = isDM
       ? ((await message.author.send("Ping?")) as Message)
       : ((await message.reply("Ping?")) as Message);
-    m.edit(
+    await m.edit(
       `Pingga!, Pongga! Latency is ${m.createdTimestamp -
         message.createdTimestamp}ms. API Latency is ${Math.round(
         ClientManager.GetClient.ping

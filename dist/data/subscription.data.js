@@ -17,15 +17,13 @@ class SubscriptionData {
         });
     }
     static GetSub(mediaId, userId, callback) {
-        query_1.Query.Execute(data_helper_1.DataHelper.SubsSelect(mediaId, userId), async (result) => {
-            const sub = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Subscription)[0];
-            if (sub !== undefined || sub !== null) {
-                callback(sub, false);
-            }
-            else {
-                callback(null, false);
-            }
-        });
+        const sub = this.All.find(x => x.MediaId === mediaId && x.UserId === userId);
+        if (sub !== null && sub !== undefined) {
+            callback(sub, false);
+        }
+        else {
+            callback(null, true);
+        }
     }
     static Insert(mediaId, userId, callback) {
         this.Exists(mediaId, userId, async (exists) => {
@@ -38,21 +36,26 @@ class SubscriptionData {
                         sub.MediaId = mediaId;
                         sub.UserId = userId;
                         await this.SubscriptionList.push(sub);
-                        await callback();
+                        if (callback !== null) {
+                            await callback();
+                        }
                     }
                 });
             }
         });
     }
-    static Delete(mediaId, discordId, callback) {
-        user_data_1.UserData.GetUser(discordId, async (user, err) => {
+    static async Delete(mediaId, discordId, callback) {
+        await user_data_1.UserData.GetUser(discordId, async (user, err) => {
             if (err === false) {
                 await query_1.Query.Execute(data_helper_1.DataHelper.SubsDelete(mediaId, user.Id), async (result) => {
                     await console.log(result);
                     const sub = await this.SubscriptionList.find(x => x.MediaId === mediaId && x.UserId === user.Id);
                     if (sub !== null || sub !== undefined) {
-                        await array_helper_1.ArrayHelper.remove(this.SubscriptionList, sub);
-                        await callback();
+                        await array_helper_1.ArrayHelper.remove(this.SubscriptionList, sub, async () => {
+                            if (callback !== null) {
+                                await callback();
+                            }
+                        });
                     }
                 });
             }

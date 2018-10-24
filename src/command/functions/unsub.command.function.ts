@@ -1,12 +1,9 @@
 import { ICommandFunction } from "../../interfaces/command.function.interface";
 import { MediaSearch } from "./../../core/media.search";
 import { SubscriptionData } from "./../../data/subscription.data";
-import { Anilist } from "./../../core/anilist";
 import { Message } from "discord.js";
 import { ICommand } from "../../interfaces/command.interface";
 import { IMedia } from "../../interfaces/page.interface";
-import { JsonHelper } from "../../helpers/json.helper";
-import { Root } from "../../models/root.model";
 import { UserData } from "../../data/user.data";
 import { MediaResult } from "../../core/media.result";
 import { MediaFormatHandler } from "../../handlers/media.list.handler";
@@ -14,16 +11,20 @@ import { SearchList } from "../../core/search.list";
 import { TitleHelper } from "../../helpers/title.helper";
 
 export class UnsubFunction implements ICommandFunction {
-  public Execute(message?: Message, command?: ICommand, dm?: boolean): void {
-    this.Search(message, command, dm);
+  public async Execute(
+    message?: Message,
+    command?: ICommand,
+    dm?: boolean
+  ): Promise<void> {
+    await this.Search(message, command, dm);
   }
 
-  private Search(message?: Message, command?: ICommand, dm?: boolean) {
+  private async Search(message?: Message, command?: ICommand, dm?: boolean) {
     const title = command.Parameter;
     let media: IMedia[] = [];
     const discordId = message.author.id;
     let userId: number;
-    UserData.GetUser(discordId, async (user, err) => {
+    await UserData.GetUser(discordId, async (user, err) => {
       if (err) {
         console.log(err);
         return;
@@ -33,37 +34,41 @@ export class UnsubFunction implements ICommandFunction {
     const userMedia: number[] = [];
     const filteredMedia: IMedia[] = [];
     const formattedResults: any[] = [];
-    MediaSearch.All(command.Parameter, (res: IMedia[]) => {
+    await MediaSearch.All(command.Parameter, async (res: IMedia[]) => {
       media = res;
-      SubscriptionData.All.forEach(sub => {
+      await SubscriptionData.All.forEach(async sub => {
         if (sub.UserId === userId) {
-          userMedia.push(sub.MediaId);
+          await userMedia.push(sub.MediaId);
         }
       });
-      media.forEach(m => {
+      await media.forEach(async m => {
         if (userMedia.includes(m.idMal)) {
-          filteredMedia.push(m);
-          formattedResults.push(MediaFormatHandler.Get(m));
+          await filteredMedia.push(m);
+          await formattedResults.push(MediaFormatHandler.Get(m));
         }
       });
       if (filteredMedia.length === 0) {
-        MediaResult.SendInfo(
+        await MediaResult.SendInfo(
           message,
           `Hmm..It seems that you are not subscribe to any anime that matches your keyword  ***${title}***.`,
           dm
         );
       } else if (filteredMedia.length === 1) {
-        SubscriptionData.Delete(filteredMedia[0].idMal, discordId, () => {
-          MediaResult.SendInfo(
-            message,
-            `You are now unsubscribed from  ***${TitleHelper.Get(
-              filteredMedia[0].title
-            )}***`,
-            dm
-          );
-        });
+        await SubscriptionData.Delete(
+          filteredMedia[0].idMal,
+          discordId,
+          async () => {
+            await MediaResult.SendInfo(
+              message,
+              `You are now unsubscribed from  ***${TitleHelper.Get(
+                filteredMedia[0].title
+              )}***`,
+              dm
+            );
+          }
+        );
       } else {
-        MediaResult.SendInfo(
+        await MediaResult.SendInfo(
           message,
           SearchList.Embed(command, formattedResults),
           dm

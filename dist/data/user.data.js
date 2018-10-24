@@ -16,17 +16,13 @@ class UserData {
         });
     }
     static GetUser(discordId, callback) {
-        query_1.Query.Execute(data_helper_1.DataHelper.UserSelect(discordId), async (result) => {
-            try {
-                const user = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.User)[0];
-                if (user !== null && user !== undefined) {
-                    await callback(user, false);
-                }
-            }
-            catch (error) {
-                await callback(null, true);
-            }
-        });
+        const user = this.All.find(x => x.DiscordId === discordId);
+        if (user !== null && user !== undefined) {
+            callback(user, false);
+        }
+        else {
+            callback(null, true);
+        }
     }
     static Insert(discordId, callback = null) {
         this.Exists(discordId, async (exists) => {

@@ -10,25 +10,27 @@ export class HelpFunction implements ICommandFunction {
     console.log(`Constructed: "${HelpFunction.name}"`);
   }
 
-  public Execute(message?: Message, command?: ICommand, dm?: boolean) {
-    this.ShowHelp(message, dm);
+  public async Execute(message?: Message, command?: ICommand, dm?: boolean) {
+    await this.ShowHelp(message, dm);
   }
 
-  private ShowHelp(message: Message, dm: boolean) {
-    if (dm) {
-      message.member.send(this.Embed(message));
-    } else {
-      message.reply(this.Embed(message));
-    }
+  private async ShowHelp(message: Message, dm: boolean) {
+    this.Embed(message).then(async embed => {
+      if (dm) {
+        await message.member.send(embed);
+        return;
+      }
+      await message.reply(embed);
+    });
   }
 
-  private Embed(message: Message) {
+  private async Embed(message: Message) {
     const commands = CommandManager.Commands;
     const client = ClientManager.GetClient;
     const list: any[] = [];
-    commands.forEach(command => {
+    await commands.forEach(async command => {
       if (command.DevOnly === false) {
-        list.push({
+        await list.push({
           name: `\n***-${command.Name}***`,
           value: `*${command.Description}*`
         });

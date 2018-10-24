@@ -9,7 +9,7 @@ class ResponseHandler {
     static Get(message, command) {
         const commands = manager_command_1.CommandManager.Commands;
         let iteration = 1;
-        commands.forEach(cmd => {
+        commands.forEach(async (cmd) => {
             if (cmd.Name === command.Name) {
                 const parameter = command.Parameter;
                 const paramRequired = cmd.ParameterRequired;
@@ -23,10 +23,10 @@ class ResponseHandler {
                     if (cmd.Function !== null) {
                         if (cmd.DevOnly === true &&
                             message.author.id === "442621672714010625") {
-                            cmd.Function.Execute(message, command, cmd.DMResponse);
+                            await cmd.Function.Execute(message, command, cmd.DMResponse);
                             return;
                         }
-                        cmd.Function.Execute(message, command, cmd.DMResponse);
+                        await cmd.Function.Execute(message, command, cmd.DMResponse);
                         return;
                     }
                 }

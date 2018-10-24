@@ -4,7 +4,7 @@ export class ArrayHelper {
     let called = false;
     if (index !== -1) {
       array.splice(index, 1);
-      !called ? callback() : (called = true);
+      !called && callback !== null ? callback() : (called = true);
     }
   }
 }
