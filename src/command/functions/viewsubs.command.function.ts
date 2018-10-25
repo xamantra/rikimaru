@@ -24,6 +24,9 @@ export class ViewSubsFunction implements ICommandFunction {
   }
 
   private async Embed(message: Message) {
+    const mediaData = MediaData.Instance;
+    const userData = UserData.Instance;
+    const subsData = SubscriptionData.Instance;
     let mentionId: string = null;
     if (message.mentions.members.size === 1) {
       mentionId = message.mentions.members.first().id;
@@ -33,18 +36,20 @@ export class ViewSubsFunction implements ICommandFunction {
     const client = ClientManager.GetClient;
     const list: any[] = [];
     const mediaSubs: IMedia[] = [];
-    const mediaList = MediaData.GetMediaList;
-    await UserData.GetUser(discordId, async (user, err) => {
-      if (err) {
-        await console.log(err);
-        return;
-      }
-      await SubscriptionData.All.forEach(async sub => {
-        if (user.Id === sub.UserId) {
-          await mediaSubs.push(mediaList.find(x => x.idMal === sub.MediaId));
-        }
+    const mediaList = mediaData.GetMediaList;
+    userData
+      .GetUser(discordId)
+      .then(user => {
+        subsData.All.forEach(async sub => {
+          if (user.Id === sub.UserId) {
+            await mediaSubs.push(mediaList.find(x => x.idMal === sub.MediaId));
+          }
+        });
+      })
+      .catch((reason: Error) => {
+        console.log(reason.message);
       });
-    });
+
     await mediaSubs.forEach(async media => {
       const title = TitleHelper.Get(media.title);
       const episode = media.nextAiringEpisode.next;

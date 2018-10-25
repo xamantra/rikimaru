@@ -17,6 +17,10 @@ class SubscribeFunction {
         await this.Search(message, command, dm);
     }
     async Search(message, command, dm) {
+        const mediaData = media_data_1.MediaData.Instance;
+        const userData = user_data_1.UserData.Instance;
+        const queueData = queue_data_1.QueueData.Instance;
+        const subsData = subscription_data_1.SubscriptionData.Instance;
         await media_search_1.MediaSearch.All(command.Parameter, async (res) => {
             const ongoing = await media_handler_1.MediaHandler.OngoingMedia(res);
             const unreleased = await media_handler_1.MediaHandler.UnreleasedMedia(res);
@@ -38,35 +42,63 @@ class SubscribeFunction {
                 const discordId = message.author.id;
                 const media = results[0];
                 const title = title_helper_1.TitleHelper.Get(results[0].title);
-                await media_data_1.MediaData.Exists(media.idMal, async (exists) => {
+                mediaData
+                    .Exists(media.idMal)
+                    .then(exists => {
                     if (exists === false) {
-                        await media_data_1.MediaData.Insert(media.idMal, title, async (insertId) => {
-                            await console.log(insertId);
+                        mediaData
+                            .Insert(media.idMal, title)
+                            .then(insertId => {
+                            console.log(insertId);
+                        })
+                            .catch((reason) => {
+                            console.log(reason.message);
                         });
                     }
+                })
+                    .catch((reason) => {
+                    console.log(reason.message);
                 });
-                await user_data_1.UserData.GetUser(discordId, async (user, err) => {
-                    if (err === false) {
-                        await subscription_data_1.SubscriptionData.Exists(media.idMal, user.Id, async (exists) => {
-                            if (exists === false) {
-                                await subscription_data_1.SubscriptionData.Insert(media.idMal, user.Id, async () => {
-                                    await media_result_1.MediaResult.SendInfo(message, `You are now subscribed to: ***${title}***. I will DM you when a new episode is aired!\nEnter the command: \`-mysubs\` to view your subscriptions.\nEnter the command: \`-unsub ${title}\` to unsubscribe to this anime.`, dm).then(async () => {
-                                        await queue_data_1.QueueData.Insert(media.idMal, media.nextAiringEpisode.next, async (insertId) => {
-                                            const q = new subscription_model_1.Queue();
-                                            q.Id = insertId;
-                                            q.MediaId = media.idMal;
-                                            q.NextEpisode = media.nextAiringEpisode.next;
-                                            const queueJob = new queue_job_model_1.QueueJob(user, q);
-                                            await queueJob.StartQueue();
-                                        });
+                userData
+                    .GetUser(discordId)
+                    .then(user => {
+                    subsData
+                        .Exists(media.idMal, user.Id)
+                        .then(exists => {
+                        if (exists === false) {
+                            subsData
+                                .Insert(media.idMal, user.Id)
+                                .then(() => {
+                                media_result_1.MediaResult.SendInfo(message, `You are now subscribed to: ***${title}***. I will DM you when a new episode is aired!\nEnter the command: \`-mysubs\` to view your subscriptions.\nEnter the command: \`-unsub ${title}\` to unsubscribe to this anime.`, dm).then(async () => {
+                                    queueData
+                                        .Insert(media.idMal, media.nextAiringEpisode.next)
+                                        .then(insertId => {
+                                        const q = new subscription_model_1.Queue();
+                                        q.Id = insertId;
+                                        q.MediaId = media.idMal;
+                                        q.NextEpisode = media.nextAiringEpisode.next;
+                                        const queueJob = new queue_job_model_1.QueueJob(user, media, q);
+                                        queueJob.StartQueue();
+                                    })
+                                        .catch((reason) => {
+                                        console.log(reason.message);
                                     });
                                 });
-                            }
-                            else {
-                                await media_result_1.MediaResult.SendInfo(message, `Cool! You are already subscribed to ***${title}***.\nEnter the command \`-unsub ${title}\`  to unsubscribe to this anime.`, dm);
-                            }
-                        });
-                    }
+                            })
+                                .catch((reason) => {
+                                console.log(reason.message);
+                            });
+                        }
+                        else {
+                            media_result_1.MediaResult.SendInfo(message, `Cool! You are already subscribed to ***${title}***.\nEnter the command \`-unsub ${title}\`  to unsubscribe to this anime.`, dm);
+                        }
+                    })
+                        .catch((reason) => {
+                        console.log(reason.message);
+                    });
+                })
+                    .catch((reason) => {
+                    console.log(reason.message);
                 });
                 return;
             }

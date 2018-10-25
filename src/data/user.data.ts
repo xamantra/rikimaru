@@ -5,79 +5,107 @@ import { Query } from "../core/query";
 import { MySqlResult } from "../models/result.mysql.model";
 
 export class UserData {
-  private static UserList: User[] = [];
-  public static Init() {
-    Query.Execute(DataHelper.UserSelectAll(), async result => {
-      const users = await JsonHelper.ArrayConvert<User>(result, User);
-      await users.forEach(async user => {
-        await this.UserList.push(user);
+  constructor() {}
+  public static get Instance() {
+    return this._instance || (this._instance = new this());
+  }
+
+  public get All() {
+    return this.UserList;
+  }
+  private static _instance: UserData;
+  private UserList: User[] = [];
+  private DataHelper = DataHelper.Instance;
+
+  public async Init() {
+    return new Promise<void>((res, rej) => {
+      Query.Execute(this.DataHelper.UserSelectAll(), async result => {
+        const users = await JsonHelper.ArrayConvert<User>(result, User);
+        if (users !== undefined && users !== null) {
+          await users.forEach(user => {
+            this.UserList.push(user);
+          });
+          res();
+        } else {
+          rej(
+            new Error(
+              `"JsonHelper.ArrayConvert<User>(result, User)" is 'null' or 'undefined'.`
+            )
+          );
+        }
       });
     });
   }
 
-  public static GetUser(
-    discordId: string,
-    callback?: (user?: User, err?: boolean) => void
-  ) {
-    const user = this.All.find(x => x.DiscordId === discordId);
-    if (user !== null && user !== undefined) {
-      callback(user, false);
-    } else {
-      callback(null, true);
-    }
-  }
-
-  public static Insert(
-    discordId: string,
-    callback: (insertId: number) => void = null
-  ) {
-    this.Exists(discordId, async exists => {
-      if (exists === false) {
-        await Query.Execute(DataHelper.UserInsert(discordId), async result => {
-          try {
-            const res = await JsonHelper.Convert<MySqlResult>(
-              result,
-              MySqlResult
-            );
-            if (
-              res !== null &&
-              res !== undefined &&
-              res.InsertId !== null &&
-              res.InsertId !== undefined
-            ) {
-              const user = new User();
-              user.Id = res.InsertId;
-              user.DiscordId = discordId;
-              await this.UserList.push(user);
-              if (callback !== null) await callback(res.InsertId);
-            }
-          } catch (error) {
-            await console.log(error);
-          }
-        });
+  public async GetUser(discordId: string) {
+    return new Promise<User>(async (res, rej) => {
+      const user = await this.All.find(x => x.DiscordId === discordId);
+      if (user !== null && user !== undefined) {
+        res(user);
+      } else {
+        rej(
+          new Error(
+            `"this.All.find(x => x.DiscordId === discordId)" is 'null' or 'undefined'.`
+          )
+        );
       }
     });
   }
 
-  public static get All() {
-    return this.UserList;
+  public async Insert(discordId: string) {
+    return new Promise<number>((res, rej) => {
+      this.Exists(discordId).then(exists => {
+        if (exists === false) {
+          Query.Execute(this.DataHelper.UserInsert(discordId), async result => {
+            try {
+              const myRes = await JsonHelper.Convert<MySqlResult>(
+                result,
+                MySqlResult
+              );
+              if (
+                myRes !== null &&
+                myRes !== undefined &&
+                myRes.InsertId !== null &&
+                myRes.InsertId !== undefined
+              ) {
+                const user = new User();
+                user.Id = myRes.InsertId;
+                user.DiscordId = discordId;
+                await this.UserList.push(user);
+              }
+              res(myRes.InsertId);
+            } catch (error) {
+              rej(new Error(`Unknown error occured.`));
+            }
+          });
+        } else {
+          rej(new Error(`DiscordId: "${discordId}" already exists.`));
+        }
+      });
+    });
   }
 
-  public static async Exists(
-    discordId: string,
-    callback?: (exists: boolean) => void
-  ) {
-    const u = this.All.find(x => x.DiscordId === discordId);
-    if (u === undefined || u === null) {
-      await callback(false);
-    } else {
-      await callback(true);
-    }
+  public async Exists(discordId: string) {
+    return new Promise<boolean>(async (res, rej) => {
+      const u = await this.All.find(x => x.DiscordId === discordId);
+      if (u === undefined || u === null) {
+        res(false);
+      } else {
+        res(true);
+      }
+    });
   }
 
-  public static LogAll() {
-    this.All.forEach(async user => {
-      await console.log(`User:`, user);
+  public async LogAll() {
+    return new Promise(async (res, rej) => {
+      if (this.All === undefined || this.All === null) {
+        rej(new Error(`"UserData.All" is 'null' or 'undefined'.`));
+      } else {
+        await this.All.forEach(user => {
+          console.log(`User:`, user);
+        });
+        res();
+      }
     });
   }
 }

@@ -17,9 +17,27 @@ bot_1.Bot.Instance.Init();
 client_1.ClientManager.Init(new discord_js_1.Client());
 message_handler_1.MessageHandler.Init();
 manager_command_1.CommandManager.Init();
-data_helper_1.DataHelper.Init();
-user_data_1.UserData.Init();
-media_data_1.MediaData.Init();
-queue_data_1.QueueData.Init();
-subscription_data_1.SubscriptionData.Init();
+data_helper_1.DataHelper.Instance.Init().then(() => {
+    user_data_1.UserData.Instance.Init()
+        .then(() => {
+        media_data_1.MediaData.Instance.Init()
+            .then(() => {
+            queue_data_1.QueueData.Instance.Init()
+                .then(() => {
+                subscription_data_1.SubscriptionData.Instance.Init().catch((reason) => {
+                    console.log(reason.message);
+                });
+            })
+                .catch((reason) => {
+                console.log(reason.message);
+            });
+        })
+            .catch((reason) => {
+            console.log(reason.message);
+        });
+    })
+        .catch((reason) => {
+        console.log(reason.message);
+    });
+});
 //# sourceMappingURL=index.js.map

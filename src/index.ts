@@ -17,8 +17,26 @@ Bot.Instance.Init();
 ClientManager.Init(new Client());
 MessageHandler.Init();
 CommandManager.Init();
-DataHelper.Init();
-UserData.Init();
-MediaData.Init();
-QueueData.Init();
-SubscriptionData.Init();
+DataHelper.Instance.Init().then(() => {
+  UserData.Instance.Init()
+    .then(() => {
+      MediaData.Instance.Init()
+        .then(() => {
+          QueueData.Instance.Init()
+            .then(() => {
+              SubscriptionData.Instance.Init().catch((reason: Error) => {
+                console.log(reason.message);
+              });
+            })
+            .catch((reason: Error) => {
+              console.log(reason.message);
+            });
+        })
+        .catch((reason: Error) => {
+          console.log(reason.message);
+        });
+    })
+    .catch((reason: Error) => {
+      console.log(reason.message);
+    });
+});

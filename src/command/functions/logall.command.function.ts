@@ -9,10 +9,27 @@ import { SubscriptionData } from "../../data/subscription.data";
 export class LogAllFunction implements ICommandFunction {
   Execute(message?: Message, command?: ICommand, dm?: boolean): void {
     if (message.author.id === "442621672714010625") {
-      MediaData.LogAll();
-      UserData.LogAll();
-      QueueData.LogAll();
-      SubscriptionData.LogAll();
+      UserData.Instance.LogAll()
+        .then(() => {
+          MediaData.Instance.LogAll()
+            .then(() => {
+              QueueData.Instance.LogAll()
+                .then(() => {
+                  SubscriptionData.Instance.LogAll().catch((reason: Error) => {
+                    console.log(reason.message);
+                  });
+                })
+                .catch((reason: Error) => {
+                  console.log(reason.message);
+                });
+            })
+            .catch((reason: Error) => {
+              console.log(reason.message);
+            });
+        })
+        .catch((reason: Error) => {
+          console.log(reason.message);
+        });
     }
   }
 }

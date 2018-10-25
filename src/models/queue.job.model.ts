@@ -2,18 +2,22 @@ import { Queue, User } from "./subscription.model";
 import { QueueData } from "./../data/queue.data";
 import { Job } from "node-schedule";
 import * as schedule from "node-schedule";
-import { MediaData } from "../data/media.data";
 import { unix } from "moment";
 import { ClientManager } from "../core/client";
+import { IMedia } from "../interfaces/page.interface";
 
 export class QueueJob {
-  constructor(private user: User, private queue: Queue) {}
+  constructor(
+    private user: User,
+    private media: IMedia,
+    private queue: Queue
+  ) {}
 
   public async StartQueue() {
     const user = await ClientManager.GetClient.users.get(this.user.DiscordId);
     const mediaId = this.queue.MediaId;
     const nextEpisode = this.queue.NextEpisode;
-    const media = await MediaData.GetMediaList.find(x => x.idMal === mediaId);
+    const media = this.media;
     let job: Job = null;
     if (nextEpisode === media.nextAiringEpisode.next) {
       const date = await unix(media.nextAiringEpisode.timeUntilAiring).toDate();
@@ -29,20 +33,20 @@ export class QueueJob {
     }
 
     if (nextEpisode < media.nextAiringEpisode.next) {
-      await QueueData.Update(
-        mediaId,
-        media.nextAiringEpisode.next,
-        async () => {
-          await user.send(
+      await QueueData.Instance.Update(mediaId, media.nextAiringEpisode.next)
+        .then(() => {
+          user.send(
             `***${media.title}***  *Episode: ${nextEpisode}*  has been aired!`
           );
           if (job !== null) {
-            await job.cancel(false);
+            job.cancel(false);
             job = null;
           }
           this.StartQueue();
-        }
-      );
+        })
+        .catch((reason: Error) => {
+          console.log(reason.message);
+        });
       return;
     }
   }

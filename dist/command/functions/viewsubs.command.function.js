@@ -20,6 +20,9 @@ class ViewSubsFunction {
         });
     }
     async Embed(message) {
+        const mediaData = media_data_1.MediaData.Instance;
+        const userData = user_data_1.UserData.Instance;
+        const subsData = subscription_data_1.SubscriptionData.Instance;
         let mentionId = null;
         if (message.mentions.members.size === 1) {
             mentionId = message.mentions.members.first().id;
@@ -28,17 +31,18 @@ class ViewSubsFunction {
         const client = client_1.ClientManager.GetClient;
         const list = [];
         const mediaSubs = [];
-        const mediaList = media_data_1.MediaData.GetMediaList;
-        await user_data_1.UserData.GetUser(discordId, async (user, err) => {
-            if (err) {
-                await console.log(err);
-                return;
-            }
-            await subscription_data_1.SubscriptionData.All.forEach(async (sub) => {
+        const mediaList = mediaData.GetMediaList;
+        userData
+            .GetUser(discordId)
+            .then(user => {
+            subsData.All.forEach(async (sub) => {
                 if (user.Id === sub.UserId) {
                     await mediaSubs.push(mediaList.find(x => x.idMal === sub.MediaId));
                 }
             });
+        })
+            .catch((reason) => {
+            console.log(reason.message);
         });
         await mediaSubs.forEach(async (media) => {
             const title = title_helper_1.TitleHelper.Get(media.title);

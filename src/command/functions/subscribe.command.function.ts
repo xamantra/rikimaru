@@ -25,6 +25,10 @@ export class SubscribeFunction implements ICommandFunction {
   }
 
   private async Search(message: Message, command: ICommand, dm: boolean) {
+    const mediaData = MediaData.Instance;
+    const userData = UserData.Instance;
+    const queueData = QueueData.Instance;
+    const subsData = SubscriptionData.Instance;
     await MediaSearch.All(command.Parameter, async (res: IMedia[]) => {
       const ongoing = await MediaHandler.OngoingMedia(res);
       const unreleased = await MediaHandler.UnreleasedMedia(res);
@@ -50,55 +54,71 @@ export class SubscribeFunction implements ICommandFunction {
         const discordId = message.author.id;
         const media = results[0];
         const title = TitleHelper.Get(results[0].title);
-        await MediaData.Exists(media.idMal, async exists => {
-          if (exists === false) {
-            await MediaData.Insert(media.idMal, title, async insertId => {
-              await console.log(insertId);
-            });
-          }
-        });
-        await UserData.GetUser(discordId, async (user, err) => {
-          if (err === false) {
-            await SubscriptionData.Exists(
-              media.idMal,
-              user.Id,
-              async exists => {
+        mediaData
+          .Exists(media.idMal)
+          .then(exists => {
+            if (exists === false) {
+              mediaData
+                .Insert(media.idMal, title)
+                .then(insertId => {
+                  console.log(insertId);
+                })
+                .catch((reason: Error) => {
+                  console.log(reason.message);
+                });
+            }
+          })
+          .catch((reason: Error) => {
+            console.log(reason.message);
+          });
+        userData
+          .GetUser(discordId)
+          .then(user => {
+            subsData
+              .Exists(media.idMal, user.Id)
+              .then(exists => {
                 if (exists === false) {
-                  await SubscriptionData.Insert(
-                    media.idMal,
-                    user.Id,
-                    async () => {
-                      await MediaResult.SendInfo(
+                  subsData
+                    .Insert(media.idMal, user.Id)
+                    .then(() => {
+                      MediaResult.SendInfo(
                         message,
                         `You are now subscribed to: ***${title}***. I will DM you when a new episode is aired!\nEnter the command: \`-mysubs\` to view your subscriptions.\nEnter the command: \`-unsub ${title}\` to unsubscribe to this anime.`,
                         dm
                       ).then(async () => {
-                        await QueueData.Insert(
-                          media.idMal,
-                          media.nextAiringEpisode.next,
-                          async insertId => {
+                        queueData
+                          .Insert(media.idMal, media.nextAiringEpisode.next)
+                          .then(insertId => {
                             const q = new Queue();
                             q.Id = insertId;
                             q.MediaId = media.idMal;
                             q.NextEpisode = media.nextAiringEpisode.next;
-                            const queueJob = new QueueJob(user, q);
-                            await queueJob.StartQueue();
-                          }
-                        );
+                            const queueJob = new QueueJob(user, media, q);
+                            queueJob.StartQueue();
+                          })
+                          .catch((reason: Error) => {
+                            console.log(reason.message);
+                          });
                       });
-                    }
-                  );
+                    })
+                    .catch((reason: Error) => {
+                      console.log(reason.message);
+                    });
                 } else {
-                  await MediaResult.SendInfo(
+                  MediaResult.SendInfo(
                     message,
                     `Cool! You are already subscribed to ***${title}***.\nEnter the command \`-unsub ${title}\`  to unsubscribe to this anime.`,
                     dm
                   );
                 }
-              }
-            );
-          }
-        });
+              })
+              .catch((reason: Error) => {
+                console.log(reason.message);
+              });
+          })
+          .catch((reason: Error) => {
+            console.log(reason.message);
+          });
         return;
       } else {
         await MediaResult.SendInfo(
