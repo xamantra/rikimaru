@@ -23,6 +23,7 @@ export class QueueJob {
         );
         job = null;
         job.cancel(false);
+        this.StartQueue();
       });
       return;
     }
@@ -39,6 +40,7 @@ export class QueueJob {
             await job.cancel(false);
             job = null;
           }
+          this.StartQueue();
         }
       );
       return;

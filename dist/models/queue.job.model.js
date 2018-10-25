@@ -29,6 +29,7 @@ class QueueJob {
                 user.send(`***${media.title}***  *Episode: ${nextEpisode}*  has been aired!`);
                 job = null;
                 job.cancel(false);
+                this.StartQueue();
             });
             return;
         }
@@ -39,6 +40,7 @@ class QueueJob {
                     await job.cancel(false);
                     job = null;
                 }
+                this.StartQueue();
             });
             return;
         }
