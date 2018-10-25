@@ -1,6 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Config {
+    static get GetFtpUser() {
+        return this.FtpUsername;
+    }
+    static get GetFtpHost() {
+        return this.FtpHost;
+    }
+    static get GetFtpPass() {
+        return this.FtpPassword;
+    }
+    static get SqlLite() {
+        return this.SqlLiteDatabase;
+    }
     static get GetToken() {
         return this.Token;
     }
@@ -30,5 +42,9 @@ Config.MysqlPassword = process.env.mysqlPassword ||
     require("../extras/env").ConfigVariables.mysqlPassword;
 Config.MysqlDatabase = process.env.mysqlDatabase ||
     require("../extras/env").ConfigVariables.mysqlDatabase;
+Config.SqlLiteDatabase = process.env.sqlLiteDatabase || "rikimaru.db";
+Config.FtpHost = process.env.ftpHost || "localhost:2020";
+Config.FtpUsername = process.env.ftpUsername || "xamantra";
+Config.FtpPassword = process.env.ftpPassword || "";
 exports.Config = Config;
 //# sourceMappingURL=config.js.map

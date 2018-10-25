@@ -38,10 +38,6 @@ export class QueueData {
     });
   }
 
-  public static AddJob(queueJob: QueueJob) {
-    this.QueueJobs.push(queueJob);
-  }
-
   public static async GetQueue(mediaId: number) {
     return new Promise<Queue>(async (resolve, reject) => {
       const q = this.All.find(x => x.MediaId === mediaId);
@@ -54,6 +50,23 @@ export class QueueData {
           )
         );
       }
+    });
+  }
+
+  public static get GetJobs() {
+    return this.QueueJobs;
+  }
+
+  public static AddJob(queueJob: QueueJob) {
+    queueJob.StartQueue();
+    this.QueueJobs.push(queueJob);
+  }
+
+  public static RemoveJob(queueJob: QueueJob) {
+    ArrayHelper.remove(this.QueueJobs, queueJob, () => {
+      queueJob.Cancel();
+      queueJob = null;
+      console.log(`Queue Job: "${queueJob}"`);
     });
   }
 
@@ -105,7 +118,6 @@ export class QueueData {
                     MediaData.GetMediaList.forEach(async m => {
                       UserData.All.forEach(async user => {
                         const queueJob = new QueueJob(user, m, q);
-                        queueJob.StartQueue();
                         QueueData.AddJob(queueJob);
                       });
                     });

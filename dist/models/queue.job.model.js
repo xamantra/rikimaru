@@ -9,8 +9,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const queue_data_1 = require("./../data/queue.data");
 const schedule = __importStar(require("node-schedule"));
-const moment_1 = require("moment");
+const moment_1 = __importStar(require("moment"));
 const client_1 = require("../core/client");
+const title_helper_1 = require("../helpers/title.helper");
 class QueueJob {
     constructor(user, media, queue) {
         this.user = user;
@@ -22,26 +23,28 @@ class QueueJob {
         const mediaId = this.queue.MediaId;
         const nextEpisode = this.queue.NextEpisode;
         const media = this.media;
-        let job = null;
         if (nextEpisode === media.nextAiringEpisode.next) {
-            const date = moment_1.unix(media.nextAiringEpisode.timeUntilAiring).toDate();
-            job = schedule.scheduleJob(date, () => {
-                user.send(`***${media.title}***  *Episode: ${nextEpisode}*  has been aired!`);
-                job = null;
-                job.cancel(false);
-                this.StartQueue();
+            this.JobDate = moment_1.unix(media.nextAiringEpisode.airingAt).toDate();
+            this.Job = schedule.scheduleJob(`User: "${user.username}", Media: "${media.title}"`, this.JobDate, () => {
+                user
+                    .send(`***${media.title}***  *Episode: ${nextEpisode}*  has been aired!`)
+                    .then(() => {
+                    this.Job = null;
+                    this.Job.cancel(false);
+                    queue_data_1.QueueData.RemoveJob(this);
+                })
+                    .catch(error => {
+                    console.log(error);
+                });
             });
-            return;
         }
         if (nextEpisode < media.nextAiringEpisode.next) {
             queue_data_1.QueueData.Update(mediaId, media.nextAiringEpisode.next)
                 .then(() => {
                 user.send(`***${media.title}***  *Episode: ${nextEpisode}*  has been aired!`);
-                if (job !== null) {
-                    job.cancel(false);
-                    job = null;
+                if (this.Job !== null) {
+                    queue_data_1.QueueData.RemoveJob(this);
                 }
-                this.StartQueue();
             })
                 .catch((reason) => {
                 console.log(reason.message);
@@ -49,8 +52,14 @@ class QueueJob {
             return;
         }
     }
+    Cancel() {
+        this.Job.cancel(false);
+        this.Job = null;
+        queue_data_1.QueueData.RemoveJob(this);
+    }
     Log() {
-        console.log(`QueueJob >>> User: ${this.user.DiscordId}, Media: ${this.media.title} Episode ${this.media.nextAiringEpisode.next}, Queue: ${this.queue.Id} Episode: ${this.queue.NextEpisode}`);
+        const countdown = moment_1.default(this.JobDate).toNow(true);
+        console.log(`QueueJob >>> User: ${this.user.DiscordId}, Media: ${title_helper_1.TitleHelper.Get(this.media.title)} Episode ${this.media.nextAiringEpisode.next}, Queue: ${this.queue.Id} Episode: ${this.queue.NextEpisode}, JobDate: ${this.JobDate}, TimeRemaining: ${countdown}`);
     }
 }
 exports.QueueJob = QueueJob;

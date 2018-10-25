@@ -9,6 +9,7 @@ import { ClientManager } from "./core/client";
 import { CommandManager } from "./command/manager.command";
 import { MessageHandler } from "./handlers/message.handler";
 import { OpenShiftUptimer } from "./others/openshift";
+import { Scheduler } from "./core/scheduler";
 
 OpenShiftUptimer.Log(true);
 OpenShiftUptimer.AutoConfigure();
@@ -29,7 +30,11 @@ class App {
       UserData.Init().then(() => {
         QueueData.Init().then(() => {
           MediaData.Init().then(() => {
-            SubscriptionData.Init();
+            SubscriptionData.Init().then(() => {
+              Scheduler.LoopJob(0, 15, 0, () => {
+                MediaData.LoadFromApi();
+              });
+            });
           });
         });
       });

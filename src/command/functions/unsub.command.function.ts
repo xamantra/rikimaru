@@ -49,10 +49,8 @@ export class UnsubFunction implements ICommandFunction {
               dm
             );
           } else if (filteredMedia.length === 1) {
-            SubscriptionData.Delete(
-              filteredMedia[0].idMal,
-              discordId,
-              async () => {
+            SubscriptionData.Delete(filteredMedia[0].idMal, discordId).then(
+              () => {
                 MediaResult.SendInfo(
                   message,
                   `You are now unsubscribed from  ***${TitleHelper.Get(

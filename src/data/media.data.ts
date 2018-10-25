@@ -1,4 +1,5 @@
 import { MediaStatus } from "./../core/media.status";
+import { QueueJob } from "./../models/queue.job.model";
 import { SubscriptionData } from "./subscription.data";
 import { Query } from "./../core/query";
 import { MediaSearch } from "./../core/media.search";
@@ -74,11 +75,27 @@ export class MediaData {
                 return;
               }
               if (MediaStatus.Ongoing($m) || MediaStatus.NotYetAired($m)) {
-                QueueData.Insert($m.idMal, $m.nextAiringEpisode.next).catch(
-                  () => {
+                QueueData.Insert($m.idMal, $m.nextAiringEpisode.next)
+                  .then(insertId => {
+                    const queue = new Queue();
+                    queue.Id = insertId;
+                    queue.MediaId = $m.idMal;
+                    queue.NextEpisode = $m.nextAiringEpisode.next;
+                    UserData.All.forEach(user => {
+                      const queueJob = new QueueJob(user, $m, queue);
+                      QueueData.AddJob(queueJob);
+                    });
+                  })
+                  .catch(() => {
+                    const queue = QueueData.All.find(
+                      x => x.MediaId === $m.idMal
+                    );
+                    UserData.All.forEach(user => {
+                      const queueJob = new QueueJob(user, $m, queue);
+                      QueueData.AddJob(queueJob);
+                    });
                     console.log(`No need to add. Already exists.`);
-                  }
-                );
+                  });
                 console.log(`Pushed: ${lm.Title}`);
                 this.MediaList.push($m);
               } else {
@@ -86,11 +103,15 @@ export class MediaData {
                   ArrayHelper.remove(this.LocalList, lm, () => {
                     Query.Execute(this.DataHelper.MediaDelete($m.id), () => {
                       userDatas.forEach(x => {
-                        SubscriptionData.Delete($m.idMal, x.DiscordId, () => {
-                          console.log(
-                            `All subscription of "${$m.title}" has been remove`
-                          );
-                        });
+                        SubscriptionData.Delete($m.idMal, x.DiscordId).then(
+                          () => {
+                            console.log(
+                              `All subscription of "${
+                                $m.title
+                              }" has been remove`
+                            );
+                          }
+                        );
                       });
                     });
                   });

@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const query_1 = require("./../core/query");
 const media_data_1 = require("./media.data");
-const queue_job_model_1 = require("./../models/queue.job.model");
 const queue_data_1 = require("./queue.data");
 const user_data_1 = require("./user.data");
 const subscription_model_1 = require("./../models/subscription.model");
@@ -28,16 +27,6 @@ class SubscriptionData {
                         this.SubscriptionList.push(sub);
                         const queue = queue_data_1.QueueData.All.find(q => q.MediaId === sub.MediaId);
                         const media = media_data_1.MediaData.GetMediaList.find(x => x.idMal === queue.MediaId);
-                        if (queue !== undefined &&
-                            queue !== null &&
-                            media !== undefined &&
-                            media !== null) {
-                            user_data_1.UserData.All.forEach(u => {
-                                const queueJob = new queue_job_model_1.QueueJob(u, media, queue);
-                                queueJob.StartQueue();
-                                queue_data_1.QueueData.AddJob(queueJob);
-                            });
-                        }
                     });
                     resolve();
                 }
@@ -78,12 +67,6 @@ class SubscriptionData {
                                     sub.MediaId = mediaId;
                                     sub.UserId = userId;
                                     this.SubscriptionList.push(sub);
-                                    if (queue !== undefined && queue !== null) {
-                                        const media = media_data_1.MediaData.GetMediaList.find(x => x.idMal === sub.MediaId);
-                                        const queueJob = new queue_job_model_1.QueueJob(user, media, queue);
-                                        queueJob.StartQueue();
-                                        queue_data_1.QueueData.AddJob(queueJob);
-                                    }
                                 }
                                 resolve();
                             });
@@ -100,17 +83,16 @@ class SubscriptionData {
             });
         });
     }
-    static async Delete(mediaId, discordId, callback) {
+    static async Delete(mediaId, discordId) {
         return new Promise((res, rej) => {
             user_data_1.UserData.GetUser(discordId)
                 .then(user => {
                 query_1.Query.Execute(this.DataHelper.SubsDelete(mediaId, user.Id), result => {
                     const sub = this.SubscriptionList.find(x => x.MediaId === mediaId && x.UserId === user.Id);
                     if (sub !== null && sub !== undefined) {
+                        const queueJob = queue_data_1.QueueData.GetJobs.find(x => x.user.DiscordId === discordId && x.media.idMal === mediaId);
                         array_helper_1.ArrayHelper.remove(this.SubscriptionList, sub, () => {
-                            if (callback !== null) {
-                                callback();
-                            }
+                            queueJob.Cancel();
                         });
                         res();
                     }

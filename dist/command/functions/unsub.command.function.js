@@ -37,7 +37,7 @@ class UnsubFunction {
                     media_result_1.MediaResult.SendInfo(message, `Hmm..It seems that you are not subscribe to any anime that matches your keyword  ***${title}***.`, dm);
                 }
                 else if (filteredMedia.length === 1) {
-                    subscription_data_1.SubscriptionData.Delete(filteredMedia[0].idMal, discordId, async () => {
+                    subscription_data_1.SubscriptionData.Delete(filteredMedia[0].idMal, discordId).then(() => {
                         media_result_1.MediaResult.SendInfo(message, `You are now unsubscribed from  ***${title_helper_1.TitleHelper.Get(filteredMedia[0].title)}***`, dm);
                     });
                 }

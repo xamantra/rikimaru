@@ -1,35 +1,43 @@
 import { Queue, User } from "./subscription.model";
+import { MediaData } from "./../data/media.data";
 import { QueueData } from "./../data/queue.data";
 import { Job } from "node-schedule";
 import * as schedule from "node-schedule";
-import { unix } from "moment";
+import moment, { unix } from "moment";
 import { ClientManager } from "../core/client";
 import { IMedia } from "../interfaces/page.interface";
+import { TitleHelper } from "../helpers/title.helper";
 
 export class QueueJob {
-  constructor(
-    private user: User,
-    private media: IMedia,
-    private queue: Queue
-  ) {}
+  private Job: Job;
+  private JobDate: Date;
+  constructor(public user: User, public media: IMedia, public queue: Queue) {}
 
   public StartQueue() {
     const user = ClientManager.GetClient.users.get(this.user.DiscordId);
     const mediaId = this.queue.MediaId;
     const nextEpisode = this.queue.NextEpisode;
     const media = this.media;
-    let job: Job = null;
     if (nextEpisode === media.nextAiringEpisode.next) {
-      const date = unix(media.nextAiringEpisode.timeUntilAiring).toDate();
-      job = schedule.scheduleJob(date, () => {
-        user.send(
-          `***${media.title}***  *Episode: ${nextEpisode}*  has been aired!`
-        );
-        job = null;
-        job.cancel(false);
-        this.StartQueue();
-      });
-      return;
+      this.JobDate = unix(media.nextAiringEpisode.airingAt).toDate();
+      this.Job = schedule.scheduleJob(
+        `User: "${user.username}", Media: "${media.title}"`,
+        this.JobDate,
+        () => {
+          user
+            .send(
+              `***${media.title}***  *Episode: ${nextEpisode}*  has been aired!`
+            )
+            .then(() => {
+              this.Job = null;
+              this.Job.cancel(false);
+              QueueData.RemoveJob(this);
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        }
+      );
     }
 
     if (nextEpisode < media.nextAiringEpisode.next) {
@@ -38,11 +46,9 @@ export class QueueJob {
           user.send(
             `***${media.title}***  *Episode: ${nextEpisode}*  has been aired!`
           );
-          if (job !== null) {
-            job.cancel(false);
-            job = null;
+          if (this.Job !== null) {
+            QueueData.RemoveJob(this);
           }
-          this.StartQueue();
         })
         .catch((reason: Error) => {
           console.log(reason.message);
@@ -51,13 +57,22 @@ export class QueueJob {
     }
   }
 
+  public Cancel() {
+    this.Job.cancel(false);
+    this.Job = null;
+    QueueData.RemoveJob(this);
+  }
+
   public Log() {
+    const countdown = moment(this.JobDate).toNow(true);
     console.log(
-      `QueueJob >>> User: ${this.user.DiscordId}, Media: ${
+      `QueueJob >>> User: ${this.user.DiscordId}, Media: ${TitleHelper.Get(
         this.media.title
-      } Episode ${this.media.nextAiringEpisode.next}, Queue: ${
+      )} Episode ${this.media.nextAiringEpisode.next}, Queue: ${
         this.queue.Id
-      } Episode: ${this.queue.NextEpisode}`
+      } Episode: ${this.queue.NextEpisode}, JobDate: ${
+        this.JobDate
+      }, TimeRemaining: ${countdown}`
     );
   }
 }

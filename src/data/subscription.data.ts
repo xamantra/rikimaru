@@ -40,18 +40,6 @@ export class SubscriptionData {
             const media = MediaData.GetMediaList.find(
               x => x.idMal === queue.MediaId
             );
-            if (
-              queue !== undefined &&
-              queue !== null &&
-              media !== undefined &&
-              media !== null
-            ) {
-              UserData.All.forEach(u => {
-                const queueJob = new QueueJob(u, media, queue);
-                queueJob.StartQueue();
-                QueueData.AddJob(queueJob);
-              });
-            }
           });
           resolve();
         }
@@ -115,14 +103,6 @@ export class SubscriptionData {
                       sub.MediaId = mediaId;
                       sub.UserId = userId;
                       this.SubscriptionList.push(sub);
-                      if (queue !== undefined && queue !== null) {
-                        const media = MediaData.GetMediaList.find(
-                          x => x.idMal === sub.MediaId
-                        );
-                        const queueJob = new QueueJob(user, media, queue);
-                        queueJob.StartQueue();
-                        QueueData.AddJob(queueJob);
-                      }
                     }
                     resolve();
                   }
@@ -148,11 +128,7 @@ export class SubscriptionData {
     });
   }
 
-  public static async Delete(
-    mediaId: number,
-    discordId: string,
-    callback?: () => void
-  ) {
+  public static async Delete(mediaId: number, discordId: string) {
     return new Promise((res, rej) => {
       UserData.GetUser(discordId)
         .then(user => {
@@ -163,10 +139,12 @@ export class SubscriptionData {
                 x => x.MediaId === mediaId && x.UserId === user.Id
               );
               if (sub !== null && sub !== undefined) {
+                const queueJob = QueueData.GetJobs.find(
+                  x =>
+                    x.user.DiscordId === discordId && x.media.idMal === mediaId
+                );
                 ArrayHelper.remove(this.SubscriptionList, sub, () => {
-                  if (callback !== null) {
-                    callback();
-                  }
+                  queueJob.Cancel();
                 });
                 res();
               } else {

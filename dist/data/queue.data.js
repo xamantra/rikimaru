@@ -29,9 +29,6 @@ class QueueData {
             });
         });
     }
-    static AddJob(queueJob) {
-        this.QueueJobs.push(queueJob);
-    }
     static async GetQueue(mediaId) {
         return new Promise(async (resolve, reject) => {
             const q = this.All.find(x => x.MediaId === mediaId);
@@ -41,6 +38,20 @@ class QueueData {
             else {
                 reject(new Error(`"this.All.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`));
             }
+        });
+    }
+    static get GetJobs() {
+        return this.QueueJobs;
+    }
+    static AddJob(queueJob) {
+        queueJob.StartQueue();
+        this.QueueJobs.push(queueJob);
+    }
+    static RemoveJob(queueJob) {
+        array_helper_1.ArrayHelper.remove(this.QueueJobs, queueJob, () => {
+            queueJob.Cancel();
+            queueJob = null;
+            console.log(`Queue Job: "${queueJob}"`);
         });
     }
     static async Insert(mediaId, next_episode) {
@@ -83,7 +94,6 @@ class QueueData {
                             media_data_1.MediaData.GetMediaList.forEach(async (m) => {
                                 user_data_1.UserData.All.forEach(async (user) => {
                                     const queueJob = new queue_job_model_1.QueueJob(user, m, q);
-                                    queueJob.StartQueue();
                                     QueueData.AddJob(queueJob);
                                 });
                             });

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const media_status_1 = require("./../core/media.status");
+const queue_job_model_1 = require("./../models/queue.job.model");
 const subscription_data_1 = require("./subscription.data");
 const query_1 = require("./../core/query");
 const media_search_1 = require("./../core/media.search");
@@ -61,7 +62,23 @@ class MediaData {
                                 return;
                             }
                             if (media_status_1.MediaStatus.Ongoing($m) || media_status_1.MediaStatus.NotYetAired($m)) {
-                                queue_data_1.QueueData.Insert($m.idMal, $m.nextAiringEpisode.next).catch(() => {
+                                queue_data_1.QueueData.Insert($m.idMal, $m.nextAiringEpisode.next)
+                                    .then(insertId => {
+                                    const queue = new subscription_model_1.Queue();
+                                    queue.Id = insertId;
+                                    queue.MediaId = $m.idMal;
+                                    queue.NextEpisode = $m.nextAiringEpisode.next;
+                                    user_data_1.UserData.All.forEach(user => {
+                                        const queueJob = new queue_job_model_1.QueueJob(user, $m, queue);
+                                        queue_data_1.QueueData.AddJob(queueJob);
+                                    });
+                                })
+                                    .catch(() => {
+                                    const queue = queue_data_1.QueueData.All.find(x => x.MediaId === $m.idMal);
+                                    user_data_1.UserData.All.forEach(user => {
+                                        const queueJob = new queue_job_model_1.QueueJob(user, $m, queue);
+                                        queue_data_1.QueueData.AddJob(queueJob);
+                                    });
                                     console.log(`No need to add. Already exists.`);
                                 });
                                 console.log(`Pushed: ${lm.Title}`);
@@ -72,7 +89,7 @@ class MediaData {
                                     array_helper_1.ArrayHelper.remove(this.LocalList, lm, () => {
                                         query_1.Query.Execute(this.DataHelper.MediaDelete($m.id), () => {
                                             userDatas.forEach(x => {
-                                                subscription_data_1.SubscriptionData.Delete($m.idMal, x.DiscordId, () => {
+                                                subscription_data_1.SubscriptionData.Delete($m.idMal, x.DiscordId).then(() => {
                                                     console.log(`All subscription of "${$m.title}" has been remove`);
                                                 });
                                             });

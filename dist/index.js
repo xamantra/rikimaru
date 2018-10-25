@@ -11,6 +11,7 @@ const client_1 = require("./core/client");
 const manager_command_1 = require("./command/manager.command");
 const message_handler_1 = require("./handlers/message.handler");
 const openshift_1 = require("./others/openshift");
+const scheduler_1 = require("./core/scheduler");
 openshift_1.OpenShiftUptimer.Log(true);
 openshift_1.OpenShiftUptimer.AutoConfigure();
 bot_1.Bot.Instance.Init();
@@ -26,7 +27,11 @@ class App {
             user_data_1.UserData.Init().then(() => {
                 queue_data_1.QueueData.Init().then(() => {
                     media_data_1.MediaData.Init().then(() => {
-                        subscription_data_1.SubscriptionData.Init();
+                        subscription_data_1.SubscriptionData.Init().then(() => {
+                            scheduler_1.Scheduler.LoopJob(0, 15, 0, () => {
+                                media_data_1.MediaData.LoadFromApi();
+                            });
+                        });
                     });
                 });
             });
