@@ -32,6 +32,9 @@ export class QueueJob {
               this.Job = null;
               this.Job.cancel(false);
               QueueData.RemoveJob(this);
+              MediaData.LoadFromApi().catch((reason: Error) => {
+                console.log(reason.message);
+              });
             })
             .catch(error => {
               console.log(error);
@@ -60,7 +63,6 @@ export class QueueJob {
   public Cancel() {
     this.Job.cancel(false);
     this.Job = null;
-    QueueData.RemoveJob(this);
   }
 
   public Log() {

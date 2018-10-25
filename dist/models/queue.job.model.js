@@ -7,6 +7,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const media_data_1 = require("./../data/media.data");
 const queue_data_1 = require("./../data/queue.data");
 const schedule = __importStar(require("node-schedule"));
 const moment_1 = __importStar(require("moment"));
@@ -32,6 +33,9 @@ class QueueJob {
                     this.Job = null;
                     this.Job.cancel(false);
                     queue_data_1.QueueData.RemoveJob(this);
+                    media_data_1.MediaData.LoadFromApi().catch((reason) => {
+                        console.log(reason.message);
+                    });
                 })
                     .catch(error => {
                     console.log(error);
@@ -55,7 +59,6 @@ class QueueJob {
     Cancel() {
         this.Job.cancel(false);
         this.Job = null;
-        queue_data_1.QueueData.RemoveJob(this);
     }
     Log() {
         const countdown = moment_1.default(this.JobDate).toNow(true);
