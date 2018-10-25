@@ -1,11 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const subscription_model_1 = require("./../models/subscription.model");
+const queue_job_model_1 = require("./../models/queue.job.model");
+const user_data_1 = require("./user.data");
 const result_mysql_model_1 = require("./../models/result.mysql.model");
 const json_helper_1 = require("./../helpers/json.helper");
 const query_1 = require("./../core/query");
 const data_helper_1 = require("../helpers/data.helper");
 const array_helper_1 = require("../helpers/array.helper");
+const media_data_1 = require("./media.data");
 class QueueData {
     static async Init() {
         await query_1.Query.Execute(data_helper_1.DataHelper.QueueSelectAll(), async (result) => {
@@ -42,13 +45,24 @@ class QueueData {
         });
     }
     static async Update(mediaId, nextEpisode, callback) {
-        const oldQueue = this.All.find(x => x.MediaId === mediaId);
+        const oldQueue = await this.All.find(x => x.MediaId === mediaId);
         await query_1.Query.Execute(await data_helper_1.DataHelper.QueueUpdate(mediaId, nextEpisode), async () => {
             await this.GetQueue(mediaId, async (q, err) => {
                 if (err === false) {
                     await array_helper_1.ArrayHelper.remove(this.All, oldQueue, async () => {
                         await this.Queues.push(q);
-                        await callback();
+                        await callback().then(async () => {
+                            await media_data_1.MediaData.LoadFromApi().then(async () => {
+                                await media_data_1.MediaData.Exists(q.MediaId, async (exists) => {
+                                    if (exists === true) {
+                                        user_data_1.UserData.All.forEach(user => {
+                                            const queueJob = new queue_job_model_1.QueueJob(user, q);
+                                            queueJob.StartQueue();
+                                        });
+                                    }
+                                });
+                            });
+                        });
                     });
                 }
             });

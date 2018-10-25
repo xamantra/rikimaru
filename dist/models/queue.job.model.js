@@ -17,7 +17,7 @@ class QueueJob {
         this.user = user;
         this.queue = queue;
     }
-    async StartQueue(callback) {
+    async StartQueue() {
         const user = await client_1.ClientManager.GetClient.users.get(this.user.DiscordId);
         const mediaId = this.queue.MediaId;
         const nextEpisode = this.queue.NextEpisode;
@@ -27,9 +27,8 @@ class QueueJob {
             const date = await moment_1.unix(media.nextAiringEpisode.timeUntilAiring).toDate();
             job = schedule.scheduleJob(date, () => {
                 user.send(`***${media.title}***  *Episode: ${nextEpisode}*  has been aired!`);
-                job.cancel(false);
                 job = null;
-                callback(this);
+                job.cancel(false);
             });
             return;
         }
@@ -39,15 +38,10 @@ class QueueJob {
                 if (job !== null) {
                     await job.cancel(false);
                     job = null;
-                    await callback(this);
                 }
             });
             return;
         }
-    }
-    StopQueue() {
-        this.user = null;
-        this.queue = null;
     }
 }
 exports.QueueJob = QueueJob;

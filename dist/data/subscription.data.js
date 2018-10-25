@@ -18,10 +18,7 @@ class SubscriptionData {
                 const queue = await queue_data_1.QueueData.All.find(q => q.MediaId === sub.MediaId);
                 await user_data_1.UserData.All.forEach(async (u) => {
                     const queueJob = new queue_job_model_1.QueueJob(u, queue);
-                    await queueJob.StartQueue(qj => {
-                        qj.StopQueue();
-                        qj = null;
-                    });
+                    await queueJob.StartQueue();
                 });
             });
         });
@@ -50,10 +47,7 @@ class SubscriptionData {
                         await this.SubscriptionList.push(sub);
                         if (callback !== null) {
                             const queueJob = new queue_job_model_1.QueueJob(user, queue);
-                            await queueJob.StartQueue(qj => {
-                                qj.StopQueue();
-                                qj = null;
-                            });
+                            await queueJob.StartQueue();
                             await callback();
                         }
                     }
