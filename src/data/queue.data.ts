@@ -1,14 +1,24 @@
 import { Queue } from "./../models/subscription.model";
+import { QueueJob } from "./../models/queue.job.model";
+import { UserData } from "./user.data";
 import { MySqlResult } from "./../models/result.mysql.model";
 import { JsonHelper } from "./../helpers/json.helper";
 import { Query } from "./../core/query";
 import { DataHelper } from "../helpers/data.helper";
 import { ArrayHelper } from "../helpers/array.helper";
+import { MediaData } from "./media.data";
 
 export class QueueData {
   private static Queues: Queue[] = [];
 
-  public static async Init() {}
+  public static async Init() {
+    await Query.Execute(DataHelper.QueueSelectAll(), async result => {
+      const queues = await JsonHelper.ArrayConvert<Queue>(result, Queue);
+      await queues.forEach(q => {
+        this.Queues.push(q);
+      });
+    });
+  }
 
   public static async GetQueue(
     mediaId: number,
@@ -53,9 +63,9 @@ export class QueueData {
   public static async Update(
     mediaId: number,
     nextEpisode: number,
-    callback?: () => void
+    callback?: () => Promise<void>
   ) {
-    const oldQueue = this.All.find(x => x.MediaId === mediaId);
+    const oldQueue = await this.All.find(x => x.MediaId === mediaId);
     await Query.Execute(
       await DataHelper.QueueUpdate(mediaId, nextEpisode),
       async () => {
@@ -63,7 +73,18 @@ export class QueueData {
           if (err === false) {
             await ArrayHelper.remove(this.All, oldQueue, async () => {
               await this.Queues.push(q);
-              await callback();
+              await callback().then(async () => {
+                await MediaData.LoadFromApi().then(async () => {
+                  await MediaData.Exists(q.MediaId, async exists => {
+                    if (exists === true) {
+                      UserData.All.forEach(user => {
+                        const queueJob = new QueueJob(user, q);
+                        queueJob.StartQueue();
+                      });
+                    }
+                  });
+                });
+              });
             });
           }
         });
@@ -89,7 +110,7 @@ export class QueueData {
 
   public static LogAll() {
     this.Queues.forEach(async q => {
-      await console.log(q);
+      await console.log(`Queue:`, q);
     });
   }
 }

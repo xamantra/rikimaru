@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const query_1 = require("./../core/query");
+const queue_job_model_1 = require("./../models/queue.job.model");
+const queue_data_1 = require("./queue.data");
 const user_data_1 = require("./user.data");
 const subscription_model_1 = require("./../models/subscription.model");
 const json_helper_1 = require("../helpers/json.helper");
@@ -8,11 +10,19 @@ const data_helper_1 = require("../helpers/data.helper");
 const result_mysql_model_1 = require("../models/result.mysql.model");
 const array_helper_1 = require("../helpers/array.helper");
 class SubscriptionData {
-    static Init() {
-        query_1.Query.Execute(data_helper_1.DataHelper.SubsSelectAll(), async (result) => {
+    static async Init() {
+        await query_1.Query.Execute(data_helper_1.DataHelper.SubsSelectAll(), async (result) => {
             const subs = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Subscription);
             await subs.forEach(async (sub) => {
                 await this.SubscriptionList.push(sub);
+                const queue = await queue_data_1.QueueData.All.find(q => q.MediaId === sub.MediaId);
+                await user_data_1.UserData.All.forEach(async (u) => {
+                    const queueJob = new queue_job_model_1.QueueJob(u, queue);
+                    await queueJob.StartQueue(qj => {
+                        qj.StopQueue();
+                        qj = null;
+                    });
+                });
             });
         });
     }
@@ -28,6 +38,8 @@ class SubscriptionData {
     static async Insert(mediaId, userId, callback) {
         await this.Exists(mediaId, userId, async (exists) => {
             if (exists === false) {
+                const user = user_data_1.UserData.All.find(x => x.Id === userId);
+                const queue = queue_data_1.QueueData.All.find(x => x.MediaId === mediaId);
                 await query_1.Query.Execute(await data_helper_1.DataHelper.SubsInsert(mediaId, userId), async (result) => {
                     const res = await json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
                     if (res.InsertId !== undefined && res.InsertId !== null) {
@@ -37,6 +49,11 @@ class SubscriptionData {
                         sub.UserId = userId;
                         await this.SubscriptionList.push(sub);
                         if (callback !== null) {
+                            const queueJob = new queue_job_model_1.QueueJob(user, queue);
+                            await queueJob.StartQueue(qj => {
+                                qj.StopQueue();
+                                qj = null;
+                            });
                             await callback();
                         }
                     }
@@ -78,7 +95,7 @@ class SubscriptionData {
     }
     static LogAll() {
         this.All.forEach(async (sub) => {
-            await console.log(sub);
+            await console.log(`Subscription:`, sub);
         });
     }
 }

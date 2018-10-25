@@ -17,12 +17,12 @@ export class QueueJob {
     let job: Job = null;
     if (nextEpisode === media.nextAiringEpisode.next) {
       const date = await unix(media.nextAiringEpisode.timeUntilAiring).toDate();
-      job = await schedule.scheduleJob(date, async () => {
+      job = schedule.scheduleJob(date, () => {
         user.send(
           `***${media.title}***  *Episode: ${nextEpisode}*  has been aired!`
         );
-        await job.cancel(false);
         job = null;
+        job.cancel(false);
       });
       return;
     }

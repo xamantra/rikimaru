@@ -20,5 +20,5 @@ CommandManager.Init();
 DataHelper.Init();
 UserData.Init();
 MediaData.Init();
-SubscriptionData.Init();
 QueueData.Init();
+SubscriptionData.Init();

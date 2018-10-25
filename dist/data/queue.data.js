@@ -7,7 +7,14 @@ const query_1 = require("./../core/query");
 const data_helper_1 = require("../helpers/data.helper");
 const array_helper_1 = require("../helpers/array.helper");
 class QueueData {
-    static async Init() { }
+    static async Init() {
+        await query_1.Query.Execute(data_helper_1.DataHelper.QueueSelectAll(), async (result) => {
+            const queues = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Queue);
+            await queues.forEach(q => {
+                this.Queues.push(q);
+            });
+        });
+    }
     static async GetQueue(mediaId, callback) {
         const q = await this.All.find(x => x.MediaId === mediaId);
         if (q !== null && q !== undefined) {
@@ -61,7 +68,7 @@ class QueueData {
     }
     static LogAll() {
         this.Queues.forEach(async (q) => {
-            await console.log(q);
+            await console.log(`Queue:`, q);
         });
     }
 }

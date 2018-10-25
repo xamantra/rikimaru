@@ -1,4 +1,5 @@
 import { ICommandFunction } from "./../../interfaces/command.function.interface";
+import { QueueData } from "./../../data/queue.data";
 import { MediaData } from "./../../data/media.data";
 import { Message } from "discord.js";
 import { ICommand } from "../../interfaces/command.interface";
@@ -10,6 +11,7 @@ export class LogAllFunction implements ICommandFunction {
     if (message.author.id === "442621672714010625") {
       MediaData.LogAll();
       UserData.LogAll();
+      QueueData.LogAll();
       SubscriptionData.LogAll();
     }
   }

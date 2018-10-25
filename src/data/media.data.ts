@@ -33,14 +33,6 @@ export class MediaData {
       await MediaSearch.All(lm.Title, async (res: IMedia[]) => {
         await res.forEach(async $m => {
           if (MediaStatus.Ongoing($m) || MediaStatus.NotYetAired($m)) {
-            await QueueData.GetQueue($m.idMal, async (queue, err) => {
-              if (err === false) {
-                await UserData.All.forEach(async user => {
-                  const queueJob = new QueueJob(user, queue);
-                  queueJob.StartQueue();
-                });
-              }
-            });
             await this.MediaList.push($m);
             return;
           } else {
@@ -100,11 +92,8 @@ export class MediaData {
   }
 
   public static LogAll() {
-    this.LocalList.forEach(async m => {
-      await console.log(m.Title);
-    });
     this.MediaList.forEach(async m => {
-      await console.log(m.idMal);
+      await console.log(`Media:`, m.idMal, m.title);
     });
   }
 

@@ -12,7 +12,6 @@ class UserData {
             await users.forEach(async (user) => {
                 await this.UserList.push(user);
             });
-            await console.log(`User List: ${this.UserList}`);
         });
     }
     static GetUser(discordId, callback) {
@@ -63,7 +62,7 @@ class UserData {
     }
     static LogAll() {
         this.All.forEach(async (user) => {
-            await console.log(user);
+            await console.log(`User:`, user);
         });
     }
 }

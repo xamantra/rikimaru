@@ -12,7 +12,6 @@ export class UserData {
       await users.forEach(async user => {
         await this.UserList.push(user);
       });
-      await console.log(`User List: ${this.UserList}`);
     });
   }
 
@@ -78,7 +77,7 @@ export class UserData {
 
   public static LogAll() {
     this.All.forEach(async user => {
-      await console.log(user);
+      await console.log(`User:`, user);
     });
   }
 }

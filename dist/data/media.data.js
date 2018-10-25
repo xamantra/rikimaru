@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const media_status_1 = require("./../core/media.status");
-const queue_data_1 = require("./queue.data");
 const subscription_data_1 = require("./subscription.data");
 const query_1 = require("./../core/query");
 const media_search_1 = require("./../core/media.search");
@@ -11,7 +10,6 @@ const subscription_model_1 = require("../models/subscription.model");
 const result_mysql_model_1 = require("../models/result.mysql.model");
 const array_helper_1 = require("../helpers/array.helper");
 const user_data_1 = require("./user.data");
-const queue_job_model_1 = require("../models/queue.job.model");
 class MediaData {
     static async Init() {
         await query_1.Query.Execute(data_helper_1.DataHelper.MediaSelectAll(), async (result) => {
@@ -30,14 +28,6 @@ class MediaData {
             await media_search_1.MediaSearch.All(lm.Title, async (res) => {
                 await res.forEach(async ($m) => {
                     if (media_status_1.MediaStatus.Ongoing($m) || media_status_1.MediaStatus.NotYetAired($m)) {
-                        await queue_data_1.QueueData.GetQueue($m.idMal, async (queue, err) => {
-                            if (err === false) {
-                                await user_data_1.UserData.All.forEach(async (user) => {
-                                    const queueJob = new queue_job_model_1.QueueJob(user, queue);
-                                    queueJob.StartQueue();
-                                });
-                            }
-                        });
                         await this.MediaList.push($m);
                         return;
                     }
@@ -84,11 +74,8 @@ class MediaData {
         });
     }
     static LogAll() {
-        this.LocalList.forEach(async (m) => {
-            await console.log(m.Title);
-        });
         this.MediaList.forEach(async (m) => {
-            await console.log(m.idMal);
+            await console.log(`Media:`, m.idMal, m.title);
         });
     }
     static get GetLocalList() {

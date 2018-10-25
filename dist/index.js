@@ -20,6 +20,6 @@ manager_command_1.CommandManager.Init();
 data_helper_1.DataHelper.Init();
 user_data_1.UserData.Init();
 media_data_1.MediaData.Init();
-subscription_data_1.SubscriptionData.Init();
 queue_data_1.QueueData.Init();
+subscription_data_1.SubscriptionData.Init();
 //# sourceMappingURL=index.js.map
