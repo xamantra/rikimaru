@@ -53,18 +53,25 @@ export class SubscribeFunction implements ICommandFunction {
           const discordId = message.author.id;
           const media = results[0];
           const title = TitleHelper.Get(results[0].title);
-          MediaData.Insert(media.idMal, title)
+          MediaData.Insert(media, title)
             .then(insertId => {
-              console.log(`New Media Id: "${insertId}"`);
+              console.log(`Media ID: ${insertId}`);
               UserData.GetUser(discordId)
                 .then(user => {
                   SubscriptionData.Insert(media.idMal, user.Id, message, dm)
                     .then(() => {
-                      MediaResult.SendInfo(
-                        message,
-                        `You are now subscribed to: ***${title}***. I will DM you when a new episode is aired!\nEnter the command: \`-mysubs\` to view your subscriptions.\nEnter the command: \`-unsub ${title}\` to unsubscribe to this anime.`,
-                        dm
-                      );
+                      QueueData.GetQueue(media.idMal)
+                        .then(queue => {
+                          const queueJob = new QueueJob(user, media, queue);
+                          QueueData.AddJob(queueJob);
+                        })
+                        .then(() => {
+                          MediaResult.SendInfo(
+                            message,
+                            `You are now subscribed to: ***${title}***. I will DM you when a new episode is aired!\nEnter the command: \`-mysubs\` to view your subscriptions.\nEnter the command: \`-unsub ${title}\` to unsubscribe to this anime.`,
+                            dm
+                          );
+                        });
                     })
                     .catch((reason: Error) => {
                       console.log(reason.message);

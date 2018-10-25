@@ -1,6 +1,5 @@
 import { Query } from "./../core/query";
 import { MediaData } from "./media.data";
-import { QueueJob } from "./../models/queue.job.model";
 import { QueueData } from "./queue.data";
 import { UserData } from "./user.data";
 import { Subscription } from "./../models/subscription.model";
@@ -144,7 +143,7 @@ export class SubscriptionData {
                     x.user.DiscordId === discordId && x.media.idMal === mediaId
                 );
                 ArrayHelper.remove(this.SubscriptionList, sub, () => {
-                  queueJob.Cancel();
+                  QueueData.RemoveJob(queueJob);
                 });
                 res();
               } else {

@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const queue_data_1 = require("./../../data/queue.data");
+const queue_job_model_1 = require("./../../models/queue.job.model");
 const media_search_1 = require("./../../core/media.search");
 const subscription_data_1 = require("./../../data/subscription.data");
 const title_helper_1 = require("./../../helpers/title.helper");
@@ -38,14 +40,21 @@ class SubscribeFunction {
                 const discordId = message.author.id;
                 const media = results[0];
                 const title = title_helper_1.TitleHelper.Get(results[0].title);
-                media_data_1.MediaData.Insert(media.idMal, title)
+                media_data_1.MediaData.Insert(media, title)
                     .then(insertId => {
-                    console.log(`New Media Id: "${insertId}"`);
+                    console.log(`Media ID: ${insertId}`);
                     user_data_1.UserData.GetUser(discordId)
                         .then(user => {
                         subscription_data_1.SubscriptionData.Insert(media.idMal, user.Id, message, dm)
                             .then(() => {
-                            media_result_1.MediaResult.SendInfo(message, `You are now subscribed to: ***${title}***. I will DM you when a new episode is aired!\nEnter the command: \`-mysubs\` to view your subscriptions.\nEnter the command: \`-unsub ${title}\` to unsubscribe to this anime.`, dm);
+                            queue_data_1.QueueData.GetQueue(media.idMal)
+                                .then(queue => {
+                                const queueJob = new queue_job_model_1.QueueJob(user, media, queue);
+                                queue_data_1.QueueData.AddJob(queueJob);
+                            })
+                                .then(() => {
+                                media_result_1.MediaResult.SendInfo(message, `You are now subscribed to: ***${title}***. I will DM you when a new episode is aired!\nEnter the command: \`-mysubs\` to view your subscriptions.\nEnter the command: \`-unsub ${title}\` to unsubscribe to this anime.`, dm);
+                            });
                         })
                             .catch((reason) => {
                             console.log(reason.message);

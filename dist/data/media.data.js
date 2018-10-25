@@ -106,41 +106,44 @@ class MediaData {
             }
         });
     }
-    static async Insert(mal_id, title) {
+    static async Insert(media, title, user = null) {
         return new Promise((res, rej) => {
-            this.Exists(mal_id)
+            this.Exists(media.idMal)
                 .then(async (exists) => {
                 if (exists === false) {
-                    query_1.Query.Execute(this.DataHelper.MediaInsert(mal_id, title), async (result) => {
+                    query_1.Query.Execute(this.DataHelper.MediaInsert(media.idMal, title), async (result) => {
                         const myRes = json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
                         if (myRes.InsertId !== undefined && myRes.InsertId !== null) {
-                            const media = new subscription_model_1.Media();
-                            media.MalId = myRes.InsertId;
-                            media.Title = title;
-                            this.LocalList.push(media);
-                            media_search_1.MediaSearch.All(title).then(ms => {
-                                ms.forEach(async ($m) => {
-                                    if (media_status_1.MediaStatus.Ongoing($m) ||
-                                        media_status_1.MediaStatus.NotYetAired($m)) {
-                                        this.MediaList.push($m);
-                                        queue_data_1.QueueData.Insert($m.idMal, $m.nextAiringEpisode.next)
-                                            .then(qId => {
-                                            res(myRes.InsertId);
-                                        })
-                                            .catch((reason) => {
-                                            console.log(reason.message);
-                                        });
-                                    }
+                            const m = new subscription_model_1.Media();
+                            m.MalId = myRes.InsertId;
+                            m.Title = title;
+                            this.LocalList.push(m);
+                            if (media_status_1.MediaStatus.Ongoing(media) ||
+                                media_status_1.MediaStatus.NotYetAired(media)) {
+                                this.MediaList.push(media);
+                                queue_data_1.QueueData.Insert(media.idMal, media.nextAiringEpisode.next)
+                                    .then(qId => {
+                                    res(media.idMal);
+                                })
+                                    .catch((reason) => {
+                                    console.log(reason.message);
                                 });
-                            });
+                            }
                         }
                     });
                 }
                 else {
+                    queue_data_1.QueueData.Insert(media.idMal, media.nextAiringEpisode.next)
+                        .then(qId => {
+                        res(media.idMal);
+                    })
+                        .catch((reason) => {
+                        console.log(reason.message);
+                    });
                 }
             })
                 .catch(() => {
-                rej(new Error(`Media with Id: "${mal_id}" already exists!`));
+                rej(new Error(`Media with Id: "${media}" already exists!`));
             });
         });
     }

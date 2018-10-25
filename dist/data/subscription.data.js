@@ -92,7 +92,7 @@ class SubscriptionData {
                     if (sub !== null && sub !== undefined) {
                         const queueJob = queue_data_1.QueueData.GetJobs.find(x => x.user.DiscordId === discordId && x.media.idMal === mediaId);
                         array_helper_1.ArrayHelper.remove(this.SubscriptionList, sub, () => {
-                            queueJob.Cancel();
+                            queue_data_1.QueueData.RemoveJob(queueJob);
                         });
                         res();
                     }
