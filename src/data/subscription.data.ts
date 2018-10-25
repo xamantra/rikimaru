@@ -8,26 +8,22 @@ import { JsonHelper } from "../helpers/json.helper";
 import { DataHelper } from "../helpers/data.helper";
 import { MySqlResult } from "../models/result.mysql.model";
 import { ArrayHelper } from "../helpers/array.helper";
+import { Message } from "discord.js";
+import { MediaResult } from "../core/media.result";
+import { title } from "process";
 
 export class SubscriptionData {
-  public static get Instance() {
-    return this._instance || (this._instance = new this());
-  }
-
-  public get All() {
+  public static get All() {
     return this.SubscriptionList;
   }
   static _instance: SubscriptionData;
-  private DataHelper = DataHelper.Instance;
-  private UserData = UserData.Instance;
-  private QueueData = QueueData.Instance;
-  private MediaData = MediaData.Instance;
-  private SubscriptionList: Subscription[] = [];
+  private static DataHelper = DataHelper.Instance;
+  private static SubscriptionList: Subscription[] = [];
 
-  public async Init() {
+  public static async Init() {
     return new Promise((resolve, reject) => {
       Query.Execute(this.DataHelper.SubsSelectAll(), async result => {
-        const subs = await JsonHelper.ArrayConvert<Subscription>(
+        const subs = JsonHelper.ArrayConvert<Subscription>(
           result,
           Subscription
         );
@@ -38,12 +34,10 @@ export class SubscriptionData {
             )
           );
         } else {
-          await subs.forEach(async sub => {
-            await this.SubscriptionList.push(sub);
-            const queue = await this.QueueData.All.find(
-              q => q.MediaId === sub.MediaId
-            );
-            const media = await this.MediaData.GetMediaList.find(
+          subs.forEach(async sub => {
+            this.SubscriptionList.push(sub);
+            const queue = QueueData.All.find(q => q.MediaId === sub.MediaId);
+            const media = MediaData.GetMediaList.find(
               x => x.idMal === queue.MediaId
             );
             if (
@@ -52,9 +46,10 @@ export class SubscriptionData {
               media !== undefined &&
               media !== null
             ) {
-              await this.UserData.All.forEach(u => {
+              UserData.All.forEach(u => {
                 const queueJob = new QueueJob(u, media, queue);
                 queueJob.StartQueue();
+                QueueData.AddJob(queueJob);
               });
             }
           });
@@ -64,9 +59,9 @@ export class SubscriptionData {
     });
   }
 
-  public async GetSub(mediaId: number, userId: number) {
+  public static async GetSub(mediaId: number, userId: number) {
     return new Promise<Subscription>(async (resolve, reject) => {
-      const sub = await this.All.find(
+      const sub = this.All.find(
         x => x.MediaId === mediaId && x.UserId === userId
       );
       if (sub !== null && sub !== undefined) {
@@ -81,12 +76,17 @@ export class SubscriptionData {
     });
   }
 
-  public async Insert(mediaId: number, userId: number) {
+  public static async Insert(
+    mediaId: number,
+    userId: number,
+    message?: Message,
+    dm?: boolean
+  ) {
     return new Promise((resolve, reject) => {
       this.Exists(mediaId, userId)
         .then(async exists => {
           if (exists === false) {
-            const user = await this.UserData.All.find(x => x.Id === userId);
+            const user = UserData.All.find(x => x.Id === userId);
             if (user === null || user === undefined) {
               reject(
                 new Error(
@@ -94,9 +94,7 @@ export class SubscriptionData {
                 )
               );
             } else {
-              const queue = await this.QueueData.All.find(
-                x => x.MediaId === mediaId
-              );
+              const queue = QueueData.All.find(x => x.MediaId === mediaId);
               if (queue === null || queue === undefined) {
                 reject(
                   new Error(
@@ -104,10 +102,10 @@ export class SubscriptionData {
                   )
                 );
               } else {
-                await Query.Execute(
-                  await this.DataHelper.SubsInsert(mediaId, userId),
+                Query.Execute(
+                  this.DataHelper.SubsInsert(mediaId, userId),
                   async result => {
-                    const res = await JsonHelper.Convert<MySqlResult>(
+                    const res = JsonHelper.Convert<MySqlResult>(
                       result,
                       MySqlResult
                     );
@@ -116,13 +114,14 @@ export class SubscriptionData {
                       sub.Id = res.InsertId;
                       sub.MediaId = mediaId;
                       sub.UserId = userId;
-                      await this.SubscriptionList.push(sub);
+                      this.SubscriptionList.push(sub);
                       if (queue !== undefined && queue !== null) {
-                        const media = await this.MediaData.GetMediaList.find(
+                        const media = MediaData.GetMediaList.find(
                           x => x.idMal === sub.MediaId
                         );
                         const queueJob = new QueueJob(user, media, queue);
-                        await queueJob.StartQueue();
+                        queueJob.StartQueue();
+                        QueueData.AddJob(queueJob);
                       }
                     }
                     resolve();
@@ -131,6 +130,11 @@ export class SubscriptionData {
               }
             }
           } else {
+            MediaResult.SendInfo(
+              message,
+              `Cool! You are already subscribed to ***${title}***.\nEnter the command \`-unsub ${title}\`  to unsubscribe to this anime.`,
+              dm
+            );
             reject(
               new Error(
                 `Subscription with MediaId: "${mediaId}" and UserId: "${userId}" already exists!`
@@ -144,13 +148,13 @@ export class SubscriptionData {
     });
   }
 
-  public async Delete(
+  public static async Delete(
     mediaId: number,
     discordId: string,
     callback?: () => void
   ) {
     return new Promise((res, rej) => {
-      this.UserData.GetUser(discordId)
+      UserData.GetUser(discordId)
         .then(user => {
           Query.Execute(
             this.DataHelper.SubsDelete(mediaId, user.Id),
@@ -181,7 +185,7 @@ export class SubscriptionData {
     });
   }
 
-  public async Exists(mediaId: number, userId: number) {
+  public static async Exists(mediaId: number, userId: number) {
     return new Promise<boolean>((resolve, reject) => {
       const sub = this.All.find(
         x => x.MediaId === mediaId && x.UserId === userId
@@ -194,7 +198,7 @@ export class SubscriptionData {
     });
   }
 
-  public async LogAll() {
+  public static async LogAll() {
     return new Promise((resolve, reject) => {
       if (this.All === null || this.All === undefined) {
         reject(new Error(`"this.All" is 'null' or 'undefined'.`));

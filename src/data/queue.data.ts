@@ -9,24 +9,19 @@ import { ArrayHelper } from "../helpers/array.helper";
 import { MediaData } from "./media.data";
 
 export class QueueData {
-  public static get Instance() {
-    return this._instance || (this._instance = new this());
-  }
-
-  public get All() {
+  public static get All() {
     return this.Queues;
   }
 
   static _instance: QueueData;
-  private Queues: Queue[] = [];
-  private DataHelper = DataHelper.Instance;
-  private UserData = UserData.Instance;
-  private MediaData = MediaData.Instance;
+  private static Queues: Queue[] = [];
+  private static QueueJobs: QueueJob[] = [];
+  private static DataHelper = DataHelper.Instance;
 
-  public async Init() {
+  public static async Init() {
     return new Promise((resolve, reject) => {
       Query.Execute(this.DataHelper.QueueSelectAll(), async result => {
-        const queues = await JsonHelper.ArrayConvert<Queue>(result, Queue);
+        const queues = JsonHelper.ArrayConvert<Queue>(result, Queue);
         if (queues === null || queues === undefined) {
           reject(
             new Error(
@@ -34,7 +29,7 @@ export class QueueData {
             )
           );
         } else {
-          await queues.forEach(q => {
+          queues.forEach(q => {
             this.Queues.push(q);
           });
           resolve();
@@ -43,9 +38,13 @@ export class QueueData {
     });
   }
 
-  public async GetQueue(mediaId: number) {
+  public static AddJob(queueJob: QueueJob) {
+    this.QueueJobs.push(queueJob);
+  }
+
+  public static async GetQueue(mediaId: number) {
     return new Promise<Queue>(async (resolve, reject) => {
-      const q = await this.All.find(x => x.MediaId === mediaId);
+      const q = this.All.find(x => x.MediaId === mediaId);
       if (q !== null && q !== undefined) {
         resolve(q);
       } else {
@@ -58,24 +57,29 @@ export class QueueData {
     });
   }
 
-  public async Insert(mediaId: number, next_episode: number) {
+  public static async Insert(mediaId: number, next_episode: number) {
     return new Promise<number>((resolve, reject) => {
-      this.Exists(mediaId, async exists => {
+      this.Exists(mediaId).then(exists => {
         if (exists === false) {
-          await Query.Execute(
+          Query.Execute(
             this.DataHelper.QueueInsert(mediaId, next_episode),
-            async result => {
-              const res = await JsonHelper.ArrayConvert<MySqlResult>(
-                result,
-                MySqlResult
-              )[0];
+            result => {
+              const res = JsonHelper.Convert<MySqlResult>(result, MySqlResult);
+              console.log(res);
               if (res !== undefined && res !== null) {
                 const q = new Queue();
                 q.Id = res.InsertId;
                 q.MediaId = mediaId;
                 q.NextEpisode = next_episode;
-                await this.Queues.push(q);
+                this.Queues.push(q);
+                console.log(`${q.MediaId} added to queue.`);
                 resolve(q.Id);
+              } else {
+                reject(
+                  new Error(
+                    `JsonHelper.ArrayConvert<MySqlResult>(result, MySqlResult)[0] is 'null' or 'undefined'.`
+                  )
+                );
               }
             }
           );
@@ -86,24 +90,29 @@ export class QueueData {
     });
   }
 
-  public async Update(mediaId: number, nextEpisode: number) {
+  public static async Update(mediaId: number, nextEpisode: number) {
     return new Promise(async (resolve, reject) => {
-      const oldQueue = await this.All.find(x => x.MediaId === mediaId);
+      const oldQueue = this.All.find(x => x.MediaId === mediaId);
       Query.Execute(
         this.DataHelper.QueueUpdate(mediaId, nextEpisode),
         async () => {
-          await this.GetQueue(mediaId)
+          this.GetQueue(mediaId)
             .then(async q => {
-              await ArrayHelper.remove(this.All, oldQueue, async () => {
-                await this.Queues.push(q);
-                await this.MediaData.LoadFromApi().then(async () => {
-                  await this.MediaData.GetMediaList.forEach(async m => {
-                    await this.UserData.All.forEach(async user => {
-                      const queueJob = new QueueJob(user, m, q);
-                      await queueJob.StartQueue();
+              ArrayHelper.remove(this.All, oldQueue, async () => {
+                this.Queues.push(q);
+                MediaData.LoadFromApi()
+                  .then(async () => {
+                    MediaData.GetMediaList.forEach(async m => {
+                      UserData.All.forEach(async user => {
+                        const queueJob = new QueueJob(user, m, q);
+                        queueJob.StartQueue();
+                        QueueData.AddJob(queueJob);
+                      });
                     });
+                  })
+                  .catch((reason: Error) => {
+                    console.log(reason.message);
                   });
-                });
                 resolve();
               });
             })
@@ -115,9 +124,9 @@ export class QueueData {
     });
   }
 
-  public async Exists(mediaId: number, callback?: (exists: boolean) => void) {
+  public static async Exists(mediaId: number) {
     return new Promise<boolean>(async (resolve, reject) => {
-      const q = await this.All.find(x => x.MediaId === mediaId);
+      const q = this.All.find(x => x.MediaId === mediaId);
       if (q === null || q === undefined) {
         resolve(false);
       } else {
@@ -126,13 +135,16 @@ export class QueueData {
     });
   }
 
-  public async LogAll() {
+  public static async LogAll() {
     return new Promise(async (resolve, reject) => {
       if (this.Queues === null || this.Queues === undefined) {
         reject(new Error(`"Queues" is 'null' or 'undefined'.`));
       } else {
-        await this.Queues.forEach(q => {
+        this.Queues.forEach(q => {
           console.log(`Queue:`, q.MediaId);
+        });
+        this.QueueJobs.forEach(qj => {
+          qj.Log();
         });
         resolve();
       }

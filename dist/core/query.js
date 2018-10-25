@@ -17,21 +17,23 @@ class Query {
         });
     }
     static async Execute(sql, callback) {
-        await this.Connect()
-            .then(async (conn) => {
-            await conn.query(sql, async (err, result) => {
-                if (err !== undefined && err !== null) {
-                    await console.log(`Error 2: ${err}`);
-                    return;
-                }
-                else {
-                    await callback(result);
-                    return `OK`;
-                }
+        return new Promise((resolve, reject) => {
+            this.Connect()
+                .then(async (conn) => {
+                conn.query(sql, async (err, result) => {
+                    if (err !== undefined && err !== null) {
+                        console.log(`Error 2: ${err}`);
+                        reject(err);
+                    }
+                    else {
+                        callback(result);
+                        resolve();
+                    }
+                });
+            })
+                .catch(reason => {
+                console.log(reason);
             });
-        })
-            .catch(reason => {
-            console.log(reason);
         });
     }
 }

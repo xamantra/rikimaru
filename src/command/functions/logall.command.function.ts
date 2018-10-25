@@ -7,29 +7,20 @@ import { UserData } from "../../data/user.data";
 import { SubscriptionData } from "../../data/subscription.data";
 
 export class LogAllFunction implements ICommandFunction {
-  Execute(message?: Message, command?: ICommand, dm?: boolean): void {
+  public async Execute(message?: Message, command?: ICommand, dm?: boolean) {
     if (message.author.id === "442621672714010625") {
-      UserData.Instance.LogAll()
-        .then(() => {
-          MediaData.Instance.LogAll()
-            .then(() => {
-              QueueData.Instance.LogAll()
-                .then(() => {
-                  SubscriptionData.Instance.LogAll().catch((reason: Error) => {
-                    console.log(reason.message);
-                  });
-                })
-                .catch((reason: Error) => {
-                  console.log(reason.message);
-                });
-            })
-            .catch((reason: Error) => {
-              console.log(reason.message);
-            });
-        })
-        .catch((reason: Error) => {
-          console.log(reason.message);
-        });
+      await UserData.LogAll().catch((reason: Error) => {
+        console.log(reason.message);
+      });
+      await MediaData.LogAll().catch((reason: Error) => {
+        console.log(reason.message);
+      });
+      await QueueData.LogAll().catch((reason: Error) => {
+        console.log(reason.message);
+      });
+      await SubscriptionData.LogAll().catch((reason: Error) => {
+        console.log(reason.message);
+      });
     }
   }
 }

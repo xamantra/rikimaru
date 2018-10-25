@@ -6,24 +6,18 @@ const data_helper_1 = require("../helpers/data.helper");
 const query_1 = require("../core/query");
 const result_mysql_model_1 = require("../models/result.mysql.model");
 class UserData {
-    constructor() {
-        this.UserList = [];
-        this.DataHelper = data_helper_1.DataHelper.Instance;
-    }
-    static get Instance() {
-        return this._instance || (this._instance = new this());
-    }
-    get All() {
+    static get All() {
         return this.UserList;
     }
-    async Init() {
+    static async Init() {
         return new Promise((res, rej) => {
-            query_1.Query.Execute(this.DataHelper.UserSelectAll(), async (result) => {
-                const users = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.User);
+            query_1.Query.Execute(this.DataHelper.UserSelectAll(), result => {
+                const users = json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.User);
                 if (users !== undefined && users !== null) {
-                    await users.forEach(user => {
+                    users.forEach(user => {
                         this.UserList.push(user);
                     });
+                    console.log(`User List: ${this.UserList.length}`);
                     res();
                 }
                 else {
@@ -32,9 +26,9 @@ class UserData {
             });
         });
     }
-    async GetUser(discordId) {
-        return new Promise(async (res, rej) => {
-            const user = await this.All.find(x => x.DiscordId === discordId);
+    static async GetUser(discordId) {
+        return new Promise((res, rej) => {
+            const user = this.All.find(x => x.DiscordId === discordId);
             if (user !== null && user !== undefined) {
                 res(user);
             }
@@ -43,13 +37,13 @@ class UserData {
             }
         });
     }
-    async Insert(discordId) {
+    static async Insert(discordId) {
         return new Promise((res, rej) => {
             this.Exists(discordId).then(exists => {
                 if (exists === false) {
-                    query_1.Query.Execute(this.DataHelper.UserInsert(discordId), async (result) => {
+                    query_1.Query.Execute(this.DataHelper.UserInsert(discordId), result => {
                         try {
-                            const myRes = await json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
+                            const myRes = json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
                             if (myRes !== null &&
                                 myRes !== undefined &&
                                 myRes.InsertId !== null &&
@@ -57,7 +51,7 @@ class UserData {
                                 const user = new subscription_model_1.User();
                                 user.Id = myRes.InsertId;
                                 user.DiscordId = discordId;
-                                await this.UserList.push(user);
+                                this.UserList.push(user);
                             }
                             res(myRes.InsertId);
                         }
@@ -72,9 +66,9 @@ class UserData {
             });
         });
     }
-    async Exists(discordId) {
-        return new Promise(async (res, rej) => {
-            const u = await this.All.find(x => x.DiscordId === discordId);
+    static async Exists(discordId) {
+        return new Promise((res, rej) => {
+            const u = this.All.find(x => x.DiscordId === discordId);
             if (u === undefined || u === null) {
                 res(false);
             }
@@ -83,13 +77,13 @@ class UserData {
             }
         });
     }
-    async LogAll() {
-        return new Promise(async (res, rej) => {
+    static async LogAll() {
+        return new Promise((res, rej) => {
             if (this.All === undefined || this.All === null) {
                 rej(new Error(`"UserData.All" is 'null' or 'undefined'.`));
             }
             else {
-                await this.All.forEach(user => {
+                this.All.forEach(user => {
                     console.log(`User:`, user);
                 });
                 res();
@@ -97,5 +91,7 @@ class UserData {
         });
     }
 }
+UserData.UserList = [];
+UserData.DataHelper = data_helper_1.DataHelper.Instance;
 exports.UserData = UserData;
 //# sourceMappingURL=user.data.js.map

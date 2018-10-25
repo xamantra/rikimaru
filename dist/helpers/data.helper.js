@@ -49,6 +49,7 @@ class DataHelper {
             query_1.Query.Execute(queueTable, result => {
                 console.log(result);
             });
+            resolve();
         });
     }
     UserInsert(discordId) {

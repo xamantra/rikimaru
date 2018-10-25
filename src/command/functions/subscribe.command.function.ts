@@ -25,108 +25,73 @@ export class SubscribeFunction implements ICommandFunction {
   }
 
   private async Search(message: Message, command: ICommand, dm: boolean) {
-    const mediaData = MediaData.Instance;
-    const userData = UserData.Instance;
-    const queueData = QueueData.Instance;
-    const subsData = SubscriptionData.Instance;
-    await MediaSearch.All(command.Parameter, async (res: IMedia[]) => {
-      const ongoing = await MediaHandler.OngoingMedia(res);
-      const unreleased = await MediaHandler.UnreleasedMedia(res);
-      if (ongoing.length === 0 && unreleased.length === 0) {
-        await MediaResult.SendInfo(
-          message,
-          "There is nothing to subscribe. The anime you search might be already completed or it is not yet aired and the release date is currently unknown, or try another keyword.",
-          dm
-        );
-        return;
-      }
-      const results: IMedia[] = [];
-      const formattedResults: any[] = [];
-      await ongoing.forEach(async m => {
-        results.push(m);
-        await formattedResults.push(MediaFormatHandler.Get(m));
-      });
-      await unreleased.forEach(async m => {
-        results.push(m);
-        await formattedResults.push(MediaFormatHandler.Get(m));
-      });
-      if (results.length === 1) {
-        const discordId = message.author.id;
-        const media = results[0];
-        const title = TitleHelper.Get(results[0].title);
-        mediaData
-          .Exists(media.idMal)
-          .then(exists => {
-            if (exists === false) {
-              mediaData
-                .Insert(media.idMal, title)
-                .then(insertId => {
-                  console.log(insertId);
-                })
-                .catch((reason: Error) => {
-                  console.log(reason.message);
-                });
-            }
-          })
-          .catch((reason: Error) => {
-            console.log(reason.message);
-          });
-        userData
-          .GetUser(discordId)
-          .then(user => {
-            subsData
-              .Exists(media.idMal, user.Id)
-              .then(exists => {
-                if (exists === false) {
-                  subsData
-                    .Insert(media.idMal, user.Id)
+    UserData.Insert(message.author.id).catch((reason: Error) => {
+      console.log(reason.message);
+    });
+    MediaSearch.All(command.Parameter)
+      .then(res => {
+        const ongoing = MediaHandler.OngoingMedia(res);
+        const unreleased = MediaHandler.UnreleasedMedia(res);
+        if (ongoing.length === 0 && unreleased.length === 0) {
+          MediaResult.SendInfo(
+            message,
+            "There is nothing to subscribe. The anime you search might be already completed or it is not yet aired and the release date is currently unknown, or try another keyword.",
+            dm
+          );
+        }
+        const results: IMedia[] = [];
+        const formattedResults: any[] = [];
+        ongoing.forEach(async m => {
+          results.push(m);
+          formattedResults.push(MediaFormatHandler.Get(m));
+        });
+        unreleased.forEach(async m => {
+          results.push(m);
+          formattedResults.push(MediaFormatHandler.Get(m));
+        });
+        if (results.length === 1) {
+          const discordId = message.author.id;
+          const media = results[0];
+          const title = TitleHelper.Get(results[0].title);
+          MediaData.Insert(media.idMal, title)
+            .then(insertId => {
+              console.log(`New Media Id: "${insertId}"`);
+              UserData.GetUser(discordId)
+                .then(user => {
+                  SubscriptionData.Insert(media.idMal, user.Id, message, dm)
                     .then(() => {
                       MediaResult.SendInfo(
                         message,
                         `You are now subscribed to: ***${title}***. I will DM you when a new episode is aired!\nEnter the command: \`-mysubs\` to view your subscriptions.\nEnter the command: \`-unsub ${title}\` to unsubscribe to this anime.`,
                         dm
-                      ).then(async () => {
-                        queueData
-                          .Insert(media.idMal, media.nextAiringEpisode.next)
-                          .then(insertId => {
-                            const q = new Queue();
-                            q.Id = insertId;
-                            q.MediaId = media.idMal;
-                            q.NextEpisode = media.nextAiringEpisode.next;
-                            const queueJob = new QueueJob(user, media, q);
-                            queueJob.StartQueue();
-                          })
-                          .catch((reason: Error) => {
-                            console.log(reason.message);
-                          });
-                      });
+                      );
                     })
                     .catch((reason: Error) => {
                       console.log(reason.message);
                     });
-                } else {
-                  MediaResult.SendInfo(
-                    message,
-                    `Cool! You are already subscribed to ***${title}***.\nEnter the command \`-unsub ${title}\`  to unsubscribe to this anime.`,
-                    dm
-                  );
-                }
-              })
-              .catch((reason: Error) => {
-                console.log(reason.message);
-              });
-          })
-          .catch((reason: Error) => {
-            console.log(reason.message);
-          });
-        return;
-      } else {
-        await MediaResult.SendInfo(
+                })
+                .catch((reason: Error) => {
+                  console.log(reason.message);
+                });
+            })
+            .catch((reason: Error) => {
+              console.log(reason.message);
+            });
+        } else {
+          MediaResult.SendInfo(
+            message,
+            SearchList.Embed(command, formattedResults),
+            dm
+          );
+        }
+      })
+      .catch((reason: Error) => {
+        MediaResult.SendInfo(
           message,
-          await SearchList.Embed(command, formattedResults),
+          "There is nothing to subscribe. The anime you search might be already completed or it is not yet aired and the release date is currently unknown, or try another keyword.",
           dm
         );
-      }
-    });
+        console.log(reason.message);
+      });
   }
 }

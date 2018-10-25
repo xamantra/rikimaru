@@ -21,43 +21,39 @@ export class UnsubFunction implements ICommandFunction {
   }
 
   private async Search(message?: Message, command?: ICommand, dm?: boolean) {
-    const userData = UserData.Instance;
-    const queueData = QueueData.Instance;
-    const subsData = SubscriptionData.Instance;
     const title = command.Parameter;
     let media: IMedia[] = [];
     const discordId = message.author.id;
     const userMedia: number[] = [];
     const filteredMedia: IMedia[] = [];
     const formattedResults: any[] = [];
-    userData
-      .GetUser(discordId)
+    UserData.GetUser(discordId)
       .then(user => {
-        MediaSearch.All(command.Parameter, async (res: IMedia[]) => {
+        MediaSearch.All(command.Parameter).then(res => {
           media = res;
-          await subsData.All.forEach(async sub => {
+          SubscriptionData.All.forEach(async sub => {
             if (sub.UserId === user.Id) {
               await userMedia.push(sub.MediaId);
             }
           });
-          await media.forEach(async m => {
+          media.forEach(async m => {
             if (userMedia.includes(m.idMal)) {
               await filteredMedia.push(m);
               await formattedResults.push(MediaFormatHandler.Get(m));
             }
           });
           if (filteredMedia.length === 0) {
-            await MediaResult.SendInfo(
+            MediaResult.SendInfo(
               message,
               `Hmm..It seems that you are not subscribe to any anime that matches your keyword  ***${title}***.`,
               dm
             );
           } else if (filteredMedia.length === 1) {
-            await subsData.Delete(
+            SubscriptionData.Delete(
               filteredMedia[0].idMal,
               discordId,
               async () => {
-                await MediaResult.SendInfo(
+                MediaResult.SendInfo(
                   message,
                   `You are now unsubscribed from  ***${TitleHelper.Get(
                     filteredMedia[0].title
@@ -67,7 +63,7 @@ export class UnsubFunction implements ICommandFunction {
               }
             );
           } else {
-            await MediaResult.SendInfo(
+            MediaResult.SendInfo(
               message,
               SearchList.Embed(command, formattedResults),
               dm

@@ -1,30 +1,27 @@
 import { User } from "../models/subscription.model";
+import { MediaResult } from "./../core/media.result";
 import { JsonHelper } from "../helpers/json.helper";
 import { DataHelper } from "../helpers/data.helper";
 import { Query } from "../core/query";
 import { MySqlResult } from "../models/result.mysql.model";
+import { Message } from "discord.js";
 
 export class UserData {
-  constructor() {}
-  public static get Instance() {
-    return this._instance || (this._instance = new this());
-  }
-
-  public get All() {
+  public static get All() {
     return this.UserList;
   }
-  private static _instance: UserData;
-  private UserList: User[] = [];
-  private DataHelper = DataHelper.Instance;
+  private static UserList: User[] = [];
+  private static DataHelper = DataHelper.Instance;
 
-  public async Init() {
+  public static async Init() {
     return new Promise<void>((res, rej) => {
-      Query.Execute(this.DataHelper.UserSelectAll(), async result => {
-        const users = await JsonHelper.ArrayConvert<User>(result, User);
+      Query.Execute(this.DataHelper.UserSelectAll(), result => {
+        const users = JsonHelper.ArrayConvert<User>(result, User);
         if (users !== undefined && users !== null) {
-          await users.forEach(user => {
+          users.forEach(user => {
             this.UserList.push(user);
           });
+          console.log(`User List: ${this.UserList.length}`);
           res();
         } else {
           rej(
@@ -37,9 +34,9 @@ export class UserData {
     });
   }
 
-  public async GetUser(discordId: string) {
-    return new Promise<User>(async (res, rej) => {
-      const user = await this.All.find(x => x.DiscordId === discordId);
+  public static async GetUser(discordId: string) {
+    return new Promise<User>((res, rej) => {
+      const user = this.All.find(x => x.DiscordId === discordId);
       if (user !== null && user !== undefined) {
         res(user);
       } else {
@@ -52,13 +49,13 @@ export class UserData {
     });
   }
 
-  public async Insert(discordId: string) {
+  public static async Insert(discordId: string) {
     return new Promise<number>((res, rej) => {
       this.Exists(discordId).then(exists => {
         if (exists === false) {
-          Query.Execute(this.DataHelper.UserInsert(discordId), async result => {
+          Query.Execute(this.DataHelper.UserInsert(discordId), result => {
             try {
-              const myRes = await JsonHelper.Convert<MySqlResult>(
+              const myRes = JsonHelper.Convert<MySqlResult>(
                 result,
                 MySqlResult
               );
@@ -71,7 +68,7 @@ export class UserData {
                 const user = new User();
                 user.Id = myRes.InsertId;
                 user.DiscordId = discordId;
-                await this.UserList.push(user);
+                this.UserList.push(user);
               }
               res(myRes.InsertId);
             } catch (error) {
@@ -85,9 +82,9 @@ export class UserData {
     });
   }
 
-  public async Exists(discordId: string) {
-    return new Promise<boolean>(async (res, rej) => {
-      const u = await this.All.find(x => x.DiscordId === discordId);
+  public static async Exists(discordId: string) {
+    return new Promise<boolean>((res, rej) => {
+      const u = this.All.find(x => x.DiscordId === discordId);
       if (u === undefined || u === null) {
         res(false);
       } else {
@@ -96,12 +93,12 @@ export class UserData {
     });
   }
 
-  public async LogAll() {
-    return new Promise(async (res, rej) => {
+  public static async LogAll() {
+    return new Promise((res, rej) => {
       if (this.All === undefined || this.All === null) {
         rej(new Error(`"UserData.All" is 'null' or 'undefined'.`));
       } else {
-        await this.All.forEach(user => {
+        this.All.forEach(user => {
           console.log(`User:`, user);
         });
         res();

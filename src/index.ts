@@ -17,26 +17,24 @@ Bot.Instance.Init();
 ClientManager.Init(new Client());
 MessageHandler.Init();
 CommandManager.Init();
-DataHelper.Instance.Init().then(() => {
-  UserData.Instance.Init()
-    .then(() => {
-      MediaData.Instance.Init()
-        .then(() => {
-          QueueData.Instance.Init()
-            .then(() => {
-              SubscriptionData.Instance.Init().catch((reason: Error) => {
-                console.log(reason.message);
-              });
-            })
-            .catch((reason: Error) => {
-              console.log(reason.message);
-            });
-        })
-        .catch((reason: Error) => {
-          console.log(reason.message);
+
+class App {
+  static _instance: App;
+  public static get Instance() {
+    return this._instance || (this._instance = new this());
+  }
+
+  public Run() {
+    DataHelper.Instance.Init().then(() => {
+      UserData.Init().then(() => {
+        QueueData.Init().then(() => {
+          MediaData.Init().then(() => {
+            SubscriptionData.Init();
+          });
         });
-    })
-    .catch((reason: Error) => {
-      console.log(reason.message);
+      });
     });
-});
+  }
+}
+
+App.Instance.Run();

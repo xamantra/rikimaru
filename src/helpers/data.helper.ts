@@ -49,6 +49,7 @@ export class DataHelper {
       Query.Execute(queueTable, result => {
         console.log(result);
       });
+      resolve();
     });
   }
 

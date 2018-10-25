@@ -4,14 +4,20 @@ const anilist_1 = require("./anilist");
 const json_helper_1 = require("../helpers/json.helper");
 const root_model_1 = require("../models/root.model");
 class MediaSearch {
-    static All(title, callback) {
-        const result = anilist_1.Anilist.MediaQuery(title);
-        let media = [];
-        let called = false;
-        result.then(async (root) => {
-            media = await json_helper_1.JsonHelper.Converter.deserialize(root, root_model_1.Root).Data
-                .Page.media;
-            !called ? await callback(media) : (called = true);
+    static async All(title) {
+        return new Promise((resolve, reject) => {
+            const result = anilist_1.Anilist.MediaQuery(title);
+            let media = [];
+            result.then(async (root) => {
+                media = json_helper_1.JsonHelper.Converter.deserialize(root, root_model_1.Root).Data.Page
+                    .media;
+                if (media !== undefined && media !== null && media.length > 0) {
+                    resolve(media);
+                }
+                else {
+                    reject(new Error(`"(JsonHelper.Converter.deserialize(root, Root) as Root).Data.Page.media" is 'null' or 'undefined'.`));
+                }
+            });
         });
     }
 }

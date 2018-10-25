@@ -17,14 +17,14 @@ class QueueJob {
         this.media = media;
         this.queue = queue;
     }
-    async StartQueue() {
-        const user = await client_1.ClientManager.GetClient.users.get(this.user.DiscordId);
+    StartQueue() {
+        const user = client_1.ClientManager.GetClient.users.get(this.user.DiscordId);
         const mediaId = this.queue.MediaId;
         const nextEpisode = this.queue.NextEpisode;
         const media = this.media;
         let job = null;
         if (nextEpisode === media.nextAiringEpisode.next) {
-            const date = await moment_1.unix(media.nextAiringEpisode.timeUntilAiring).toDate();
+            const date = moment_1.unix(media.nextAiringEpisode.timeUntilAiring).toDate();
             job = schedule.scheduleJob(date, () => {
                 user.send(`***${media.title}***  *Episode: ${nextEpisode}*  has been aired!`);
                 job = null;
@@ -34,7 +34,7 @@ class QueueJob {
             return;
         }
         if (nextEpisode < media.nextAiringEpisode.next) {
-            await queue_data_1.QueueData.Instance.Update(mediaId, media.nextAiringEpisode.next)
+            queue_data_1.QueueData.Update(mediaId, media.nextAiringEpisode.next)
                 .then(() => {
                 user.send(`***${media.title}***  *Episode: ${nextEpisode}*  has been aired!`);
                 if (job !== null) {
@@ -48,6 +48,9 @@ class QueueJob {
             });
             return;
         }
+    }
+    Log() {
+        console.log(`QueueJob >>> User: ${this.user.DiscordId}, Media: ${this.media.title} Episode ${this.media.nextAiringEpisode.next}, Queue: ${this.queue.Id} Episode: ${this.queue.NextEpisode}`);
     }
 }
 exports.QueueJob = QueueJob;

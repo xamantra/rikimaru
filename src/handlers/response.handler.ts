@@ -25,10 +25,10 @@ export class ResponseHandler {
               cmd.DevOnly === true &&
               message.author.id === "442621672714010625"
             ) {
-              await cmd.Function.Execute(message, command, cmd.DMResponse);
+              cmd.Function.Execute(message, command, cmd.DMResponse);
               return;
             }
-            await cmd.Function.Execute(message, command, cmd.DMResponse);
+            cmd.Function.Execute(message, command, cmd.DMResponse);
             return;
           }
         }
