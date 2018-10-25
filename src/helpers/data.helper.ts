@@ -36,7 +36,9 @@ export class DataHelper {
       host: Config.GetMySqlHost,
       user: Config.GetMySqlUsername,
       password: Config.GetMySqlPassword,
-      database: Config.GetMySqlDatabase
+      database: Config.GetMySqlDatabase,
+      timeout: 10000,
+      connectTimeout: 60000
     });
     return conn;
   }

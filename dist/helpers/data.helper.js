@@ -34,7 +34,9 @@ class DataHelper {
             host: config_1.Config.GetMySqlHost,
             user: config_1.Config.GetMySqlUsername,
             password: config_1.Config.GetMySqlPassword,
-            database: config_1.Config.GetMySqlDatabase
+            database: config_1.Config.GetMySqlDatabase,
+            timeout: 10000,
+            connectTimeout: 60000
         });
         return conn;
     }
