@@ -4,7 +4,7 @@ const config_1 = require("../core/config");
 const discord_js_1 = require("discord.js");
 class MessageHelper {
     static IsCommand(config, message) {
-        return message.content.indexOf(config_1.Config.GetPrefix) === 0;
+        return message.content.indexOf(config_1.Config.COMMAND_PREFIX) === 0;
     }
     static IsDMChannel(message) {
         return message.channel instanceof discord_js_1.DMChannel || message.guild === null;
@@ -22,7 +22,7 @@ class MessageHelper {
     }
     static GetArgs(config, message) {
         return message.content
-            .slice(config_1.Config.GetPrefix.length)
+            .slice(config_1.Config.COMMAND_PREFIX.length)
             .trim()
             .split(/ +/g);
     }

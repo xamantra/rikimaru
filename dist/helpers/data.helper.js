@@ -22,12 +22,13 @@ class DataHelper {
     }
     static get Conn() {
         const conn = mysql.createConnection({
-            host: config_1.Config.GetMySqlHost,
-            user: config_1.Config.GetMySqlUsername,
-            password: config_1.Config.GetMySqlPassword,
-            database: config_1.Config.GetMySqlDatabase,
-            timeout: 10000,
-            connectTimeout: 60000
+            host: config_1.Config.MYSQL_HOST,
+            port: config_1.Config.MYSQL_PORT,
+            user: config_1.Config.MYSQL_USERNAME,
+            password: config_1.Config.MYSQL_PASSWORD,
+            database: config_1.Config.MYSQL_DATABASE,
+            timeout: config_1.Config.MYSQL_TIMEOUT,
+            connectTimeout: config_1.Config.MYSQL_CONNECTION_TIMEOUT
         });
         return conn;
     }

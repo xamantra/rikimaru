@@ -3,7 +3,7 @@ import { Message, DMChannel } from "discord.js";
 
 export class MessageHelper {
   public static IsCommand(config: Config, message: Message) {
-    return message.content.indexOf(Config.GetPrefix) === 0;
+    return message.content.indexOf(Config.COMMAND_PREFIX) === 0;
   }
 
   public static IsDMChannel(message: Message) {
@@ -25,7 +25,7 @@ export class MessageHelper {
 
   public static GetArgs(config: Config, message: Message) {
     return message.content
-      .slice(Config.GetPrefix.length)
+      .slice(Config.COMMAND_PREFIX.length)
       .trim()
       .split(/ +/g);
   }

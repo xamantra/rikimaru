@@ -5,7 +5,7 @@ export class ClientManager {
   private static Client: Client;
 
   public static async Init(botClient: Client) {
-    botClient.login(Config.GetToken);
+    botClient.login(Config.BOT_TOKEN);
     const client = botClient;
     this.Client = botClient;
 

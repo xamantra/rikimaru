@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_1 = require("./config");
 class ClientManager {
     static async Init(botClient) {
-        botClient.login(config_1.Config.GetToken);
+        botClient.login(config_1.Config.BOT_TOKEN);
         const client = botClient;
         this.Client = botClient;
         client.on("guildCreate", guild => {

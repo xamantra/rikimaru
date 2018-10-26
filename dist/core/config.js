@@ -1,50 +1,50 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Config {
-    static get GetFtpUser() {
-        return this.FtpUsername;
+    static get BOT_TOKEN() {
+        return this.BotToken;
     }
-    static get GetFtpHost() {
-        return this.FtpHost;
+    static get COMMAND_PREFIX() {
+        return this.CommandPrefix;
     }
-    static get GetFtpPass() {
-        return this.FtpPassword;
-    }
-    static get SqlLite() {
-        return this.SqlLiteDatabase;
-    }
-    static get GetToken() {
-        return this.Token;
-    }
-    static get GetPrefix() {
-        return this.Prefix;
-    }
-    static get GetMySqlHost() {
+    static get MYSQL_HOST() {
         return this.MysqlHost;
     }
-    static get GetMySqlUsername() {
+    static get MYSQL_PORT() {
+        return this.MysqlPort;
+    }
+    static get MYSQL_USERNAME() {
         return this.MysqlUsername;
     }
-    static get GetMySqlPassword() {
+    static get MYSQL_PASSWORD() {
         return this.MysqlPassword;
     }
-    static get GetMySqlDatabase() {
+    static get MYSQL_DATABASE() {
         return this.MysqlDatabase;
     }
+    static get MYSQL_TIMEOUT() {
+        return this.MysqlTimeout;
+    }
+    static get MYSQL_CONNECTION_TIMEOUT() {
+        return this.MysqlConnectionTimeout;
+    }
 }
-Config.Token = process.env.botToken || require("../extras/env").ConfigVariables.token;
-Config.Prefix = process.env.commandPrefix ||
-    require("../extras/env").ConfigVariables.prefix;
-Config.MysqlHost = process.env.mysqlURL || require("../extras/env").ConfigVariables.mysqlURL;
-Config.MysqlUsername = process.env.mysqlUsername ||
-    require("../extras/env").ConfigVariables.mysqlUsername;
-Config.MysqlPassword = process.env.mysqlPassword ||
-    require("../extras/env").ConfigVariables.mysqlPassword;
-Config.MysqlDatabase = process.env.mysqlDatabase ||
-    require("../extras/env").ConfigVariables.mysqlDatabase;
-Config.SqlLiteDatabase = process.env.sqlLiteDatabase || "rikimaru.db";
-Config.FtpHost = process.env.ftpHost || "localhost:2020";
-Config.FtpUsername = process.env.ftpUsername || "xamantra";
-Config.FtpPassword = process.env.ftpPassword || "";
+Config.BotToken = process.env.BOT_TOKEN || require("../extras/env").ConfigVariables.BOT_TOKEN;
+Config.CommandPrefix = process.env.COMMAND_PREFIX ||
+    require("../extras/env").ConfigVariables.COMMAND_PREFIX;
+Config.MysqlHost = process.env.MYSQL_HOST ||
+    require("../extras/env").ConfigVariables.MYSQL_HOST;
+Config.MysqlPort = process.env.MYSQL_PORT ||
+    require("../extras/env").ConfigVariables.MYSQL_PORT;
+Config.MysqlUsername = process.env.MYSQL_USERNAME ||
+    require("../extras/env").ConfigVariables.MYSQL_USERNAME;
+Config.MysqlPassword = process.env.MYSQL_PASSWORD ||
+    require("../extras/env").ConfigVariables.MYSQL_PASSWORD;
+Config.MysqlDatabase = process.env.MYSQL_DATABASE ||
+    require("../extras/env").ConfigVariables.MYSQL_DATABASE;
+Config.MysqlTimeout = process.env.MYSQL_TIMEOUT ||
+    require("../extras/env").ConfigVariables.MYSQL_TIMEOUT;
+Config.MysqlConnectionTimeout = process.env.MYSQL_CONNECTION_TIMEOUT ||
+    require("../extras/env").ConfigVariables.MYSQL_CONNECTION_TIMEOUT;
 exports.Config = Config;
 //# sourceMappingURL=config.js.map

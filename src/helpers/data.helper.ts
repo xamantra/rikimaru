@@ -11,12 +11,13 @@ export class DataHelper {
 
   public static get Conn() {
     const conn = mysql.createConnection({
-      host: Config.GetMySqlHost,
-      user: Config.GetMySqlUsername,
-      password: Config.GetMySqlPassword,
-      database: Config.GetMySqlDatabase,
-      timeout: 10000,
-      connectTimeout: 60000
+      host: Config.MYSQL_HOST,
+      port: Config.MYSQL_PORT,
+      user: Config.MYSQL_USERNAME,
+      password: Config.MYSQL_PASSWORD,
+      database: Config.MYSQL_DATABASE,
+      timeout: Config.MYSQL_TIMEOUT,
+      connectTimeout: Config.MYSQL_CONNECTION_TIMEOUT
     });
     return conn;
   }
