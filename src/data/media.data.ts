@@ -165,10 +165,15 @@ export class MediaData {
   public static async LogAll() {
     return new Promise(async (res, rej) => {
       if (this.LocalList.length === this.MediaList.length) {
+        let iteration = 1;
         this.LocalList.forEach(m => {
           console.log(m);
+          if (iteration === this.LocalList.length) {
+            res();
+          } else {
+            iteration++;
+          }
         });
-        res();
       } else {
         rej(new Error(`"LocalList" and "Media List" is not yet synchronize.`));
       }
