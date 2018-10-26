@@ -6,6 +6,7 @@ export class BotCommand {
   public Name: string;
   public Description: string;
   public ParameterRequired: boolean;
+  public MentionRequired: boolean;
   public DevOnly = false;
   public Function: ICommandFunction;
   public DMResponse = false;
@@ -15,6 +16,7 @@ export class BotCommand {
     name: string,
     description: string,
     requireParameter: boolean,
+    requireMention: boolean,
     private responseType: Response,
     commandFunction: ICommandFunction,
     example?: ICommandExample,
@@ -23,6 +25,7 @@ export class BotCommand {
     this.Name = name;
     this.Description = description;
     this.ParameterRequired = requireParameter;
+    this.MentionRequired = requireMention;
     this.Function = commandFunction;
     this.Example = example;
     this.DevOnly = devOnly;

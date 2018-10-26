@@ -7,6 +7,7 @@ const json_helper_1 = require("./../helpers/json.helper");
 const query_1 = require("./../core/query");
 const data_helper_1 = require("../helpers/data.helper");
 const array_helper_1 = require("../helpers/array.helper");
+const subscription_data_1 = require("./subscription.data");
 class QueueData {
     static get All() {
         return this.Queues;
@@ -88,12 +89,19 @@ class QueueData {
         return new Promise(async (resolve, reject) => {
             query_1.Query.Execute(this.DataHelper.QueueUpdate(media.idMal, media.nextAiringEpisode.next)).then(() => {
                 this.Init().then(() => {
-                    this.GetQueue(media.idMal).then(q => {
-                        const qj = new queue_job_model_1.QueueJob(user, media, q);
-                        this.AddJob(qj).then(() => {
-                            this.RemoveJob(queueJob);
-                            resolve();
-                        });
+                    subscription_data_1.SubscriptionData.Exists(media.idMal, user.Id).then(exists => {
+                        if (exists === true) {
+                            this.GetQueue(media.idMal).then(q => {
+                                const qj = new queue_job_model_1.QueueJob(user, media, q);
+                                this.AddJob(qj).then(() => {
+                                    this.RemoveJob(queueJob);
+                                    resolve();
+                                });
+                            });
+                        }
+                        else {
+                            reject(`User ${user.DiscordId} is not subscribe to Media ${media.idMal}`);
+                        }
                     });
                 });
             });

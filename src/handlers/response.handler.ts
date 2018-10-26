@@ -15,7 +15,14 @@ export class ResponseHandler {
       if (cmd.Name === command.Name) {
         const parameter = command.Parameter;
         const paramRequired = cmd.ParameterRequired;
-        if (parameter.length === 0 && paramRequired) {
+        if (
+          cmd.MentionRequired &&
+          message.mentions !== null &&
+          message.mentions !== undefined
+        ) {
+          cmd.Function.Execute(message, command, cmd.DMResponse);
+          return;
+        } else if (parameter.length === 0 && paramRequired) {
           this.SendRescue(message, cmd.DMResponse, cmd, command);
         } else if (parameter.length > 0 && !paramRequired) {
           this.SendRescue(message, cmd.DMResponse, cmd, command);

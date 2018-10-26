@@ -5,7 +5,7 @@ import {
   when,
   dmwhen,
   subscribe,
-  mysubs,
+  viewsubs,
   ping,
   dmping,
   logall,
@@ -24,7 +24,7 @@ export class CommandManager {
     cmds.push(when);
     cmds.push(dmwhen);
     cmds.push(subscribe);
-    cmds.push(mysubs);
+    cmds.push(viewsubs);
     cmds.push(dmmysubs);
     cmds.push(unsub);
     cmds.push(ping);

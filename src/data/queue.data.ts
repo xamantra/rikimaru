@@ -6,6 +6,7 @@ import { Query } from "./../core/query";
 import { DataHelper } from "../helpers/data.helper";
 import { ArrayHelper } from "../helpers/array.helper";
 import { IMedia } from "../interfaces/page.interface";
+import { SubscriptionData } from "./subscription.data";
 
 export class QueueData {
   public static get All() {
@@ -113,12 +114,22 @@ export class QueueData {
         this.DataHelper.QueueUpdate(media.idMal, media.nextAiringEpisode.next)
       ).then(() => {
         this.Init().then(() => {
-          this.GetQueue(media.idMal).then(q => {
-            const qj = new QueueJob(user, media, q);
-            this.AddJob(qj).then(() => {
-              this.RemoveJob(queueJob);
-              resolve();
-            });
+          SubscriptionData.Exists(media.idMal, user.Id).then(exists => {
+            if (exists === true) {
+              this.GetQueue(media.idMal).then(q => {
+                const qj = new QueueJob(user, media, q);
+                this.AddJob(qj).then(() => {
+                  this.RemoveJob(queueJob);
+                  resolve();
+                });
+              });
+            } else {
+              reject(
+                `User ${user.DiscordId} is not subscribe to Media ${
+                  media.idMal
+                }`
+              );
+            }
           });
         });
       });

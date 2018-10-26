@@ -69,10 +69,10 @@ class QueueJob {
         }
         queue_data_1.QueueData.Update(this.user, this.media, this)
             .then(() => {
-            console.log(`Removing Queue: ${this.media.idMal}`);
+            console.log(`Removed Queue: ${this.media.idMal}`);
         })
-            .catch((reason) => {
-            console.log(reason.message);
+            .catch(reason => {
+            console.log(reason);
         });
     }
     Embed(media, episode) {

@@ -77,8 +77,14 @@ export class MediaData {
                       x => x.MediaId === $m.idMal
                     );
                     UserData.All.forEach(user => {
-                      const queueJob = new QueueJob(user, $m, queue);
-                      QueueData.AddJob(queueJob);
+                      SubscriptionData.Exists($m.idMal, user.Id).then(
+                        exists => {
+                          if (exists) {
+                            const queueJob = new QueueJob(user, $m, queue);
+                            QueueData.AddJob(queueJob);
+                          }
+                        }
+                      );
                     });
                   })
                   .catch(() => {
@@ -86,8 +92,14 @@ export class MediaData {
                       x => x.MediaId === $m.idMal
                     );
                     UserData.All.forEach(user => {
-                      const queueJob = new QueueJob(user, $m, queue);
-                      QueueData.AddJob(queueJob);
+                      SubscriptionData.Exists($m.idMal, user.Id).then(
+                        exists => {
+                          if (exists) {
+                            const queueJob = new QueueJob(user, $m, queue);
+                            QueueData.AddJob(queueJob);
+                          }
+                        }
+                      );
                     });
                     console.log(`No need to add. Already exists.`);
                   });

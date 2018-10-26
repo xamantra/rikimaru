@@ -62,15 +62,23 @@ class MediaData {
                                 .then(insertId => {
                                 const queue = queue_data_1.QueueData.All.find(x => x.MediaId === $m.idMal);
                                 user_data_1.UserData.All.forEach(user => {
-                                    const queueJob = new queue_job_model_1.QueueJob(user, $m, queue);
-                                    queue_data_1.QueueData.AddJob(queueJob);
+                                    subscription_data_1.SubscriptionData.Exists($m.idMal, user.Id).then(exists => {
+                                        if (exists) {
+                                            const queueJob = new queue_job_model_1.QueueJob(user, $m, queue);
+                                            queue_data_1.QueueData.AddJob(queueJob);
+                                        }
+                                    });
                                 });
                             })
                                 .catch(() => {
                                 const queue = queue_data_1.QueueData.All.find(x => x.MediaId === $m.idMal);
                                 user_data_1.UserData.All.forEach(user => {
-                                    const queueJob = new queue_job_model_1.QueueJob(user, $m, queue);
-                                    queue_data_1.QueueData.AddJob(queueJob);
+                                    subscription_data_1.SubscriptionData.Exists($m.idMal, user.Id).then(exists => {
+                                        if (exists) {
+                                            const queueJob = new queue_job_model_1.QueueJob(user, $m, queue);
+                                            queue_data_1.QueueData.AddJob(queueJob);
+                                        }
+                                    });
                                 });
                                 console.log(`No need to add. Already exists.`);
                             });
