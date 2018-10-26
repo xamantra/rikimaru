@@ -70,7 +70,7 @@ export class DataHelper {
   public MediaInsert(mal_id: number, title: string) {
     return `INSERT IGNORE INTO ${
       this.media
-    } (mal_id, title) VALUES(${mal_id}, '${title}')`;
+    } (mal_id, title) VALUES(${mal_id}, "${title}")`;
   }
 
   public MediaDelete(mediaId: number) {

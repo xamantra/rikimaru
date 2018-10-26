@@ -56,7 +56,7 @@ export const sub = new BotCommand(
 );
 export const dmsub = new BotCommand(
   "dmsub",
-  "Subscribe to an ongoing anime. You can provide keyword or anime title.",
+  "Just similar with* ***--sub.**",
   true,
   false,
   Response.DirectMessage,

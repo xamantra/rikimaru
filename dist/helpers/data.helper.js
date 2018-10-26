@@ -62,7 +62,7 @@ class DataHelper {
         return `SELECT * FROM ${this.user}`;
     }
     MediaInsert(mal_id, title) {
-        return `INSERT IGNORE INTO ${this.media} (mal_id, title) VALUES(${mal_id}, '${title}')`;
+        return `INSERT IGNORE INTO ${this.media} (mal_id, title) VALUES(${mal_id}, "${title}")`;
     }
     MediaDelete(mediaId) {
         return `DELETE FROM ${this.media} WHERE mal_id=${mediaId}`;
