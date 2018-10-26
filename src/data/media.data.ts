@@ -151,7 +151,8 @@ export class MediaData {
     return new Promise(async (res, rej) => {
       if (this.MediaList.length > 0) {
         this.MediaList.forEach(m => {
-          console.log(`Media:`, m.idMal, m.title);
+          const title = TitleHelper.Get(m.title);
+          console.log(`Media: "${title}"`);
         });
         res();
       } else {

@@ -10,6 +10,7 @@ const subscription_model_1 = require("../models/subscription.model");
 const result_mysql_model_1 = require("../models/result.mysql.model");
 const array_helper_1 = require("../helpers/array.helper");
 const user_data_1 = require("./user.data");
+const title_helper_1 = require("../helpers/title.helper");
 const queue_data_1 = require("./queue.data");
 class MediaData {
     static get GetLocalList() {
@@ -125,7 +126,8 @@ class MediaData {
         return new Promise(async (res, rej) => {
             if (this.MediaList.length > 0) {
                 this.MediaList.forEach(m => {
-                    console.log(`Media:`, m.idMal, m.title);
+                    const title = title_helper_1.TitleHelper.Get(m.title);
+                    console.log(`Media: "${title}"`);
                 });
                 res();
             }
