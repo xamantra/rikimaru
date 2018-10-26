@@ -1,50 +1,35 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const env_1 = require("../extras/env");
 class Config {
     static get BOT_TOKEN() {
-        return this.BotToken;
+        return process.env.BOT_TOKEN || env_1.env.BOT_TOKEN;
     }
     static get COMMAND_PREFIX() {
-        return this.CommandPrefix;
+        return process.env.COMMAND_PREFIX || env_1.env.COMMAND_PREFIX;
     }
     static get MYSQL_HOST() {
-        return this.MysqlHost;
+        return process.env.MYSQL_HOST || env_1.env.MYSQL_HOST;
     }
     static get MYSQL_PORT() {
-        return this.MysqlPort;
+        return Number(process.env.MYSQL_PORT) || env_1.env.MYSQL_PORT;
     }
     static get MYSQL_USERNAME() {
-        return this.MysqlUsername;
+        return process.env.MYSQL_USERNAME || env_1.env.MYSQL_USERNAME;
     }
     static get MYSQL_PASSWORD() {
-        return this.MysqlPassword;
+        return process.env.MYSQL_PASSWORD || env_1.env.MYSQL_PASSWORD;
     }
     static get MYSQL_DATABASE() {
-        return this.MysqlDatabase;
+        return process.env.MYSQL_DATABASE || env_1.env.MYSQL_DATABASE;
     }
     static get MYSQL_TIMEOUT() {
-        return this.MysqlTimeout;
+        return Number(process.env.MYSQL_TIMEOUT) || env_1.env.MYSQL_TIMEOUT;
     }
     static get MYSQL_CONNECTION_TIMEOUT() {
-        return this.MysqlConnectionTimeout;
+        return (Number(process.env.MYSQL_CONNECTION_TIMEOUT) ||
+            env_1.env.MYSQL_CONNECTION_TIMEOUT);
     }
 }
-Config.BotToken = process.env.BOT_TOKEN || require("../extras/env").ConfigVariables.BOT_TOKEN;
-Config.CommandPrefix = process.env.COMMAND_PREFIX ||
-    require("../extras/env").ConfigVariables.COMMAND_PREFIX;
-Config.MysqlHost = process.env.MYSQL_HOST ||
-    require("../extras/env").ConfigVariables.MYSQL_HOST;
-Config.MysqlPort = process.env.MYSQL_PORT ||
-    require("../extras/env").ConfigVariables.MYSQL_PORT;
-Config.MysqlUsername = process.env.MYSQL_USERNAME ||
-    require("../extras/env").ConfigVariables.MYSQL_USERNAME;
-Config.MysqlPassword = process.env.MYSQL_PASSWORD ||
-    require("../extras/env").ConfigVariables.MYSQL_PASSWORD;
-Config.MysqlDatabase = process.env.MYSQL_DATABASE ||
-    require("../extras/env").ConfigVariables.MYSQL_DATABASE;
-Config.MysqlTimeout = process.env.MYSQL_TIMEOUT ||
-    require("../extras/env").ConfigVariables.MYSQL_TIMEOUT;
-Config.MysqlConnectionTimeout = process.env.MYSQL_CONNECTION_TIMEOUT ||
-    require("../extras/env").ConfigVariables.MYSQL_CONNECTION_TIMEOUT;
 exports.Config = Config;
 //# sourceMappingURL=config.js.map
