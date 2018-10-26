@@ -50,7 +50,7 @@ export const sub = new BotCommand(
   "Subscribe to an ongoing anime. You can provide keyword or anime title.",
   true,
   false,
-  Response.DirectMessage,
+  Response.ChannelReply,
   subscribeFunction,
   mediaExample
 );
@@ -59,7 +59,7 @@ export const dmsub = new BotCommand(
   "Subscribe to an ongoing anime. You can provide keyword or anime title.",
   true,
   false,
-  Response.ChannelReply,
+  Response.DirectMessage,
   subscribeFunction,
   mediaExample
 );
