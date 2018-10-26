@@ -7,6 +7,7 @@ import { DataHelper } from "../helpers/data.helper";
 import { ArrayHelper } from "../helpers/array.helper";
 import { IMedia } from "../interfaces/page.interface";
 import { SubscriptionData } from "./subscription.data";
+import { UserData } from "./user.data";
 
 export class QueueData {
   public static get All() {
@@ -19,7 +20,7 @@ export class QueueData {
   private static DataHelper = DataHelper.Instance;
 
   public static async Init() {
-    this.Queues = [];
+    this.Clear();
     return new Promise((resolve, reject) => {
       Query.Execute(this.DataHelper.QueueSelectAll(), async result => {
         const queues = JsonHelper.ArrayConvert<Queue>(result, Queue);
@@ -39,6 +40,13 @@ export class QueueData {
     });
   }
 
+  private static Clear() {
+    this.Queues = [];
+    this.QueueJobs = [];
+    this.Queues.length = 0;
+    this.QueueJobs.length = 0;
+  }
+
   public static async GetQueue(mediaId: number) {
     return new Promise<Queue>(async (resolve, reject) => {
       const q = this.All.find(x => x.MediaId === mediaId);
@@ -51,6 +59,19 @@ export class QueueData {
           )
         );
       }
+    });
+  }
+
+  public static SetQueue($m: IMedia) {
+    QueueData.GetQueue($m.idMal).then(queue => {
+      UserData.All.forEach(user => {
+        SubscriptionData.Exists($m.idMal, user.Id).then(exists => {
+          if (exists === true) {
+            const queueJob = new QueueJob(user, $m, queue);
+            QueueData.AddJob(queueJob);
+          }
+        });
+      });
     });
   }
 

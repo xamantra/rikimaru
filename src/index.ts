@@ -28,7 +28,9 @@ class App {
                     .then(() => {
                       Scheduler.LoopJob(0, 15, 0, () => {
                         console.log(`(15m) Refreshing Data....`);
-                        MediaData.LoadFromApi();
+                        QueueData.Init().then(() => {
+                          MediaData.LoadFromApi();
+                        });
                       });
                     })
                     .catch((err: Error) => {

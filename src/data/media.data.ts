@@ -73,34 +73,10 @@ export class MediaData {
               if (MediaStatus.Ongoing($m) || MediaStatus.NotYetAired($m)) {
                 QueueData.Insert($m.idMal, $m.nextAiringEpisode.next)
                   .then(insertId => {
-                    const queue = QueueData.All.find(
-                      x => x.MediaId === $m.idMal
-                    );
-                    UserData.All.forEach(user => {
-                      SubscriptionData.Exists($m.idMal, user.Id).then(
-                        exists => {
-                          if (exists) {
-                            const queueJob = new QueueJob(user, $m, queue);
-                            QueueData.AddJob(queueJob);
-                          }
-                        }
-                      );
-                    });
+                    QueueData.SetQueue($m);
                   })
                   .catch(() => {
-                    const queue = QueueData.All.find(
-                      x => x.MediaId === $m.idMal
-                    );
-                    UserData.All.forEach(user => {
-                      SubscriptionData.Exists($m.idMal, user.Id).then(
-                        exists => {
-                          if (exists) {
-                            const queueJob = new QueueJob(user, $m, queue);
-                            QueueData.AddJob(queueJob);
-                          }
-                        }
-                      );
-                    });
+                    QueueData.SetQueue($m);
                     console.log(`No need to add. Already exists.`);
                   });
                 console.log(`Pushed: ${lm.Title}`);

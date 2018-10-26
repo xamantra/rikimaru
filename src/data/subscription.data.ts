@@ -6,7 +6,6 @@ import { JsonHelper } from "../helpers/json.helper";
 import { DataHelper } from "../helpers/data.helper";
 import { MySqlResult } from "../models/result.mysql.model";
 import { ArrayHelper } from "../helpers/array.helper";
-import { Message } from "discord.js";
 
 export class SubscriptionData {
   public static get All() {

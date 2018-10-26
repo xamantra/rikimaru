@@ -8,12 +8,13 @@ const query_1 = require("./../core/query");
 const data_helper_1 = require("../helpers/data.helper");
 const array_helper_1 = require("../helpers/array.helper");
 const subscription_data_1 = require("./subscription.data");
+const user_data_1 = require("./user.data");
 class QueueData {
     static get All() {
         return this.Queues;
     }
     static async Init() {
-        this.Queues = [];
+        this.Clear();
         return new Promise((resolve, reject) => {
             query_1.Query.Execute(this.DataHelper.QueueSelectAll(), async (result) => {
                 const queues = json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Queue);
@@ -29,6 +30,12 @@ class QueueData {
             });
         });
     }
+    static Clear() {
+        this.Queues = [];
+        this.QueueJobs = [];
+        this.Queues.length = 0;
+        this.QueueJobs.length = 0;
+    }
     static async GetQueue(mediaId) {
         return new Promise(async (resolve, reject) => {
             const q = this.All.find(x => x.MediaId === mediaId);
@@ -38,6 +45,18 @@ class QueueData {
             else {
                 reject(new Error(`"this.All.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`));
             }
+        });
+    }
+    static SetQueue($m) {
+        QueueData.GetQueue($m.idMal).then(queue => {
+            user_data_1.UserData.All.forEach(user => {
+                subscription_data_1.SubscriptionData.Exists($m.idMal, user.Id).then(exists => {
+                    if (exists === true) {
+                        const queueJob = new queue_job_model_1.QueueJob(user, $m, queue);
+                        QueueData.AddJob(queueJob);
+                    }
+                });
+            });
         });
     }
     static get GetJobs() {
