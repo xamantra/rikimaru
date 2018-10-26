@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const page_model_1 = require("./page.model");
 const json2typescript_1 = require("json2typescript");
 const media_model_1 = require("./media.model");
-let Data = class Data {
+let DataPage = class DataPage {
     constructor() {
         this.Page = undefined;
     }
@@ -20,12 +20,12 @@ let Data = class Data {
 __decorate([
     json2typescript_1.JsonProperty("Page", page_model_1.Page),
     __metadata("design:type", Object)
-], Data.prototype, "Page", void 0);
-Data = __decorate([
+], DataPage.prototype, "Page", void 0);
+DataPage = __decorate([
     json2typescript_1.JsonObject("data")
-], Data);
-exports.Data = Data;
-let MData = class MData {
+], DataPage);
+exports.DataPage = DataPage;
+let DataMedia = class DataMedia {
     constructor() {
         this.Media = undefined;
     }
@@ -33,9 +33,9 @@ let MData = class MData {
 __decorate([
     json2typescript_1.JsonProperty("Media", media_model_1.Media),
     __metadata("design:type", Object)
-], MData.prototype, "Media", void 0);
-MData = __decorate([
+], DataMedia.prototype, "Media", void 0);
+DataMedia = __decorate([
     json2typescript_1.JsonObject("data")
-], MData);
-exports.MData = MData;
+], DataMedia);
+exports.DataMedia = DataMedia;
 //# sourceMappingURL=data.model.js.map

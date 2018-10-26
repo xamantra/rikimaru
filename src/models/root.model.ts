@@ -1,9 +1,16 @@
 import { JsonObject, JsonProperty } from "json2typescript";
-import { Data } from "./data.model";
-import { IData } from "../interfaces/data.interface";
+import { DataPage, DataMedia } from "./data.model";
+import { IDataPage, IDataMedia } from "../interfaces/data.interface";
+import { Media } from "./media.model";
 
 @JsonObject("root")
-export class Root {
-  @JsonProperty("data", Data)
-  public Data: IData = undefined;
+export class RootPage {
+  @JsonProperty("data", DataPage)
+  public DataPage: IDataPage = undefined;
+}
+
+@JsonObject("root")
+export class RootMedia {
+  @JsonProperty("data", DataMedia)
+  public DataMedia: IDataMedia = undefined;
 }

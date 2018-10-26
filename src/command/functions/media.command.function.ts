@@ -6,7 +6,7 @@ import { ICommand } from "../../interfaces/command.interface";
 import { MediaResult } from "../../core/media.result";
 import { MediaHandler } from "../../handlers/media.handler";
 import { ResponseMessageHelper } from "../../helpers/response.message.helper";
-import { Root } from "../../models/root.model";
+import { RootPage } from "../../models/root.model";
 import { Message } from "discord.js";
 import { IMedia } from "../../interfaces/page.interface";
 import { Color } from "../../core/colors";

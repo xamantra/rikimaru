@@ -1,4 +1,8 @@
-import { IPage } from "./page.interface";
-export interface IData {
+import { IPage, IMedia } from "./page.interface";
+export interface IDataPage {
   Page: IPage;
+}
+
+export interface IDataMedia {
+  Media: IMedia;
 }

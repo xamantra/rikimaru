@@ -14,4 +14,8 @@ export class SearchVariables {
       type: type
     };
   }
+
+  public static Media(id: number) {
+    return { id: id };
+  }
 }

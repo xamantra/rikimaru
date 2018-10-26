@@ -8,7 +8,7 @@ const json_helper_1 = require("./../helpers/json.helper");
 const query_1 = require("./../core/query");
 const data_helper_1 = require("../helpers/data.helper");
 const array_helper_1 = require("../helpers/array.helper");
-const media_data_1 = require("./media.data");
+const subscription_data_1 = require("./subscription.data");
 class QueueData {
     static get All() {
         return this.Queues;
@@ -49,9 +49,9 @@ class QueueData {
     }
     static RemoveJob(queueJob) {
         array_helper_1.ArrayHelper.remove(this.QueueJobs, queueJob, () => {
+            console.log(`Queue Job: "${queueJob}"`);
             queueJob.Cancel();
             queueJob = null;
-            console.log(`Queue Job: "${queueJob}"`);
         });
     }
     static async Insert(mediaId, next_episode) {
@@ -81,31 +81,27 @@ class QueueData {
             });
         });
     }
-    static async Update(mediaId, nextEpisode) {
+    static async Update(media) {
         return new Promise(async (resolve, reject) => {
-            const oldQueue = this.All.find(x => x.MediaId === mediaId);
-            query_1.Query.Execute(this.DataHelper.QueueUpdate(mediaId, nextEpisode), async () => {
-                this.GetQueue(mediaId)
+            const oldQueue = this.All.find(x => x.MediaId === media.idMal);
+            query_1.Query.Execute(this.DataHelper.QueueUpdate(media.idMal, media.nextAiringEpisode.next), async () => {
+                this.GetQueue(media.idMal)
                     .then(async (q) => {
                     array_helper_1.ArrayHelper.remove(this.All, oldQueue, async () => {
                         this.Queues.push(q);
-                        media_data_1.MediaData.LoadFromApi()
-                            .then(async () => {
-                            media_data_1.MediaData.GetMediaList.forEach(async (m) => {
-                                user_data_1.UserData.All.forEach(async (user) => {
-                                    const queueJob = new queue_job_model_1.QueueJob(user, m, q);
+                        user_data_1.UserData.All.forEach(async (user) => {
+                            subscription_data_1.SubscriptionData.Exists(media.idMal, user.Id).then(exists => {
+                                if (exists === true) {
+                                    const queueJob = new queue_job_model_1.QueueJob(user, media, q);
                                     QueueData.AddJob(queueJob);
-                                });
+                                }
                             });
-                        })
-                            .catch((reason) => {
-                            console.log(reason.message);
                         });
                         resolve();
                     });
                 })
                     .catch((reason) => {
-                    console.log(reason.message);
+                    reject(reason);
                 });
             });
         });

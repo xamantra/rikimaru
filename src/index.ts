@@ -1,5 +1,5 @@
 import { QueueData } from "./data/queue.data";
-import { Client } from "discord.js";
+import { Client, Collection, User } from "discord.js";
 import { Bot } from "./core/bot";
 import { SubscriptionData } from "./data/subscription.data";
 import { MediaData } from "./data/media.data";
@@ -11,14 +11,6 @@ import { MessageHandler } from "./handlers/message.handler";
 import { OpenShiftUptimer } from "./others/openshift";
 import { Scheduler } from "./core/scheduler";
 
-OpenShiftUptimer.Log(true);
-OpenShiftUptimer.AutoConfigure();
-
-Bot.Instance.Init();
-ClientManager.Init(new Client());
-MessageHandler.Init();
-CommandManager.Init();
-
 class App {
   static _instance: App;
   public static get Instance() {
@@ -27,19 +19,43 @@ class App {
 
   public Run() {
     DataHelper.Instance.Init().then(() => {
-      UserData.Init().then(() => {
-        QueueData.Init().then(() => {
-          MediaData.Init().then(() => {
-            SubscriptionData.Init().then(() => {
-              Scheduler.LoopJob(0, 15, 0, () => {
-                MediaData.LoadFromApi();
-              });
+      UserData.Init()
+        .then(() => {
+          QueueData.Init()
+            .then(() => {
+              MediaData.Init()
+                .then(() => {
+                  SubscriptionData.Init()
+                    .then(() => {
+                      Scheduler.LoopJob(0, 15, 0, () => {
+                        MediaData.LoadFromApi();
+                      });
+                    })
+                    .catch((err: Error) => {
+                      console.log(err.message);
+                    });
+                })
+                .catch((err: Error) => {
+                  console.log(err.message);
+                });
+            })
+            .catch((err: Error) => {
+              console.log(err.message);
             });
-          });
+        })
+        .catch((err: Error) => {
+          console.log(err.message);
         });
-      });
     });
   }
 }
+
+OpenShiftUptimer.Log(true);
+OpenShiftUptimer.AutoConfigure();
+
+Bot.Instance.Init();
+ClientManager.Init(new Client());
+MessageHandler.Init();
+CommandManager.Init();
 
 App.Instance.Run();

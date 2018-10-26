@@ -68,38 +68,36 @@ export class MediaData {
         rej(new Error(`"locals = this.LocalList" is 'null' or 'undefined'`));
       } else {
         locals.forEach(async lm => {
-          MediaSearch.All(lm.Title).then(media => {
-            media.forEach($m => {
-              if (this.MediaList.length === locals.length) {
-                res();
-                return;
-              }
-              if (MediaStatus.Ongoing($m) || MediaStatus.NotYetAired($m)) {
-                QueueData.Insert($m.idMal, $m.nextAiringEpisode.next)
-                  .then(insertId => {
-                    const queue = new Queue();
-                    queue.Id = insertId;
-                    queue.MediaId = $m.idMal;
-                    queue.NextEpisode = $m.nextAiringEpisode.next;
-                    UserData.All.forEach(user => {
-                      const queueJob = new QueueJob(user, $m, queue);
-                      QueueData.AddJob(queueJob);
+          if (this.MediaList.length === locals.length) {
+            res();
+          } else {
+            MediaSearch.Find(lm.MalId)
+              .then($m => {
+                if (MediaStatus.Ongoing($m) || MediaStatus.NotYetAired($m)) {
+                  QueueData.Insert($m.idMal, $m.nextAiringEpisode.next)
+                    .then(insertId => {
+                      const queue = new Queue();
+                      queue.Id = insertId;
+                      queue.MediaId = $m.idMal;
+                      queue.NextEpisode = $m.nextAiringEpisode.next;
+                      UserData.All.forEach(user => {
+                        const queueJob = new QueueJob(user, $m, queue);
+                        QueueData.AddJob(queueJob);
+                      });
+                    })
+                    .catch(() => {
+                      const queue = QueueData.All.find(
+                        x => x.MediaId === $m.idMal
+                      );
+                      UserData.All.forEach(user => {
+                        const queueJob = new QueueJob(user, $m, queue);
+                        QueueData.AddJob(queueJob);
+                      });
+                      console.log(`No need to add. Already exists.`);
                     });
-                  })
-                  .catch(() => {
-                    const queue = QueueData.All.find(
-                      x => x.MediaId === $m.idMal
-                    );
-                    UserData.All.forEach(user => {
-                      const queueJob = new QueueJob(user, $m, queue);
-                      QueueData.AddJob(queueJob);
-                    });
-                    console.log(`No need to add. Already exists.`);
-                  });
-                console.log(`Pushed: ${lm.Title}`);
-                this.MediaList.push($m);
-              } else {
-                if ($m.idMal === lm.MalId) {
+                  console.log(`Pushed: ${lm.Title}`);
+                  this.MediaList.push($m);
+                } else {
                   ArrayHelper.remove(this.LocalList, lm, () => {
                     Query.Execute(this.DataHelper.MediaDelete($m.id), () => {
                       userDatas.forEach(x => {
@@ -119,9 +117,11 @@ export class MediaData {
                     res();
                   }
                 }
-              }
-            });
-          });
+              })
+              .catch(err => {
+                console.log(err);
+              });
+          }
         });
       }
     });

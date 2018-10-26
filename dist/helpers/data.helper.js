@@ -95,7 +95,7 @@ class DataHelper {
         return `SELECT * FROM ${this.queue}`;
     }
     QueueUpdate(mediaId, next_episode) {
-        return `UPDATE FROM ${this.queue} WHERE id=${mediaId} SET next_episode=${next_episode}`;
+        return `UPDATE ${this.queue} SET next_episode=${next_episode} WHERE media_id=${mediaId}`;
     }
 }
 exports.DataHelper = DataHelper;

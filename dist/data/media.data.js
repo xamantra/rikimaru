@@ -55,12 +55,12 @@ class MediaData {
             }
             else {
                 locals.forEach(async (lm) => {
-                    media_search_1.MediaSearch.All(lm.Title).then(media => {
-                        media.forEach($m => {
-                            if (this.MediaList.length === locals.length) {
-                                res();
-                                return;
-                            }
+                    if (this.MediaList.length === locals.length) {
+                        res();
+                    }
+                    else {
+                        media_search_1.MediaSearch.Find(lm.MalId)
+                            .then($m => {
                             if (media_status_1.MediaStatus.Ongoing($m) || media_status_1.MediaStatus.NotYetAired($m)) {
                                 queue_data_1.QueueData.Insert($m.idMal, $m.nextAiringEpisode.next)
                                     .then(insertId => {
@@ -85,23 +85,24 @@ class MediaData {
                                 this.MediaList.push($m);
                             }
                             else {
-                                if ($m.idMal === lm.MalId) {
-                                    array_helper_1.ArrayHelper.remove(this.LocalList, lm, () => {
-                                        query_1.Query.Execute(this.DataHelper.MediaDelete($m.id), () => {
-                                            userDatas.forEach(x => {
-                                                subscription_data_1.SubscriptionData.Delete($m.idMal, x.DiscordId).then(() => {
-                                                    console.log(`All subscription of "${$m.title}" has been remove`);
-                                                });
+                                array_helper_1.ArrayHelper.remove(this.LocalList, lm, () => {
+                                    query_1.Query.Execute(this.DataHelper.MediaDelete($m.id), () => {
+                                        userDatas.forEach(x => {
+                                            subscription_data_1.SubscriptionData.Delete($m.idMal, x.DiscordId).then(() => {
+                                                console.log(`All subscription of "${$m.title}" has been remove`);
                                             });
                                         });
                                     });
-                                    if (this.MediaList.length === locals.length) {
-                                        res();
-                                    }
+                                });
+                                if (this.MediaList.length === locals.length) {
+                                    res();
                                 }
                             }
+                        })
+                            .catch(err => {
+                            console.log(err);
                         });
-                    });
+                    }
                 });
             }
         });

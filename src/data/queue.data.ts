@@ -7,6 +7,8 @@ import { Query } from "./../core/query";
 import { DataHelper } from "../helpers/data.helper";
 import { ArrayHelper } from "../helpers/array.helper";
 import { MediaData } from "./media.data";
+import { IMedia } from "../interfaces/page.interface";
+import { SubscriptionData } from "./subscription.data";
 
 export class QueueData {
   public static get All() {
@@ -64,9 +66,9 @@ export class QueueData {
 
   public static RemoveJob(queueJob: QueueJob) {
     ArrayHelper.remove(this.QueueJobs, queueJob, () => {
+      console.log(`Queue Job: "${queueJob}"`);
       queueJob.Cancel();
       queueJob = null;
-      console.log(`Queue Job: "${queueJob}"`);
     });
   }
 
@@ -103,33 +105,29 @@ export class QueueData {
     });
   }
 
-  public static async Update(mediaId: number, nextEpisode: number) {
+  public static async Update(media: IMedia) {
     return new Promise(async (resolve, reject) => {
-      const oldQueue = this.All.find(x => x.MediaId === mediaId);
+      const oldQueue = this.All.find(x => x.MediaId === media.idMal);
       Query.Execute(
-        this.DataHelper.QueueUpdate(mediaId, nextEpisode),
+        this.DataHelper.QueueUpdate(media.idMal, media.nextAiringEpisode.next),
         async () => {
-          this.GetQueue(mediaId)
+          this.GetQueue(media.idMal)
             .then(async q => {
               ArrayHelper.remove(this.All, oldQueue, async () => {
                 this.Queues.push(q);
-                MediaData.LoadFromApi()
-                  .then(async () => {
-                    MediaData.GetMediaList.forEach(async m => {
-                      UserData.All.forEach(async user => {
-                        const queueJob = new QueueJob(user, m, q);
-                        QueueData.AddJob(queueJob);
-                      });
-                    });
-                  })
-                  .catch((reason: Error) => {
-                    console.log(reason.message);
+                UserData.All.forEach(async user => {
+                  SubscriptionData.Exists(media.idMal, user.Id).then(exists => {
+                    if (exists === true) {
+                      const queueJob = new QueueJob(user, media, q);
+                      QueueData.AddJob(queueJob);
+                    }
                   });
+                });
                 resolve();
               });
             })
             .catch((reason: Error) => {
-              console.log(reason.message);
+              reject(reason);
             });
         }
       );

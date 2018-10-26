@@ -9,6 +9,9 @@ class SearchVariables {
             type: type
         };
     }
+    static Media(id) {
+        return { id: id };
+    }
 }
 exports.SearchVariables = SearchVariables;
 //# sourceMappingURL=search.variables.js.map

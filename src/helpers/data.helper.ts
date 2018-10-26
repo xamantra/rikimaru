@@ -122,8 +122,8 @@ export class DataHelper {
   }
 
   public QueueUpdate(mediaId: number, next_episode: number) {
-    return `UPDATE FROM ${
+    return `UPDATE ${
       this.queue
-    } WHERE id=${mediaId} SET next_episode=${next_episode}`;
+    } SET next_episode=${next_episode} WHERE media_id=${mediaId}`;
   }
 }

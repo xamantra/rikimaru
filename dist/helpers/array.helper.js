@@ -6,7 +6,10 @@ class ArrayHelper {
         let called = false;
         if (index !== -1) {
             array.splice(index, 1);
-            !called && callback !== null ? callback() : (called = true);
+            if (!called && callback !== null) {
+                called = true;
+                callback();
+            }
         }
     }
 }
