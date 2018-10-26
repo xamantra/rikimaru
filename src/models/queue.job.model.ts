@@ -100,7 +100,7 @@ export class QueueJob {
         description: `**Episode ${episode}** *has been aired!*`,
         fields: [
           { name: `To unsubscribe, type:`, value: `\`-unsub ${t}\`` },
-          { name: `To view all subscription, type:`, value: `\`-mysubs\`` }
+          { name: `To view all subscription, type:`, value: `\`-viewsubs\`` }
         ],
         timestamp: new Date(),
         footer: {
