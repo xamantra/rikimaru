@@ -56,7 +56,7 @@ export const sub = new BotCommand(
 );
 export const dmsub = new BotCommand(
   "dmsub",
-  "Just similar with* ***--sub.**",
+  "Just similar with* ***-sub.**",
   true,
   false,
   Response.DirectMessage,
