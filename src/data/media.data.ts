@@ -30,6 +30,7 @@ export class MediaData {
 
   public static async Init() {
     return new Promise(async (res, rej) => {
+      this.Clear();
       Query.Execute(this.DataHelper.MediaSelectAll(), async result => {
         const media = JsonHelper.ArrayConvert<Media>(result, Media);
         if (media === undefined || media === null) {
@@ -53,6 +54,20 @@ export class MediaData {
             console.log(reason.message);
           });
       });
+    });
+  }
+
+  public static async Clear() {
+    return new Promise((resolve, reject) => {
+      this.LocalList.length = 0;
+      this.MediaList.length = 0;
+      this.LocalList.splice(0, this.LocalList.length);
+      this.MediaList.splice(0, this.MediaList.length);
+      if (this.LocalList.length === 0 && this.MediaList.length === 0) {
+        resolve();
+      } else {
+        reject(new Error(`The arrays were not cleared.`));
+      }
     });
   }
 

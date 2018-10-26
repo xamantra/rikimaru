@@ -28,7 +28,7 @@ class App {
                             scheduler_1.Scheduler.LoopJob(0, 1, 0, () => {
                                 console.log(`Refreshing Data....`);
                                 queue_data_1.QueueData.Init().then(() => {
-                                    media_data_1.MediaData.LoadFromApi();
+                                    media_data_1.MediaData.Init();
                                 });
                             });
                         })

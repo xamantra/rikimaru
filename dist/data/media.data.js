@@ -21,6 +21,7 @@ class MediaData {
     }
     static async Init() {
         return new Promise(async (res, rej) => {
+            this.Clear();
             query_1.Query.Execute(this.DataHelper.MediaSelectAll(), async (result) => {
                 const media = json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Media);
                 if (media === undefined || media === null) {
@@ -41,6 +42,20 @@ class MediaData {
                     console.log(reason.message);
                 });
             });
+        });
+    }
+    static async Clear() {
+        return new Promise((resolve, reject) => {
+            this.LocalList.length = 0;
+            this.MediaList.length = 0;
+            this.LocalList.splice(0, this.LocalList.length);
+            this.MediaList.splice(0, this.MediaList.length);
+            if (this.LocalList.length === 0 && this.MediaList.length === 0) {
+                resolve();
+            }
+            else {
+                reject(new Error(`The arrays were not cleared.`));
+            }
         });
     }
     static async LoadFromApi() {
