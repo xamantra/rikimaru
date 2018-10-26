@@ -1,6 +1,5 @@
 import { QueueData } from "./data/queue.data";
-import { Client, Collection, User } from "discord.js";
-import { Bot } from "./core/bot";
+import { Client } from "discord.js";
 import { SubscriptionData } from "./data/subscription.data";
 import { MediaData } from "./data/media.data";
 import { UserData } from "./data/user.data";
@@ -53,7 +52,6 @@ class App {
 OpenShiftUptimer.Log(true);
 OpenShiftUptimer.AutoConfigure();
 
-Bot.Instance.Init();
 ClientManager.Init(new Client());
 MessageHandler.Init();
 CommandManager.Init();
