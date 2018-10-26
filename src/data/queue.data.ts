@@ -102,7 +102,7 @@ export class QueueData {
   public static RemoveJob(queueJob: QueueJob) {
     ArrayHelper.remove(this.QueueJobs, queueJob, () => {
       console.log(`Queue Job: "${queueJob}"`);
-      queueJob.Cancel();
+      // queueJob.Cancel();
       queueJob = null;
     });
   }

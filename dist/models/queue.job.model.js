@@ -8,7 +8,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const queue_data_1 = require("./../data/queue.data");
-const schedule = __importStar(require("node-schedule"));
 const moment_1 = __importStar(require("moment"));
 const client_1 = require("../core/client");
 const title_helper_1 = require("../helpers/title.helper");
@@ -27,7 +26,7 @@ class QueueJob {
             // const title = TitleHelper.Get(media.title);
             if (nextEpisode === media.nextAiringEpisode.next) {
                 this.JobDate = moment_1.unix(media.nextAiringEpisode.airingAt).toDate();
-                this.Job = schedule.scheduleJob(`"${media.title}"`, this.JobDate, () => {
+                setTimeout(() => {
                     user
                         .send(this.Embed(media, media.nextAiringEpisode.next))
                         .then(() => {
@@ -36,7 +35,21 @@ class QueueJob {
                         .catch((error) => {
                         console.log(error.message);
                     });
-                });
+                }, media.nextAiringEpisode.timeUntilAiring * 1000);
+                // this.Job = schedule.scheduleJob(
+                //   `"${media.title}"`,
+                //   this.JobDate,
+                //   () => {
+                //     user
+                //       .send(this.Embed(media, media.nextAiringEpisode.next))
+                //       .then(() => {
+                //         this.Update();
+                //       })
+                //       .catch((error: Error) => {
+                //         console.log(error.message);
+                //       });
+                //   }
+                // );
             }
             else if (nextEpisode < media.nextAiringEpisode.next) {
                 console.log(this.queue, media);
@@ -54,20 +67,20 @@ class QueueJob {
             }
         });
     }
-    Cancel() {
-        if (this.Job !== undefined && this.Job !== null) {
-            this.Job.cancel(false);
-            this.Job = null;
-        }
-    }
+    // public Cancel() {
+    //   if (this.Job !== undefined && this.Job !== null) {
+    //     this.Job.cancel(false);
+    //     this.Job = null;
+    //   }
+    // }
     Log() {
         const countdown = moment_1.default(this.JobDate).toNow(true);
-        console.log(`QueueJob >>> User: ${this.user.DiscordId}, Media: ${title_helper_1.TitleHelper.Get(this.media.title)} Episode ${this.media.nextAiringEpisode.next}, Queue: ${this.queue.Id} Episode: ${this.queue.NextEpisode}, JobDate: ${this.JobDate}, TimeRemaining: ${countdown}`);
+        console.log(this.user, this.JobDate, title_helper_1.TitleHelper.Get(this.media.title), countdown);
     }
     Update() {
-        if (this.Job !== undefined && this.Job !== null) {
-            this.Job.cancel(false);
-        }
+        // if (this.Job !== undefined && this.Job !== null) {
+        //   this.Job.cancel(false);
+        // }
         media_search_1.MediaSearch.Find(this.media.idMal).then(media => {
             queue_data_1.QueueData.Update(this.user, media, this)
                 .then(() => {

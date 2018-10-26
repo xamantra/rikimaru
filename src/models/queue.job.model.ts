@@ -1,7 +1,6 @@
 import { Queue, User } from "./subscription.model";
 import { QueueData } from "./../data/queue.data";
 import { Job } from "node-schedule";
-import * as schedule from "node-schedule";
 import moment, { unix } from "moment";
 import { ClientManager } from "../core/client";
 import { IMedia } from "../interfaces/page.interface";
@@ -21,20 +20,30 @@ export class QueueJob {
       // const title = TitleHelper.Get(media.title);
       if (nextEpisode === media.nextAiringEpisode.next) {
         this.JobDate = unix(media.nextAiringEpisode.airingAt).toDate();
-        this.Job = schedule.scheduleJob(
-          `"${media.title}"`,
-          this.JobDate,
-          () => {
-            user
-              .send(this.Embed(media, media.nextAiringEpisode.next))
-              .then(() => {
-                this.Update();
-              })
-              .catch((error: Error) => {
-                console.log(error.message);
-              });
-          }
-        );
+        setTimeout(() => {
+          user
+            .send(this.Embed(media, media.nextAiringEpisode.next))
+            .then(() => {
+              this.Update();
+            })
+            .catch((error: Error) => {
+              console.log(error.message);
+            });
+        }, media.nextAiringEpisode.timeUntilAiring * 1000);
+        // this.Job = schedule.scheduleJob(
+        //   `"${media.title}"`,
+        //   this.JobDate,
+        //   () => {
+        //     user
+        //       .send(this.Embed(media, media.nextAiringEpisode.next))
+        //       .then(() => {
+        //         this.Update();
+        //       })
+        //       .catch((error: Error) => {
+        //         console.log(error.message);
+        //       });
+        //   }
+        // );
       } else if (nextEpisode < media.nextAiringEpisode.next) {
         console.log(this.queue, media);
         user
@@ -51,30 +60,27 @@ export class QueueJob {
     });
   }
 
-  public Cancel() {
-    if (this.Job !== undefined && this.Job !== null) {
-      this.Job.cancel(false);
-      this.Job = null;
-    }
-  }
+  // public Cancel() {
+  //   if (this.Job !== undefined && this.Job !== null) {
+  //     this.Job.cancel(false);
+  //     this.Job = null;
+  //   }
+  // }
 
   public Log() {
     const countdown = moment(this.JobDate).toNow(true);
     console.log(
-      `QueueJob >>> User: ${this.user.DiscordId}, Media: ${TitleHelper.Get(
-        this.media.title
-      )} Episode ${this.media.nextAiringEpisode.next}, Queue: ${
-        this.queue.Id
-      } Episode: ${this.queue.NextEpisode}, JobDate: ${
-        this.JobDate
-      }, TimeRemaining: ${countdown}`
+      this.user,
+      this.JobDate,
+      TitleHelper.Get(this.media.title),
+      countdown
     );
   }
 
   private Update() {
-    if (this.Job !== undefined && this.Job !== null) {
-      this.Job.cancel(false);
-    }
+    // if (this.Job !== undefined && this.Job !== null) {
+    //   this.Job.cancel(false);
+    // }
     MediaSearch.Find(this.media.idMal).then(media => {
       QueueData.Update(this.user, media, this)
         .then(() => {
