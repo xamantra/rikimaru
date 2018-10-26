@@ -69,12 +69,8 @@ export class QueueJob {
 
   public Log() {
     const countdown = moment(this.JobDate).toNow(true);
-    console.log(
-      this.user,
-      this.JobDate,
-      TitleHelper.Get(this.media.title),
-      countdown
-    );
+    const title = TitleHelper.Get(this.media.title);
+    console.log(`"${this.user.DiscordId}": ${title}  in  ${countdown}`);
   }
 
   private Update() {
