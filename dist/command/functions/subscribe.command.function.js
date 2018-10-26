@@ -47,7 +47,7 @@ class SubscribeFunction {
                     console.log(`Media ID: ${insertId}`);
                     user_data_1.UserData.GetUser(discordId)
                         .then(user => {
-                        subscription_data_1.SubscriptionData.Insert(media.idMal, user.Id, message, dm)
+                        subscription_data_1.SubscriptionData.Insert(media.idMal, user.Id)
                             .then(() => {
                             queue_data_1.QueueData.GetQueue(media.idMal).then(queue => {
                                 const queueJob = new queue_job_model_1.QueueJob(user, media, queue);

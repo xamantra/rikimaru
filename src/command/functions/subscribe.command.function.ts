@@ -60,7 +60,7 @@ export class SubscribeFunction implements ICommandFunction {
               console.log(`Media ID: ${insertId}`);
               UserData.GetUser(discordId)
                 .then(user => {
-                  SubscriptionData.Insert(media.idMal, user.Id, message, dm)
+                  SubscriptionData.Insert(media.idMal, user.Id)
                     .then(() => {
                       QueueData.GetQueue(media.idMal).then(queue => {
                         const queueJob = new QueueJob(user, media, queue);
