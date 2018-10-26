@@ -1,5 +1,5 @@
 import { BotCommand } from "./bot.command";
-import { Response } from "../core/enums";
+import { Response } from "./../core/enums";
 import {
   helpFunction,
   whenAnimeFunction,
@@ -61,6 +61,13 @@ export const dmmysubs = new BotCommand(
   "Just similar with ***-mysubs***.",
   false,
   Response.DirectMessage,
+  viewSubsFunction
+);
+export const subsof = new BotCommand(
+  "subsof",
+  "View other member's subscriptions.",
+  true,
+  Response.ChannelReply,
   viewSubsFunction
 );
 export const unsub = new BotCommand(

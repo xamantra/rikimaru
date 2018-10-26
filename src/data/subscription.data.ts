@@ -1,4 +1,5 @@
 import { Query } from "./../core/query";
+import { ClientManager } from "./../core/client";
 import { MediaData } from "./media.data";
 import { QueueData } from "./queue.data";
 import { UserData } from "./user.data";
@@ -10,22 +11,25 @@ import { ArrayHelper } from "../helpers/array.helper";
 import { Message } from "discord.js";
 import { MediaResult } from "../core/media.result";
 import { title } from "process";
+import { Color } from "../core/colors";
+import { IMedia } from "../interfaces/page.interface";
+import { TitleHelper } from "../helpers/title.helper";
 
 export class SubscriptionData {
   public static get All() {
     return this.SubscriptionList;
   }
-  static _instance: SubscriptionData;
   private static DataHelper = DataHelper.Instance;
   private static SubscriptionList: Subscription[] = [];
 
   public static async Init() {
     return new Promise((resolve, reject) => {
-      Query.Execute(this.DataHelper.SubsSelectAll(), async result => {
+      Query.Execute(this.DataHelper.SubsSelectAll(), result => {
         const subs = JsonHelper.ArrayConvert<Subscription>(
           result,
           Subscription
         );
+        console.log(subs);
         if (subs === null || subs === undefined) {
           reject(
             new Error(
@@ -33,12 +37,8 @@ export class SubscriptionData {
             )
           );
         } else {
-          subs.forEach(async sub => {
+          subs.forEach(sub => {
             this.SubscriptionList.push(sub);
-            const queue = QueueData.All.find(q => q.MediaId === sub.MediaId);
-            const media = MediaData.GetMediaList.find(
-              x => x.idMal === queue.MediaId
-            );
           });
           resolve();
         }
@@ -46,20 +46,15 @@ export class SubscriptionData {
     });
   }
 
-  public static async GetSub(mediaId: number, userId: number) {
-    return new Promise<Subscription>(async (resolve, reject) => {
-      const sub = this.All.find(
-        x => x.MediaId === mediaId && x.UserId === userId
-      );
-      if (sub !== null && sub !== undefined) {
-        resolve(sub);
-      } else {
-        reject(
-          new Error(
-            `"this.All.find(x => x.MediaId === mediaId && x.UserId === userId)" is 'null' or 'undefined'.`
-          )
-        );
-      }
+  public static async GetUserSubs(userId: number) {
+    return new Promise<Subscription[]>((resolve, reject) => {
+      const subs: Subscription[] = [];
+      this.SubscriptionList.forEach(sub => {
+        if (sub.UserId === userId) {
+          subs.push(sub);
+        }
+      });
+      resolve(subs);
     });
   }
 
@@ -70,60 +65,43 @@ export class SubscriptionData {
     dm?: boolean
   ) {
     return new Promise((resolve, reject) => {
-      this.Exists(mediaId, userId)
-        .then(async exists => {
-          if (exists === false) {
-            const user = UserData.All.find(x => x.Id === userId);
-            if (user === null || user === undefined) {
+      this.Exists(mediaId, userId).then(async exists => {
+        if (exists === false) {
+          const user = UserData.All.find(x => x.Id === userId);
+          if (user === null || user === undefined) {
+            reject(
+              `"this.UserData.All.find(x => x.Id === userId)" is 'null' or 'undefined'.`
+            );
+          } else {
+            const queue = QueueData.All.find(x => x.MediaId === mediaId);
+            if (queue === null || queue === undefined) {
               reject(
-                new Error(
-                  `"this.UserData.All.find(x => x.Id === userId)" is 'null' or 'undefined'.`
-                )
+                `"this.QueueData.All.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`
               );
             } else {
-              const queue = QueueData.All.find(x => x.MediaId === mediaId);
-              if (queue === null || queue === undefined) {
-                reject(
-                  new Error(
-                    `"this.QueueData.All.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`
-                  )
-                );
-              } else {
-                Query.Execute(
-                  this.DataHelper.SubsInsert(mediaId, userId),
-                  async result => {
-                    const res = JsonHelper.Convert<MySqlResult>(
-                      result,
-                      MySqlResult
-                    );
-                    if (res.InsertId !== undefined && res.InsertId !== null) {
-                      const sub = new Subscription();
-                      sub.Id = res.InsertId;
-                      sub.MediaId = mediaId;
-                      sub.UserId = userId;
-                      this.SubscriptionList.push(sub);
-                    }
-                    resolve();
+              Query.Execute(
+                this.DataHelper.SubsInsert(mediaId, userId),
+                async result => {
+                  const res = JsonHelper.Convert<MySqlResult>(
+                    result,
+                    MySqlResult
+                  );
+                  if (res.InsertId !== undefined && res.InsertId !== null) {
+                    const sub = new Subscription();
+                    sub.Id = res.InsertId;
+                    sub.MediaId = mediaId;
+                    sub.UserId = userId;
+                    this.SubscriptionList.push(sub);
                   }
-                );
-              }
+                  resolve();
+                }
+              );
             }
-          } else {
-            MediaResult.SendInfo(
-              message,
-              `Cool! You are already subscribed to ***${title}***.\nEnter the command \`-unsub ${title}\`  to unsubscribe to this anime.`,
-              dm
-            );
-            reject(
-              new Error(
-                `Subscription with MediaId: "${mediaId}" and UserId: "${userId}" already exists!`
-              )
-            );
           }
-        })
-        .catch((reason: Error) => {
-          console.log(reason.message);
-        });
+        } else {
+          reject("EXISTS");
+        }
+      });
     });
   }
 
@@ -177,7 +155,11 @@ export class SubscriptionData {
 
   public static async LogAll() {
     return new Promise((resolve, reject) => {
-      if (this.All === null || this.All === undefined) {
+      if (
+        this.All === null ||
+        this.All === undefined ||
+        this.All.length === 0
+      ) {
         reject(new Error(`"this.All" is 'null' or 'undefined'.`));
       } else {
         this.All.forEach(sub => {

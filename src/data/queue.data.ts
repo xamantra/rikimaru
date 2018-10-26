@@ -1,14 +1,11 @@
-import { Queue } from "./../models/subscription.model";
+import { Queue, User } from "./../models/subscription.model";
 import { QueueJob } from "./../models/queue.job.model";
-import { UserData } from "./user.data";
 import { MySqlResult } from "./../models/result.mysql.model";
 import { JsonHelper } from "./../helpers/json.helper";
 import { Query } from "./../core/query";
 import { DataHelper } from "../helpers/data.helper";
 import { ArrayHelper } from "../helpers/array.helper";
-import { MediaData } from "./media.data";
 import { IMedia } from "../interfaces/page.interface";
-import { SubscriptionData } from "./subscription.data";
 
 export class QueueData {
   public static get All() {
@@ -21,6 +18,7 @@ export class QueueData {
   private static DataHelper = DataHelper.Instance;
 
   public static async Init() {
+    this.Queues = [];
     return new Promise((resolve, reject) => {
       Query.Execute(this.DataHelper.QueueSelectAll(), async result => {
         const queues = JsonHelper.ArrayConvert<Queue>(result, Queue);
@@ -60,8 +58,11 @@ export class QueueData {
   }
 
   public static AddJob(queueJob: QueueJob) {
-    queueJob.StartQueue();
-    this.QueueJobs.push(queueJob);
+    return new Promise((resolve, reject) => {
+      queueJob.StartQueue();
+      this.QueueJobs.push(queueJob);
+      resolve();
+    });
   }
 
   public static RemoveJob(queueJob: QueueJob) {
@@ -99,38 +100,28 @@ export class QueueData {
             }
           );
         } else {
-          reject(new Error(`Queue with mediaId: "${mediaId}" already exists.`));
+          const queue = this.Queues.find(x => x.MediaId === mediaId);
+          resolve(queue.Id);
         }
       });
     });
   }
 
-  public static async Update(media: IMedia) {
+  public static async Update(user: User, media: IMedia, queueJob: QueueJob) {
     return new Promise(async (resolve, reject) => {
-      const oldQueue = this.All.find(x => x.MediaId === media.idMal);
       Query.Execute(
-        this.DataHelper.QueueUpdate(media.idMal, media.nextAiringEpisode.next),
-        async () => {
-          this.GetQueue(media.idMal)
-            .then(async q => {
-              ArrayHelper.remove(this.All, oldQueue, async () => {
-                this.Queues.push(q);
-                UserData.All.forEach(async user => {
-                  SubscriptionData.Exists(media.idMal, user.Id).then(exists => {
-                    if (exists === true) {
-                      const queueJob = new QueueJob(user, media, q);
-                      QueueData.AddJob(queueJob);
-                    }
-                  });
-                });
-                resolve();
-              });
-            })
-            .catch((reason: Error) => {
-              reject(reason);
+        this.DataHelper.QueueUpdate(media.idMal, media.nextAiringEpisode.next)
+      ).then(() => {
+        this.Init().then(() => {
+          this.GetQueue(media.idMal).then(q => {
+            const qj = new QueueJob(user, media, q);
+            this.AddJob(qj).then(() => {
+              this.RemoveJob(queueJob);
+              resolve();
             });
-        }
-      );
+          });
+        });
+      });
     });
   }
 

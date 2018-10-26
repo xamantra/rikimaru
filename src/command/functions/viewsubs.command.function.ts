@@ -38,44 +38,44 @@ export class ViewSubsFunction implements ICommandFunction {
       const mediaList = MediaData.GetMediaList;
       UserData.GetUser(discordId)
         .then(user => {
-          SubscriptionData.All.forEach(async sub => {
-            if (user.Id === sub.UserId) {
+          SubscriptionData.GetUserSubs(user.Id).then(subs => {
+            subs.forEach(sub => {
               const media = mediaList.find(x => x.idMal === sub.MediaId);
               mediaSubs.push(media);
-            }
-          });
-          mediaSubs.forEach(async media => {
-            const title = TitleHelper.Get(media.title);
-            const episode = media.nextAiringEpisode.next;
-            const countdown = await TimeHelper.Countdown(
-              media.nextAiringEpisode.timeUntilAiring
-            );
-            await list.push({
-              name: `\n***${title}***`,
-              value: `\`Episode ${episode} : ${countdown}\` - [MAL Link](https://myanimelist.net/anime/${
-                media.idMal
-              }/)\n-------------------------------------------------------------------`
             });
-          });
-          const embed = {
-            embed: {
-              color: Color.Random,
-              thumbnail: {
-                url: message.author.avatarURL
-              },
-              title: `***${message.author.username}***'s *Subscription List*`,
-              description: `**${
-                mediaSubs.length
-              } Anime**\n\nPlease Note: *The airing schedule for the streaming site you are using might be different.*\n`,
-              fields: list,
-              timestamp: new Date(),
-              footer: {
-                icon_url: client.user.avatarURL,
-                text: "© Rikimaru"
+            mediaSubs.forEach(async media => {
+              const title = TitleHelper.Get(media.title);
+              const episode = media.nextAiringEpisode.next;
+              const countdown = await TimeHelper.Countdown(
+                media.nextAiringEpisode.timeUntilAiring
+              );
+              await list.push({
+                name: `\n***${title}***`,
+                value: `\`Episode ${episode} : ${countdown}\` - [MAL Link](https://myanimelist.net/anime/${
+                  media.idMal
+                }/)\n-------------------------------------------------------------------`
+              });
+            });
+            const embed = {
+              embed: {
+                color: Color.Random,
+                thumbnail: {
+                  url: message.author.avatarURL
+                },
+                title: `***${message.author.username}***'s *Subscription List*`,
+                description: `**${
+                  mediaSubs.length
+                } Anime**\n\nPlease Note: *The airing schedule for the streaming site you are using might be different.*\n`,
+                fields: list,
+                timestamp: new Date(),
+                footer: {
+                  icon_url: client.user.avatarURL,
+                  text: "© Rikimaru"
+                }
               }
-            }
-          };
-          resolve(embed);
+            };
+            resolve(embed);
+          });
         })
         .catch((reason: Error) => {
           MediaResult.SendInfo(

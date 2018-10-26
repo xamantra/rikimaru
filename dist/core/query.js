@@ -26,7 +26,8 @@ class Query {
                         reject(err);
                     }
                     else {
-                        callback(result);
+                        if (callback !== null && callback !== undefined)
+                            callback(result);
                         resolve();
                     }
                 });

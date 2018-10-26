@@ -11,6 +11,8 @@ const media_result_1 = require("./../../core/media.result");
 const search_list_1 = require("./../../core/search.list");
 const media_list_handler_1 = require("./../../handlers/media.list.handler");
 const media_handler_1 = require("../../handlers/media.handler");
+const client_1 = require("../../core/client");
+const colors_1 = require("../../core/colors");
 class SubscribeFunction {
     async Execute(message, command, dm) {
         await this.Search(message, command, dm);
@@ -47,17 +49,20 @@ class SubscribeFunction {
                         .then(user => {
                         subscription_data_1.SubscriptionData.Insert(media.idMal, user.Id, message, dm)
                             .then(() => {
-                            queue_data_1.QueueData.GetQueue(media.idMal)
-                                .then(queue => {
+                            queue_data_1.QueueData.GetQueue(media.idMal).then(queue => {
                                 const queueJob = new queue_job_model_1.QueueJob(user, media, queue);
-                                queue_data_1.QueueData.AddJob(queueJob);
-                            })
-                                .then(() => {
-                                media_result_1.MediaResult.SendInfo(message, `You are now subscribed to: ***${title}***. I will DM you when a new episode is aired!\nEnter the command: \`-mysubs\` to view your subscriptions.\nEnter the command: \`-unsub ${title}\` to unsubscribe to this anime.`, dm);
+                                queue_data_1.QueueData.AddJob(queueJob).then(() => {
+                                    media_result_1.MediaResult.SendInfo(message, this.Embed(media, true), dm);
+                                });
                             });
                         })
                             .catch((reason) => {
-                            console.log(reason.message);
+                            if (reason === "EXISTS") {
+                                media_result_1.MediaResult.SendInfo(message, this.Embed(media, false), dm);
+                            }
+                            else {
+                                console.log(reason);
+                            }
                         });
                     })
                         .catch((reason) => {
@@ -76,6 +81,34 @@ class SubscribeFunction {
             media_result_1.MediaResult.SendInfo(message, "There is nothing to subscribe. The anime you search might be already completed or it is not yet aired and the release date is currently unknown, or try another keyword.", dm);
             console.log(reason.message);
         });
+    }
+    // tslint:disable-next-line:member-ordering
+    Embed(media, newSub) {
+        const client = client_1.ClientManager.GetClient;
+        const t = title_helper_1.TitleHelper.Get(media.title);
+        const embed = {
+            embed: {
+                color: colors_1.Color.Random,
+                thumbnail: {
+                    url: media.coverImage.large
+                },
+                title: `***${t}***`,
+                url: `https://myanimelist.net/anime/${media.idMal}/`,
+                description: newSub
+                    ? `You are now subscribed to this anime. *I will DM you when new episode is aired.*`
+                    : `You are already subscribed to this anime.`,
+                fields: [
+                    { name: `To unsubscribe, type:`, value: `\`-unsub ${t}\`` },
+                    { name: `To view all subscription, type:`, value: `\`-mysubs\`` }
+                ],
+                timestamp: new Date(),
+                footer: {
+                    icon_url: client.user.avatarURL,
+                    text: "© Rikimaru"
+                }
+            }
+        };
+        return embed;
     }
 }
 exports.SubscribeFunction = SubscribeFunction;

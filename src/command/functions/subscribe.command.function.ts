@@ -14,6 +14,8 @@ import { Message } from "discord.js";
 import { ICommand } from "../../interfaces/command.interface";
 import { MediaHandler } from "../../handlers/media.handler";
 import { Queue } from "../../models/subscription.model";
+import { ClientManager } from "../../core/client";
+import { Color } from "../../core/colors";
 
 export class SubscribeFunction implements ICommandFunction {
   public async Execute(
@@ -60,21 +62,27 @@ export class SubscribeFunction implements ICommandFunction {
                 .then(user => {
                   SubscriptionData.Insert(media.idMal, user.Id, message, dm)
                     .then(() => {
-                      QueueData.GetQueue(media.idMal)
-                        .then(queue => {
-                          const queueJob = new QueueJob(user, media, queue);
-                          QueueData.AddJob(queueJob);
-                        })
-                        .then(() => {
+                      QueueData.GetQueue(media.idMal).then(queue => {
+                        const queueJob = new QueueJob(user, media, queue);
+                        QueueData.AddJob(queueJob).then(() => {
                           MediaResult.SendInfo(
                             message,
-                            `You are now subscribed to: ***${title}***. I will DM you when a new episode is aired!\nEnter the command: \`-mysubs\` to view your subscriptions.\nEnter the command: \`-unsub ${title}\` to unsubscribe to this anime.`,
+                            this.Embed(media, true),
                             dm
                           );
                         });
+                      });
                     })
-                    .catch((reason: Error) => {
-                      console.log(reason.message);
+                    .catch((reason: string) => {
+                      if (reason === "EXISTS") {
+                        MediaResult.SendInfo(
+                          message,
+                          this.Embed(media, false),
+                          dm
+                        );
+                      } else {
+                        console.log(reason);
+                      }
                     });
                 })
                 .catch((reason: Error) => {
@@ -100,5 +108,34 @@ export class SubscribeFunction implements ICommandFunction {
         );
         console.log(reason.message);
       });
+  }
+
+  // tslint:disable-next-line:member-ordering
+  private Embed(media: IMedia, newSub: boolean) {
+    const client = ClientManager.GetClient;
+    const t = TitleHelper.Get(media.title);
+    const embed = {
+      embed: {
+        color: Color.Random,
+        thumbnail: {
+          url: media.coverImage.large
+        },
+        title: `***${t}***`,
+        url: `https://myanimelist.net/anime/${media.idMal}/`,
+        description: newSub
+          ? `You are now subscribed to this anime. *I will DM you when new episode is aired.*`
+          : `You are already subscribed to this anime.`,
+        fields: [
+          { name: `To unsubscribe, type:`, value: `\`-unsub ${t}\`` },
+          { name: `To view all subscription, type:`, value: `\`-mysubs\`` }
+        ],
+        timestamp: new Date(),
+        footer: {
+          icon_url: client.user.avatarURL,
+          text: "© Rikimaru"
+        }
+      }
+    };
+    return embed;
   }
 }

@@ -25,7 +25,7 @@ export class Query {
               console.log(`Error 2: ${err}`);
               reject(err);
             } else {
-              callback(result);
+              if (callback !== null && callback !== undefined) callback(result);
               resolve();
             }
           });
