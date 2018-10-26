@@ -20,31 +20,43 @@ export class QueueData {
   private static DataHelper = DataHelper.Instance;
 
   public static async Init() {
-    this.Clear();
     return new Promise((resolve, reject) => {
-      Query.Execute(this.DataHelper.QueueSelectAll(), async result => {
-        const queues = JsonHelper.ArrayConvert<Queue>(result, Queue);
-        if (queues === null || queues === undefined) {
-          reject(
-            new Error(
-              `"JsonHelper.ArrayConvert<Queue>(result, Queue)" is 'null' or 'undefined'`
-            )
-          );
-        } else {
-          queues.forEach(q => {
-            this.Queues.push(q);
+      this.Clear()
+        .then(() => {
+          Query.Execute(this.DataHelper.QueueSelectAll(), async result => {
+            const queues = JsonHelper.ArrayConvert<Queue>(result, Queue);
+            if (queues === null || queues === undefined) {
+              reject(
+                new Error(
+                  `"JsonHelper.ArrayConvert<Queue>(result, Queue)" is 'null' or 'undefined'`
+                )
+              );
+            } else {
+              queues.forEach(q => {
+                this.Queues.push(q);
+              });
+              resolve();
+            }
           });
-          resolve();
-        }
-      });
+        })
+        .catch((err: Error) => {
+          console.log(err.message);
+        });
     });
   }
 
-  private static Clear() {
-    this.Queues = [];
-    this.QueueJobs = [];
-    this.Queues.length = 0;
-    this.QueueJobs.length = 0;
+  private static async Clear() {
+    return new Promise((resolve, reject) => {
+      this.Queues.length = 0;
+      this.QueueJobs.length = 0;
+      this.Queues.splice(0, this.Queues.length);
+      this.QueueJobs.splice(0, this.QueueJobs.length);
+      if (this.Queues.length === 0 && this.QueueJobs.length === 0) {
+        resolve();
+      } else {
+        reject(new Error(`The arrays were not cleared.`));
+      }
+    });
   }
 
   public static async GetQueue(mediaId: number) {
