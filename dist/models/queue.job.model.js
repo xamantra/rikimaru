@@ -12,6 +12,7 @@ const schedule = __importStar(require("node-schedule"));
 const moment_1 = __importStar(require("moment"));
 const client_1 = require("../core/client");
 const title_helper_1 = require("../helpers/title.helper");
+const media_search_1 = require("../core/media.search");
 const colors_1 = require("../core/colors");
 class QueueJob {
     constructor(user, media, queue) {
@@ -67,12 +68,14 @@ class QueueJob {
         if (this.Job !== undefined && this.Job !== null) {
             this.Job.cancel(false);
         }
-        queue_data_1.QueueData.Update(this.user, this.media, this)
-            .then(() => {
-            console.log(`Removed Queue: ${this.media.idMal}`);
-        })
-            .catch(reason => {
-            console.log(reason);
+        media_search_1.MediaSearch.Find(this.media.idMal).then(media => {
+            queue_data_1.QueueData.Update(this.user, media, this)
+                .then(() => {
+                console.log(`Removed Queue: ${media.idMal}`);
+            })
+                .catch(reason => {
+                console.log(reason);
+            });
         });
     }
     Embed(media, episode) {

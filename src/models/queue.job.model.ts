@@ -75,13 +75,15 @@ export class QueueJob {
     if (this.Job !== undefined && this.Job !== null) {
       this.Job.cancel(false);
     }
-    QueueData.Update(this.user, this.media, this)
-      .then(() => {
-        console.log(`Removed Queue: ${this.media.idMal}`);
-      })
-      .catch(reason => {
-        console.log(reason);
-      });
+    MediaSearch.Find(this.media.idMal).then(media => {
+      QueueData.Update(this.user, media, this)
+        .then(() => {
+          console.log(`Removed Queue: ${media.idMal}`);
+        })
+        .catch(reason => {
+          console.log(reason);
+        });
+    });
   }
 
   private Embed(media: IMedia, episode: number) {

@@ -26,6 +26,7 @@ class App {
                         media_data_1.MediaData.Init()
                             .then(() => {
                             scheduler_1.Scheduler.LoopJob(0, 15, 0, () => {
+                                console.log(`(15m) Refreshing Data....`);
                                 media_data_1.MediaData.LoadFromApi();
                             });
                         })
