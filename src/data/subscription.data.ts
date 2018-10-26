@@ -1,6 +1,4 @@
 import { Query } from "./../core/query";
-import { ClientManager } from "./../core/client";
-import { MediaData } from "./media.data";
 import { QueueData } from "./queue.data";
 import { UserData } from "./user.data";
 import { Subscription } from "./../models/subscription.model";
@@ -9,11 +7,6 @@ import { DataHelper } from "../helpers/data.helper";
 import { MySqlResult } from "../models/result.mysql.model";
 import { ArrayHelper } from "../helpers/array.helper";
 import { Message } from "discord.js";
-import { MediaResult } from "../core/media.result";
-import { title } from "process";
-import { Color } from "../core/colors";
-import { IMedia } from "../interfaces/page.interface";
-import { TitleHelper } from "../helpers/title.helper";
 
 export class SubscriptionData {
   public static get All() {
@@ -58,12 +51,7 @@ export class SubscriptionData {
     });
   }
 
-  public static async Insert(
-    mediaId: number,
-    userId: number,
-    message?: Message,
-    dm?: boolean
-  ) {
+  public static async Insert(mediaId: number, userId: number) {
     return new Promise((resolve, reject) => {
       this.Exists(mediaId, userId).then(async exists => {
         if (exists === false) {

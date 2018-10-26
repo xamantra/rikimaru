@@ -40,7 +40,7 @@ class SubscriptionData {
             resolve(subs);
         });
     }
-    static async Insert(mediaId, userId, message, dm) {
+    static async Insert(mediaId, userId) {
         return new Promise((resolve, reject) => {
             this.Exists(mediaId, userId).then(async (exists) => {
                 if (exists === false) {

@@ -21,9 +21,9 @@ class App {
                 .then(() => {
                 queue_data_1.QueueData.Init()
                     .then(() => {
-                    media_data_1.MediaData.Init()
+                    subscription_data_1.SubscriptionData.Init()
                         .then(() => {
-                        subscription_data_1.SubscriptionData.Init()
+                        media_data_1.MediaData.Init()
                             .then(() => {
                             scheduler_1.Scheduler.LoopJob(0, 15, 0, () => {
                                 media_data_1.MediaData.LoadFromApi();
