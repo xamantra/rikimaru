@@ -164,14 +164,13 @@ export class MediaData {
 
   public static async LogAll() {
     return new Promise(async (res, rej) => {
-      if (this.MediaList.length > 0) {
-        this.MediaList.forEach(m => {
-          const title = TitleHelper.Get(m.title);
-          console.log(`Media { "${title}" }`);
+      if (this.LocalList.length === this.MediaList.length) {
+        this.LocalList.forEach(m => {
+          console.log(m);
         });
         res();
       } else {
-        rej(new Error(`"MediaList" doesn't have any items`));
+        rej(new Error(`"LocalList" and "Media List" is not yet synchronize.`));
       }
     });
   }

@@ -10,7 +10,6 @@ const subscription_model_1 = require("../models/subscription.model");
 const result_mysql_model_1 = require("../models/result.mysql.model");
 const array_helper_1 = require("../helpers/array.helper");
 const user_data_1 = require("./user.data");
-const title_helper_1 = require("../helpers/title.helper");
 const queue_data_1 = require("./queue.data");
 class MediaData {
     static get GetLocalList() {
@@ -139,15 +138,14 @@ class MediaData {
     }
     static async LogAll() {
         return new Promise(async (res, rej) => {
-            if (this.MediaList.length > 0) {
-                this.MediaList.forEach(m => {
-                    const title = title_helper_1.TitleHelper.Get(m.title);
-                    console.log(`Media { "${title}" }`);
+            if (this.LocalList.length === this.MediaList.length) {
+                this.LocalList.forEach(m => {
+                    console.log(m);
                 });
                 res();
             }
             else {
-                rej(new Error(`"MediaList" doesn't have any items`));
+                rej(new Error(`"LocalList" and "Media List" is not yet synchronize.`));
             }
         });
     }
