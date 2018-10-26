@@ -142,7 +142,7 @@ class MediaData {
             if (this.MediaList.length > 0) {
                 this.MediaList.forEach(m => {
                     const title = title_helper_1.TitleHelper.Get(m.title);
-                    console.log(`Media: "${title}"`);
+                    console.log(`Media { "${title}" }`);
                 });
                 res();
             }

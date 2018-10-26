@@ -150,7 +150,7 @@ export class SubscriptionData {
         reject(new Error(`"this.All" is 'null' or 'undefined'.`));
       } else {
         this.All.forEach(sub => {
-          console.log(`Subscription:`, sub);
+          console.log(sub);
         });
         resolve();
       }

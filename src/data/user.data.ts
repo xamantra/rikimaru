@@ -99,7 +99,7 @@ export class UserData {
         rej(new Error(`"UserData.All" is 'null' or 'undefined'.`));
       } else {
         this.All.forEach(user => {
-          console.log(`User:`, user);
+          console.log(user);
         });
         res();
       }

@@ -84,7 +84,7 @@ class UserData {
             }
             else {
                 this.All.forEach(user => {
-                    console.log(`User:`, user);
+                    console.log(user);
                 });
                 res();
             }

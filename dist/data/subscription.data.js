@@ -119,7 +119,7 @@ class SubscriptionData {
             }
             else {
                 this.All.forEach(sub => {
-                    console.log(`Subscription:`, sub);
+                    console.log(sub);
                 });
                 resolve();
             }

@@ -157,7 +157,7 @@ class QueueData {
             }
             else {
                 this.Queues.forEach(q => {
-                    console.log(`Queue:`, q.MediaId);
+                    console.log(q);
                 });
                 this.QueueJobs.forEach(qj => {
                     qj.Log();
