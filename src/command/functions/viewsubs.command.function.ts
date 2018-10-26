@@ -50,10 +50,10 @@ export class ViewSubsFunction implements ICommandFunction {
                   media.nextAiringEpisode.timeUntilAiring
                 );
                 await list.push({
-                  name: `\n***${title}***`,
-                  value: `\`Episode ${episode} : ${countdown}\` - [MAL Link](https://myanimelist.net/anime/${
+                  name: `\n[${title}](https://myanimelist.net/anime/${
                     media.idMal
-                  }/)\n-------------------------------------------------------------------`
+                  }/)`,
+                  value: `*Episode ${episode} :* ***${countdown}***\n-------------------------------------------------------------------`
                 });
               });
               resolve(this.EmbedTemplate(user, mediaSubs, list));
