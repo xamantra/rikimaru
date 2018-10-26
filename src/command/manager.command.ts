@@ -4,13 +4,15 @@ import {
   dmhelp,
   when,
   dmwhen,
-  subscribe,
+  sub,
   viewsubs,
   ping,
   dmping,
   logall,
   dmmysubs,
-  unsub
+  unsub,
+  dmsub,
+  dmviewsubs
 } from "./commands";
 
 export class CommandManager {
@@ -23,8 +25,10 @@ export class CommandManager {
     cmds.push(dmhelp);
     cmds.push(when);
     cmds.push(dmwhen);
-    cmds.push(subscribe);
+    cmds.push(sub);
+    cmds.push(dmsub);
     cmds.push(viewsubs);
+    cmds.push(dmviewsubs);
     cmds.push(dmmysubs);
     cmds.push(unsub);
     cmds.push(ping);

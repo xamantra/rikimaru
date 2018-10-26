@@ -45,8 +45,8 @@ export const dmwhen = new BotCommand(
   whenAnimeFunction,
   mediaExample
 );
-export const subscribe = new BotCommand(
-  "subscribe",
+export const sub = new BotCommand(
+  "sub",
   "Subscribe to an ongoing anime. You can provide keyword or anime title.",
   true,
   false,
@@ -54,12 +54,29 @@ export const subscribe = new BotCommand(
   subscribeFunction,
   mediaExample
 );
+export const dmsub = new BotCommand(
+  "dmsub",
+  "Subscribe to an ongoing anime. You can provide keyword or anime title.",
+  true,
+  false,
+  Response.ChannelReply,
+  subscribeFunction,
+  mediaExample
+);
 export const viewsubs = new BotCommand(
   "viewsubs",
-  "View your own subscription list.",
+  "View your own or other's subscription list.",
   false,
   true,
   Response.ChannelReply,
+  viewSubsFunction
+);
+export const dmviewsubs = new BotCommand(
+  "dmviewsubs",
+  "Just similar with ***-viewsubs***.",
+  false,
+  true,
+  Response.DirectMessage,
   viewSubsFunction
 );
 export const dmmysubs = new BotCommand(

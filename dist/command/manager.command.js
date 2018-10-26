@@ -8,8 +8,10 @@ class CommandManager {
         cmds.push(commands_1.dmhelp);
         cmds.push(commands_1.when);
         cmds.push(commands_1.dmwhen);
-        cmds.push(commands_1.subscribe);
+        cmds.push(commands_1.sub);
+        cmds.push(commands_1.dmsub);
         cmds.push(commands_1.viewsubs);
+        cmds.push(commands_1.dmviewsubs);
         cmds.push(commands_1.dmmysubs);
         cmds.push(commands_1.unsub);
         cmds.push(commands_1.ping);
