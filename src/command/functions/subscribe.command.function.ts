@@ -32,6 +32,11 @@ export class SubscribeFunction implements ICommandFunction {
     });
     MediaSearch.All(command.Parameter)
       .then(res => {
+        console.log(
+          `There are "${res.length} results" for the search "${
+            command.Parameter
+          }".`
+        );
         const ongoing = MediaHandler.OngoingMedia(res);
         const unreleased = MediaHandler.UnreleasedMedia(res);
         if (ongoing.length === 0 && unreleased.length === 0) {
@@ -127,7 +132,7 @@ export class SubscribeFunction implements ICommandFunction {
           : `You are already subscribed to this anime.`,
         fields: [
           { name: `To unsubscribe, type:`, value: `\`-unsub ${t}\`` },
-          { name: `To view all subscription, type:`, value: `\`-mysubs\`` }
+          { name: `To view all subscription, type:`, value: `\`-viewsubs\`` }
         ],
         timestamp: new Date(),
         footer: {

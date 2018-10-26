@@ -23,6 +23,7 @@ class SubscribeFunction {
         });
         media_search_1.MediaSearch.All(command.Parameter)
             .then(res => {
+            console.log(`There are "${res.length} results" for the search "${command.Parameter}".`);
             const ongoing = media_handler_1.MediaHandler.OngoingMedia(res);
             const unreleased = media_handler_1.MediaHandler.UnreleasedMedia(res);
             if (ongoing.length === 0 && unreleased.length === 0) {
@@ -99,7 +100,7 @@ class SubscribeFunction {
                     : `You are already subscribed to this anime.`,
                 fields: [
                     { name: `To unsubscribe, type:`, value: `\`-unsub ${t}\`` },
-                    { name: `To view all subscription, type:`, value: `\`-mysubs\`` }
+                    { name: `To view all subscription, type:`, value: `\`-viewsubs\`` }
                 ],
                 timestamp: new Date(),
                 footer: {
