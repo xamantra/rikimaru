@@ -12,7 +12,6 @@ class CommandManager {
         cmds.push(commands_1.dmsub);
         cmds.push(commands_1.viewsubs);
         cmds.push(commands_1.dmviewsubs);
-        cmds.push(commands_1.dmmysubs);
         cmds.push(commands_1.unsub);
         cmds.push(commands_1.ping);
         cmds.push(commands_1.dmping);

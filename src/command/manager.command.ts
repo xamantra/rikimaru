@@ -9,7 +9,6 @@ import {
   ping,
   dmping,
   logall,
-  dmmysubs,
   unsub,
   dmsub,
   dmviewsubs
@@ -29,7 +28,6 @@ export class CommandManager {
     cmds.push(dmsub);
     cmds.push(viewsubs);
     cmds.push(dmviewsubs);
-    cmds.push(dmmysubs);
     cmds.push(unsub);
     cmds.push(ping);
     cmds.push(dmping);

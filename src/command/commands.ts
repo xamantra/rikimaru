@@ -73,23 +73,24 @@ export const viewsubs = new BotCommand(
 );
 export const dmviewsubs = new BotCommand(
   "dmviewsubs",
-  "Just similar with ***-viewsubs***.",
+  "Just similar with* ***-viewsubs.**",
   false,
   true,
-  Response.DirectMessage,
-  viewSubsFunction
-);
-export const dmmysubs = new BotCommand(
-  "dmmysubs",
-  "Just similar with ***-mysubs***.",
-  false,
-  false,
   Response.DirectMessage,
   viewSubsFunction
 );
 export const unsub = new BotCommand(
   "unsub",
   "Unsubscribe to an ongoing anime. You can provide keyword or anime title.",
+  true,
+  false,
+  Response.ChannelReply,
+  unsubFunction,
+  mediaExample
+);
+export const dmunsub = new BotCommand(
+  "unsub",
+  "Just similar with* ***-unsub.**",
   true,
   false,
   Response.DirectMessage,
