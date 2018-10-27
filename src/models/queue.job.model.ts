@@ -18,13 +18,8 @@ export class QueueJob {
       const nextEpisode = this.queue.NextEpisode;
       const media = this.media;
       // const title = TitleHelper.Get(media.title);
-      console.log(
-        `New Queue Job:`,
-        this.queue,
-        `Media Episode:`,
-        media.nextAiringEpisode.next
-      );
       if (nextEpisode === media.nextAiringEpisode.next) {
+        console.log(`Episode is synced with the api, Cool!`);
         this.JobDate = unix(media.nextAiringEpisode.airingAt).toDate();
         setTimeout(() => {
           user
@@ -51,7 +46,7 @@ export class QueueJob {
         //   }
         // );
       } else if (nextEpisode < media.nextAiringEpisode.next) {
-        console.log(this.queue, media);
+        console.log(`Oh!, episode is NOT synced with the api. Updating...`);
         user
           .send(this.Embed(media, nextEpisode))
           .then(() => {
