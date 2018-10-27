@@ -1,13 +1,13 @@
-import { Client, Collection, User } from "discord.js";
+import { Client, User } from "discord.js";
 import { Config } from "./config";
 
 export class ClientManager {
   private static Client: Client;
 
   public static async Init(client: Client) {
-    const botClient = await this.Login(client);
-    this.Client = botClient;
-    botClient.on("guildCreate", guild => {
+    client.login(Config.BOT_TOKEN);
+    this.Client = client;
+    client.on("guildCreate", guild => {
       console.log(
         `New server joined: ${guild.name} (Id: ${guild.id}). This server has ${
         guild.memberCount
@@ -15,28 +15,13 @@ export class ClientManager {
       );
     });
 
-    botClient.on("ready", () => {
+    client.on("ready", () => {
       console.log(
-        `Bot has started, with ${botClient.users.size} users, in ${
-        botClient.channels.size
-        } channels of ${botClient.guilds.size} servers.`
+        `Bot has started, with ${client.users.size} users, in ${
+        client.channels.size
+        } channels of ${client.guilds.size} servers.`
       );
-      botClient.user.setActivity(`as a Bot`);
-    });
-  }
-
-  private static Login(client: Client) {
-    return new Promise<Client>((resolve, reject) => {
-      setInterval(() => {
-        client.login(Config.BOT_TOKEN)
-          .then(token => {
-            console.log(`"${client.user.username}" has successfully logged in! Token: "${token.substring(0, 20)}..."`);
-            resolve(client);
-          })
-          .catch(() => {
-            console.log(`Unable to login...Logging in again.`);
-          });
-      }, 1000);
+      client.user.setActivity(`as a Bot`);
     });
   }
 

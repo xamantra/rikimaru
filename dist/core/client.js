@@ -3,28 +3,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_1 = require("./config");
 class ClientManager {
     static async Init(client) {
-        const botClient = await this.Login(client);
-        this.Client = botClient;
-        botClient.on("guildCreate", guild => {
+        client.login(config_1.Config.BOT_TOKEN);
+        this.Client = client;
+        client.on("guildCreate", guild => {
             console.log(`New server joined: ${guild.name} (Id: ${guild.id}). This server has ${guild.memberCount} members!`);
         });
-        botClient.on("ready", () => {
-            console.log(`Bot has started, with ${botClient.users.size} users, in ${botClient.channels.size} channels of ${botClient.guilds.size} servers.`);
-            botClient.user.setActivity(`as a Bot`);
-        });
-    }
-    static Login(client) {
-        return new Promise((resolve, reject) => {
-            setInterval(() => {
-                client.login(config_1.Config.BOT_TOKEN)
-                    .then(token => {
-                    console.log(`"${client.user.username}" has successfully logged in! Token: "${token.substring(0, 20)}..."`);
-                    resolve(client);
-                })
-                    .catch(() => {
-                    console.log(`Unable to login...Logging in again.`);
-                });
-            }, 1000);
+        client.on("ready", () => {
+            console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} servers.`);
+            client.user.setActivity(`as a Bot`);
         });
     }
     static get GetClient() {
