@@ -27,7 +27,6 @@ class QueueJob {
             if (timeout > 2147483647) {
                 timeout = 2147483647;
             }
-            // const title = TitleHelper.Get(media.title);
             if (nextEpisode === media.nextAiringEpisode.next) {
                 console.log(`${media.title.romaji} Episode ${media.nextAiringEpisode.next} is synced with the api, Cool!`);
                 this.JobDate = moment_1.unix(media.nextAiringEpisode.airingAt).toDate();
@@ -35,58 +34,41 @@ class QueueJob {
                     user
                         .send(this.Embed(media, media.nextAiringEpisode.next))
                         .then(() => {
-                        this.Update();
+                        setTimeout(() => {
+                            this.Update();
+                        }, 1800000);
                     })
                         .catch((error) => {
                         console.log(error.message);
                     });
                 }, timeout);
-                // this.Job = schedule.scheduleJob(
-                //   `"${media.title}"`,
-                //   this.JobDate,
-                //   () => {
-                //     user
-                //       .send(this.Embed(media, media.nextAiringEpisode.next))
-                //       .then(() => {
-                //         this.Update();
-                //       })
-                //       .catch((error: Error) => {
-                //         console.log(error.message);
-                //       });
-                //   }
-                // );
             }
             else if (nextEpisode < media.nextAiringEpisode.next) {
                 console.log(`Oh!, ${media.title.romaji} Episode ${media.nextAiringEpisode.next} is NOT synced with the api!`);
                 user
                     .send(this.Embed(media, nextEpisode))
                     .then(() => {
-                    this.Update();
+                    setTimeout(() => {
+                        this.Update();
+                    }, 2000);
                 })
                     .catch((error) => {
                     console.log(error.message);
                 });
             }
             else {
-                this.Update();
+                setTimeout(() => {
+                    this.Update();
+                }, 2000);
             }
         });
     }
-    // public Cancel() {
-    //   if (this.Job !== undefined && this.Job !== null) {
-    //     this.Job.cancel(false);
-    //     this.Job = null;
-    //   }
-    // }
     Log() {
         const countdown = moment_1.default(this.JobDate).toNow(true);
         const title = title_helper_1.TitleHelper.Get(this.media.title);
         console.log(`Queue Job { Queue Episode: "Episode ${this.queue.NextEpisode}" User: "${this.user.DiscordId}": "${title} Episode ${this.media.nextAiringEpisode.next}"  in  ${countdown} }`);
     }
     Update() {
-        // if (this.Job !== undefined && this.Job !== null) {
-        //   this.Job.cancel(false);
-        // }
         media_search_1.MediaSearch.Find(this.media.idMal).then(media => {
             queue_data_1.QueueData.Update(this.user, media, this)
                 .then(() => {
