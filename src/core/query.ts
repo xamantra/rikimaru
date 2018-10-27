@@ -17,13 +17,13 @@ export class Query {
   // }
 
   public static async Execute(sql: string, callback?: (result: any) => void) {
-    return new Promise((resolve, reject) => {
+    return new Promise<any>((resolve, reject) => {
       DataHelper.Pool.query(sql, (error, results, fields) => {
         if (error !== null && error !== undefined) {
           reject(error);
         } else {
           if (callback !== null && callback !== undefined) callback(results);
-          resolve();
+          resolve(results);
         }
       });
     });

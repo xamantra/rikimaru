@@ -17,9 +17,17 @@ export class QueueJob {
     ClientManager.GetUser(this.user.DiscordId).then(user => {
       const nextEpisode = this.queue.NextEpisode;
       const media = this.media;
+      let timeout = media.nextAiringEpisode.timeUntilAiring * 1000;
+      if (timeout > 2147483647) {
+        timeout = 2147483647;
+      }
       // const title = TitleHelper.Get(media.title);
       if (nextEpisode === media.nextAiringEpisode.next) {
-        console.log(`Episode is synced with the api, Cool!`);
+        console.log(
+          `${media.title.romaji} Episode ${
+            media.nextAiringEpisode.next
+          } is synced with the api, Cool!`
+        );
         this.JobDate = unix(media.nextAiringEpisode.airingAt).toDate();
         setTimeout(() => {
           user
@@ -30,7 +38,7 @@ export class QueueJob {
             .catch((error: Error) => {
               console.log(error.message);
             });
-        }, media.nextAiringEpisode.timeUntilAiring * 1000);
+        }, timeout);
         // this.Job = schedule.scheduleJob(
         //   `"${media.title}"`,
         //   this.JobDate,
@@ -46,7 +54,11 @@ export class QueueJob {
         //   }
         // );
       } else if (nextEpisode < media.nextAiringEpisode.next) {
-        console.log(`Oh!, episode is NOT synced with the api. Updating...`);
+        console.log(
+          `Oh!, ${media.title.romaji} Episode ${
+            media.nextAiringEpisode.next
+          } is NOT synced with the api!`
+        );
         user
           .send(this.Embed(media, nextEpisode))
           .then(() => {
@@ -89,8 +101,10 @@ export class QueueJob {
         .then(() => {
           console.log(`Removed Queue: ${media.idMal}`);
         })
-        .catch(reason => {
-          console.log(reason);
+        .catch(error => {
+          console.warn(
+            `Error while searching : [MediaSearch.Find(${this.media.idMal})]`
+          );
         });
     });
   }

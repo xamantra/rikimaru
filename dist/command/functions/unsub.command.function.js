@@ -20,7 +20,8 @@ class UnsubFunction {
         const formattedResults = [];
         user_data_1.UserData.GetUser(discordId)
             .then(user => {
-            media_search_1.MediaSearch.All(command.Parameter).then(res => {
+            media_search_1.MediaSearch.All(command.Parameter)
+                .then(res => {
                 media = res;
                 subscription_data_1.SubscriptionData.All.forEach(async (sub) => {
                     if (sub.UserId === user.Id) {
@@ -44,6 +45,9 @@ class UnsubFunction {
                 else {
                     media_result_1.MediaResult.SendInfo(message, search_list_1.SearchList.Embed(command, formattedResults), dm);
                 }
+            })
+                .catch(error => {
+                console.warn(`Error while searching : [MediaSearch.All(${command.Parameter})]`);
             });
         })
             .catch((reason) => {

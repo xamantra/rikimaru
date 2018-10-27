@@ -8,7 +8,8 @@ class MediaSearch {
         return new Promise((resolve, reject) => {
             const result = anilist_1.Anilist.MediaSearch(title);
             let media = [];
-            result.then($p => {
+            result
+                .then($p => {
                 media = json_helper_1.JsonHelper.Converter.deserialize($p, root_model_1.RootPage)
                     .DataPage.Page.media;
                 if (media !== undefined && media !== null && media.length > 0) {
@@ -17,6 +18,9 @@ class MediaSearch {
                 else {
                     reject(new Error(`"(JsonHelper.Converter.deserialize(root, Root) as Root).Data.Page.media" is 'null' or 'undefined'.`));
                 }
+            })
+                .catch(error => {
+                reject(error);
             });
         });
     }

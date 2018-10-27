@@ -15,7 +15,7 @@ export class UserData {
 
   public static async Init() {
     return new Promise<void>((res, rej) => {
-      Query.Execute(this.DataHelper.UserSelectAll(), result => {
+      Query.Execute(this.DataHelper.UserSelectAll()).then(result => {
         const users = JsonHelper.ArrayConvert<User>(result, User);
         if (users !== undefined && users !== null) {
           users.forEach(user => {

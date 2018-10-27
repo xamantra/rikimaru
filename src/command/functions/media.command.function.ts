@@ -21,72 +21,78 @@ export class MediaFunction implements ICommandFunction {
   }
 
   public async Handle(message: Message, command: ICommand, isDM: boolean) {
-    MediaSearch.All(command.Parameter).then(res => {
-      const ongoing = MediaHandler.OngoingMedia(res);
-      const unreleased = MediaHandler.UnreleasedMedia(res);
-      const unreleasedNoDate = MediaHandler.UnreleasedNoDateMedia(res);
-      const completed = MediaHandler.CompletedMedia(res);
-      const exactMedia = MediaHandler.ExactMedia(res, command.Parameter);
+    MediaSearch.All(command.Parameter)
+      .then(res => {
+        const ongoing = MediaHandler.OngoingMedia(res);
+        const unreleased = MediaHandler.UnreleasedMedia(res);
+        const unreleasedNoDate = MediaHandler.UnreleasedNoDateMedia(res);
+        const completed = MediaHandler.CompletedMedia(res);
+        const exactMedia = MediaHandler.ExactMedia(res, command.Parameter);
 
-      if (exactMedia.length > 0) {
-        exactMedia.forEach(async m => {
-          MediaResult.SendMessage(
-            message,
-            isDM,
-            ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
-          );
-        });
-      } else if (ongoing.length > 0) {
-        ongoing.forEach(async m => {
-          MediaResult.SendMessage(
-            message,
-            isDM,
-            ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
-          );
-        });
-      } else if (unreleased.length > 0) {
-        unreleased.forEach(async m => {
-          MediaResult.SendMessage(
-            message,
-            isDM,
-            ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
-          );
-        });
-      } else if (unreleasedNoDate.length > 0) {
-        unreleasedNoDate.forEach(async m => {
-          MediaResult.SendMessage(
-            message,
-            isDM,
-            ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
-          );
-        });
-      } else if (completed.length > 0) {
-        if (completed.length === 1) {
-          completed.forEach(async m => {
+        if (exactMedia.length > 0) {
+          exactMedia.forEach(async m => {
             MediaResult.SendMessage(
               message,
               isDM,
               ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
             );
           });
+        } else if (ongoing.length > 0) {
+          ongoing.forEach(async m => {
+            MediaResult.SendMessage(
+              message,
+              isDM,
+              ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
+            );
+          });
+        } else if (unreleased.length > 0) {
+          unreleased.forEach(async m => {
+            MediaResult.SendMessage(
+              message,
+              isDM,
+              ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
+            );
+          });
+        } else if (unreleasedNoDate.length > 0) {
+          unreleasedNoDate.forEach(async m => {
+            MediaResult.SendMessage(
+              message,
+              isDM,
+              ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
+            );
+          });
+        } else if (completed.length > 0) {
+          if (completed.length === 1) {
+            completed.forEach(async m => {
+              MediaResult.SendMessage(
+                message,
+                isDM,
+                ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
+              );
+            });
+          } else {
+            MediaResult.SendInfo(
+              message,
+              `I found ***${completed.length}*** anime with your keyword ***${
+                command.Parameter
+              }*** and all of them is already completed.`,
+              isDM
+            );
+          }
         } else {
           MediaResult.SendInfo(
             message,
-            `I found ***${completed.length}*** anime with your keyword ***${
+            `Go me nasai!, I didn't find anime that matches your keyword ***"${
               command.Parameter
-            }*** and all of them is already completed.`,
+            }"***, try checking your spelling or another keyword.`,
             isDM
           );
         }
-      } else {
-        MediaResult.SendInfo(
-          message,
-          `Go me nasai!, I didn't find anime that matches your keyword ***"${
-            command.Parameter
-          }"***, try checking your spelling or another keyword.`,
-          isDM
+      })
+      .catch(error => {
+        console.warn(
+          `Error while searching : [MediaSearch.All(${command.Parameter})]`
         );
-      }
-    });
+      });
   }
 }

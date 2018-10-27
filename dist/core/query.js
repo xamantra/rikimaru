@@ -24,7 +24,7 @@ class Query {
                 else {
                     if (callback !== null && callback !== undefined)
                         callback(results);
-                    resolve();
+                    resolve(results);
                 }
             });
         });

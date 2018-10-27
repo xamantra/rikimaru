@@ -11,7 +11,7 @@ class UserData {
     }
     static async Init() {
         return new Promise((res, rej) => {
-            query_1.Query.Execute(this.DataHelper.UserSelectAll(), result => {
+            query_1.Query.Execute(this.DataHelper.UserSelectAll()).then(result => {
                 const users = json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.User);
                 if (users !== undefined && users !== null) {
                     users.forEach(user => {

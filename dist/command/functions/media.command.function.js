@@ -13,7 +13,8 @@ class MediaFunction {
         await this.Handle(message, command, dm);
     }
     async Handle(message, command, isDM) {
-        media_search_1.MediaSearch.All(command.Parameter).then(res => {
+        media_search_1.MediaSearch.All(command.Parameter)
+            .then(res => {
             const ongoing = media_handler_1.MediaHandler.OngoingMedia(res);
             const unreleased = media_handler_1.MediaHandler.UnreleasedMedia(res);
             const unreleasedNoDate = media_handler_1.MediaHandler.UnreleasedNoDateMedia(res);
@@ -52,6 +53,9 @@ class MediaFunction {
             else {
                 media_result_1.MediaResult.SendInfo(message, `Go me nasai!, I didn't find anime that matches your keyword ***"${command.Parameter}"***, try checking your spelling or another keyword.`, isDM);
             }
+        })
+            .catch(error => {
+            console.warn(`Error while searching : [MediaSearch.All(${command.Parameter})]`);
         });
     }
 }

@@ -29,45 +29,49 @@ export class UnsubFunction implements ICommandFunction {
     const formattedResults: any[] = [];
     UserData.GetUser(discordId)
       .then(user => {
-        MediaSearch.All(command.Parameter).then(res => {
-          media = res;
-          SubscriptionData.All.forEach(async sub => {
-            if (sub.UserId === user.Id) {
-              await userMedia.push(sub.MediaId);
-            }
-          });
-          media.forEach(async m => {
-            if (userMedia.includes(m.idMal)) {
-              await filteredMedia.push(m);
-              await formattedResults.push(MediaFormatHandler.Get(m));
-            }
-          });
-          if (filteredMedia.length === 0) {
-            MediaResult.SendInfo(
-              message,
-              `Hmm..It seems that you are not subscribe to any anime that matches your keyword  ***${title}***.`,
-              dm
-            );
-          } else if (filteredMedia.length === 1) {
-            SubscriptionData.Delete(filteredMedia[0].idMal, discordId).then(
-              () => {
-                MediaResult.SendInfo(
-                  message,
-                  `You are now unsubscribed from  ***${TitleHelper.Get(
-                    filteredMedia[0].title
-                  )}***`,
-                  dm
-                );
+        MediaSearch.All(command.Parameter)
+          .then(res => {
+            media = res;
+            SubscriptionData.All.forEach(async sub => {
+              if (sub.UserId === user.Id) {
+                await userMedia.push(sub.MediaId);
               }
-            );
-          } else {
-            MediaResult.SendInfo(
-              message,
-              SearchList.Embed(command, formattedResults),
-              dm
-            );
-          }
-        });
+            });
+            media.forEach(async m => {
+              if (userMedia.includes(m.idMal)) {
+                await filteredMedia.push(m);
+                await formattedResults.push(MediaFormatHandler.Get(m));
+              }
+            });
+            if (filteredMedia.length === 0) {
+              MediaResult.SendInfo(
+                message,
+                `Hmm..It seems that you are not subscribe to any anime that matches your keyword  ***${title}***.`,
+                dm
+              );
+            } else if (filteredMedia.length === 1) {
+              SubscriptionData.Delete(filteredMedia[0].idMal, discordId).then(
+                () => {
+                  MediaResult.SendInfo(
+                    message,
+                    `You are now unsubscribed from  ***${TitleHelper.Get(
+                      filteredMedia[0].title
+                    )}***`,
+                    dm
+                  );
+                }
+              );
+            } else {
+              MediaResult.SendInfo(
+                message,
+                SearchList.Embed(command, formattedResults),
+                dm
+              );
+            }
+          })
+          .catch(error => {
+            console.warn(`Error while searching : [MediaSearch.All(${command.Parameter})]`);
+          });
       })
       .catch((reason: Error) => {
         console.log(reason.message);

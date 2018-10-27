@@ -8,19 +8,23 @@ export class MediaSearch {
     return new Promise<IMedia[]>((resolve, reject) => {
       const result = Anilist.MediaSearch(title);
       let media: IMedia[] = [];
-      result.then($p => {
-        media = (JsonHelper.Converter.deserialize($p, RootPage) as RootPage)
-          .DataPage.Page.media;
-        if (media !== undefined && media !== null && media.length > 0) {
-          resolve(media);
-        } else {
-          reject(
-            new Error(
-              `"(JsonHelper.Converter.deserialize(root, Root) as Root).Data.Page.media" is 'null' or 'undefined'.`
-            )
-          );
-        }
-      });
+      result
+        .then($p => {
+          media = (JsonHelper.Converter.deserialize($p, RootPage) as RootPage)
+            .DataPage.Page.media;
+          if (media !== undefined && media !== null && media.length > 0) {
+            resolve(media);
+          } else {
+            reject(
+              new Error(
+                `"(JsonHelper.Converter.deserialize(root, Root) as Root).Data.Page.media" is 'null' or 'undefined'.`
+              )
+            );
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
     });
   }
 

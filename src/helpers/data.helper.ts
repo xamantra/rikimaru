@@ -19,7 +19,8 @@ export class DataHelper {
       database: Config.MYSQL_DATABASE,
       timeout: Config.MYSQL_TIMEOUT,
       connectTimeout: Config.MYSQL_CONNECTION_TIMEOUT,
-      connectionLimit: Config.MYSQL_CONNECTION_LIMIT
+      connectionLimit: Config.MYSQL_CONNECTION_LIMIT,
+      waitForConnections: true
     });
 
     pool.getConnection((err, connection) => {

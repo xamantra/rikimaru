@@ -120,8 +120,10 @@ export class MediaData {
                 res();
               }
             })
-            .catch(err => {
-              console.log(err);
+            .catch(error => {
+              console.warn(
+                `Error while searching : [MediaSearch.Find(${lm.MalId})]`
+              );
             });
         });
       }
