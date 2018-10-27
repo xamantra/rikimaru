@@ -28,9 +28,16 @@ class Query {
                     }
                     else {
                         conn.end();
-                        if (callback !== null && callback !== undefined)
-                            callback(result);
-                        resolve();
+                        conn.on("end", (_err) => {
+                            if (_err === null || _err === undefined) {
+                                if (callback !== null && callback !== undefined)
+                                    callback(result);
+                                resolve();
+                            }
+                            else {
+                                reject(_err);
+                            }
+                        });
                     }
                 });
             })

@@ -1,5 +1,5 @@
 import { DataHelper } from "../helpers/data.helper";
-import { Connection } from "mysql";
+import { Connection, MysqlError } from "mysql";
 
 export class Query {
   public static async Connect() {
@@ -27,8 +27,15 @@ export class Query {
               reject(err);
             } else {
               conn.end();
-              if (callback !== null && callback !== undefined) callback(result);
-              resolve();
+              conn.on("end", (_err: MysqlError) => {
+                if (_err === null || _err === undefined) {
+                  if (callback !== null && callback !== undefined)
+                    callback(result);
+                  resolve();
+                } else {
+                  reject(_err);
+                }
+              });
             }
           });
         })
