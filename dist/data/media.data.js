@@ -64,7 +64,7 @@ class MediaData {
             if (userDatas === undefined || userDatas === null) {
                 rej(new Error(`"userDatas = this.UserData.All" is 'null' or 'undefined'`));
             }
-            else if (userDatas === undefined || userDatas === null) {
+            else if (locals === undefined || locals === null) {
                 rej(new Error(`"locals = this.LocalList" is 'null' or 'undefined'`));
             }
             else {
@@ -88,6 +88,8 @@ class MediaData {
                                 query_1.Query.Execute(this.DataHelper.MediaDelete($m.id), () => {
                                     userDatas.forEach(x => {
                                         subscription_data_1.SubscriptionData.Delete($m.idMal, x.DiscordId).then(() => {
+                                            const qj = queue_data_1.QueueData.GetJobs.find(j => j.user.Id === x.Id && j.media.idMal === $m.idMal);
+                                            queue_data_1.QueueData.RemoveJob(qj);
                                             console.log(`All subscription of "${$m.title}" has been remove`);
                                         });
                                     });
