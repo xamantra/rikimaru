@@ -89,7 +89,7 @@ export const unsub = new BotCommand(
   mediaExample
 );
 export const dmunsub = new BotCommand(
-  "unsub",
+  "dmunsub",
   "Just similar with* ***-unsub.**",
   true,
   false,

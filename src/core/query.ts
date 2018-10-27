@@ -5,13 +5,18 @@ export class Query {
   public static async Connect() {
     return new Promise<Connection>((resolve, reject) => {
       const conn = DataHelper.Conn;
-      conn.end();
-      conn.connect(err => {
-        if (err !== null && err !== undefined) {
-          console.log(`Error 1: ${err}`);
-          reject(err);
+      conn.end((error: MysqlError) => {
+        if (error !== null && error !== undefined) {
+          reject(error);
         } else {
-          resolve(conn);
+          conn.connect(err => {
+            if (err !== null && err !== undefined) {
+              console.log(`Error 1: ${err}`);
+              reject(err);
+            } else {
+              resolve(conn);
+            }
+          });
         }
       });
     });
@@ -24,9 +29,15 @@ export class Query {
         if (error !== null && error !== undefined) {
           reject(error);
         } else {
-          conn.end();
-          if (callback !== null && callback !== undefined) callback(results);
-          resolve(results);
+          conn.end((err: MysqlError) => {
+            if (err !== null && err !== undefined) {
+              reject(err);
+            } else {
+              if (callback !== null && callback !== undefined)
+                callback(results);
+              resolve(results);
+            }
+          });
         }
       });
     });

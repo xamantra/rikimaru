@@ -5,14 +5,20 @@ class Query {
     static async Connect() {
         return new Promise((resolve, reject) => {
             const conn = data_helper_1.DataHelper.Conn;
-            conn.end();
-            conn.connect(err => {
-                if (err !== null && err !== undefined) {
-                    console.log(`Error 1: ${err}`);
-                    reject(err);
+            conn.end((error) => {
+                if (error !== null && error !== undefined) {
+                    reject(error);
                 }
                 else {
-                    resolve(conn);
+                    conn.connect(err => {
+                        if (err !== null && err !== undefined) {
+                            console.log(`Error 1: ${err}`);
+                            reject(err);
+                        }
+                        else {
+                            resolve(conn);
+                        }
+                    });
                 }
             });
         });
@@ -25,10 +31,16 @@ class Query {
                     reject(error);
                 }
                 else {
-                    conn.end();
-                    if (callback !== null && callback !== undefined)
-                        callback(results);
-                    resolve(results);
+                    conn.end((err) => {
+                        if (err !== null && err !== undefined) {
+                            reject(err);
+                        }
+                        else {
+                            if (callback !== null && callback !== undefined)
+                                callback(results);
+                            resolve(results);
+                        }
+                    });
                 }
             });
         });
