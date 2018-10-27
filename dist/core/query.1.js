@@ -65,4 +65,4 @@ class Query {
     }
 }
 exports.Query = Query;
-//# sourceMappingURL=query.js.map
+//# sourceMappingURL=query.1.js.map

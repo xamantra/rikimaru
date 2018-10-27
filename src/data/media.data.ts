@@ -1,19 +1,15 @@
 import { MediaStatus } from "./../core/media.status";
-import { QueueJob } from "./../models/queue.job.model";
 import { SubscriptionData } from "./subscription.data";
 import { Query } from "./../core/query";
 import { MediaSearch } from "./../core/media.search";
 import { JsonHelper } from "../helpers/json.helper";
 import { DataHelper } from "../helpers/data.helper";
-import { Media, Queue, User } from "../models/subscription.model";
+import { Media, User } from "../models/subscription.model";
 import { IMedia } from "../interfaces/page.interface";
 import { MySqlResult } from "../models/result.mysql.model";
 import { ArrayHelper } from "../helpers/array.helper";
 import { UserData } from "./user.data";
-import { TitleHelper } from "../helpers/title.helper";
 import { QueueData } from "./queue.data";
-import { MediaResult } from "../core/media.result";
-import { Message } from "discord.js";
 
 export class MediaData {
   public static get GetLocalList() {

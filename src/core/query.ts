@@ -5,18 +5,12 @@ export class Query {
   public static async Connect() {
     return new Promise<Connection>((resolve, reject) => {
       const conn = DataHelper.Conn;
-      conn.end((error: MysqlError) => {
-        if (error !== null && error !== undefined) {
-          reject(error);
+      conn.connect(err => {
+        if (err !== null && err !== undefined) {
+          console.log(`Error 1: ${err}`);
+          reject(err);
         } else {
-          conn.connect(err => {
-            if (err !== null && err !== undefined) {
-              console.log(`Error 1: ${err}`);
-              reject(err);
-            } else {
-              resolve(conn);
-            }
-          });
+          resolve(conn);
         }
       });
     });
@@ -27,23 +21,18 @@ export class Query {
       this.Connect()
         .then(conn => {
           conn.query(sql, (error, results, fields) => {
+            conn.destroy();
             if (error !== null && error !== undefined) {
-              reject(error);
+              reject(new Error(`${error.message}`));
             } else {
-              conn.end((err: MysqlError) => {
-                if (err !== null && err !== undefined) {
-                  reject(err);
-                } else {
-                  if (callback !== null && callback !== undefined)
-                    callback(results);
-                  resolve(results);
-                }
-              });
+              if (callback !== null && callback !== undefined)
+                callback(results);
+              resolve(results);
             }
           });
         })
         .catch((err: MysqlError) => {
-          console.warn(new Error(`${err.message}`));
+          reject(new Error(`${err.message}`));
         });
     });
     // return new Promise((resolve, reject) => {
