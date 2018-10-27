@@ -24,6 +24,7 @@ class QueueJob {
             const nextEpisode = this.queue.NextEpisode;
             const media = this.media;
             // const title = TitleHelper.Get(media.title);
+            console.log(`New Queue Job:`, this.queue, `Media Episode:`, media.nextAiringEpisode.next);
             if (nextEpisode === media.nextAiringEpisode.next) {
                 this.JobDate = moment_1.unix(media.nextAiringEpisode.airingAt).toDate();
                 setTimeout(() => {
