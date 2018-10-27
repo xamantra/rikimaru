@@ -20,17 +20,34 @@ class DataHelper {
     static get Instance() {
         return this._instance || (this._instance = new this());
     }
-    static get Conn() {
-        const conn = mysql.createConnection({
+    static get Pool() {
+        const pool = mysql.createPool({
             host: config_1.Config.MYSQL_HOST,
             port: config_1.Config.MYSQL_PORT,
             user: config_1.Config.MYSQL_USERNAME,
             password: config_1.Config.MYSQL_PASSWORD,
             database: config_1.Config.MYSQL_DATABASE,
             timeout: config_1.Config.MYSQL_TIMEOUT,
-            connectTimeout: config_1.Config.MYSQL_CONNECTION_TIMEOUT
+            connectTimeout: config_1.Config.MYSQL_CONNECTION_TIMEOUT,
+            connectionLimit: config_1.Config.MYSQL_CONNECTION_LIMIT
         });
-        return conn;
+        pool.getConnection((err, connection) => {
+            if (err) {
+                if (err.code === "PROTOCOL_CONNECTION_LOST") {
+                    console.log("Database connection was closed.");
+                }
+                if (err.code === "ER_CON_COUNT_ERROR") {
+                    console.log("Database has too many connections.");
+                }
+                if (err.code === "ECONNREFUSED") {
+                    console.log("Database connection was refused.");
+                }
+            }
+            if (connection)
+                connection.release();
+            return;
+        });
+        return pool;
     }
     Init() {
         return new Promise((resolve, reject) => {

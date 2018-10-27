@@ -50,4 +50,11 @@ export class Config {
       require("../extras/env").MYSQL_CONNECTION_TIMEOUT
     );
   }
+
+  public static get MYSQL_CONNECTION_LIMIT(): number {
+    return (
+      Number(process.env.MYSQL_CONNECTION_LIMIT) ||
+      require("../extras/env").MYSQL_CONNECTION_LIMIT
+    );
+  }
 }

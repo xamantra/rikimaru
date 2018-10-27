@@ -30,6 +30,10 @@ class Config {
         return (Number(process.env.MYSQL_CONNECTION_TIMEOUT) ||
             require("../extras/env").MYSQL_CONNECTION_TIMEOUT);
     }
+    static get MYSQL_CONNECTION_LIMIT() {
+        return (Number(process.env.MYSQL_CONNECTION_LIMIT) ||
+            require("../extras/env").MYSQL_CONNECTION_LIMIT);
+    }
 }
 exports.Config = Config;
 //# sourceMappingURL=config.js.map

@@ -2,49 +2,58 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const data_helper_1 = require("../helpers/data.helper");
 class Query {
-    static async Connect() {
-        return new Promise((resolve, reject) => {
-            const con = data_helper_1.DataHelper.Conn;
-            con.connect(err => {
-                if (err !== null && err !== undefined) {
-                    console.log(`Error 1: ${err}`);
-                    reject(err);
-                }
-                else {
-                    resolve(con);
-                }
-            });
-        });
-    }
+    // public static async Connect() {
+    //   return new Promise<Pool>((resolve, reject) => {
+    //     const pool = DataHelper.Pool;
+    //     pool.(err => {
+    //       if (err !== null && err !== undefined) {
+    //         console.log(`Error 1: ${err}`);
+    //         reject(err);
+    //       } else {
+    //         resolve(pool);
+    //       }
+    //     });
+    //   });
+    // }
     static async Execute(sql, callback) {
         return new Promise((resolve, reject) => {
-            this.Connect()
-                .then(async (conn) => {
-                conn.query(sql, (err, result) => {
-                    if (err !== undefined && err !== null) {
-                        console.log(`Error 2: ${err}`);
-                        conn.end();
-                        reject(err);
-                    }
-                    else {
-                        conn.end();
-                        conn.on("end", (_err) => {
-                            if (_err === null || _err === undefined) {
-                                if (callback !== null && callback !== undefined)
-                                    callback(result);
-                                resolve();
-                            }
-                            else {
-                                reject(_err);
-                            }
-                        });
-                    }
-                });
-            })
-                .catch(reason => {
-                console.log(reason);
+            data_helper_1.DataHelper.Pool.query(sql, (error, results, fields) => {
+                if (error !== null && error !== undefined) {
+                    reject(error);
+                }
+                else {
+                    if (callback !== null && callback !== undefined)
+                        callback(results);
+                    resolve();
+                }
             });
         });
+        // return new Promise((resolve, reject) => {
+        //   this.Connect()
+        //     .then(async conn => {
+        //       conn.query(sql, (err, result) => {
+        //         if (err !== undefined && err !== null) {
+        //           console.log(`Error 2: ${err}`);
+        //           conn.end();
+        //           reject(err);
+        //         } else {
+        //           conn.end();
+        //           conn.on("end", (_err: MysqlError) => {
+        //             if (_err === null || _err === undefined) {
+        //               if (callback !== null && callback !== undefined)
+        //                 callback(result);
+        //               resolve();
+        //             } else {
+        //               reject(_err);
+        //             }
+        //           });
+        //         }
+        //       });
+        //     })
+        //     .catch(reason => {
+        //       console.log(reason);
+        //     });
+        // });
     }
 }
 exports.Query = Query;
