@@ -5,7 +5,7 @@ export class MediaStatus {
     if (
       $m.status === "RELEASING" &&
       $m.nextAiringEpisode !== null &&
-      $m.nextAiringEpisode.airingAt
+      $m.nextAiringEpisode.airingAt !== null
     ) {
       return true;
     }
@@ -16,7 +16,7 @@ export class MediaStatus {
     if (
       $m.status === "NOT_YET_RELEASED" &&
       $m.nextAiringEpisode !== null &&
-      $m.nextAiringEpisode.airingAt
+      $m.nextAiringEpisode.airingAt !== null
     ) {
       return true;
     }
