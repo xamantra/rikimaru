@@ -9,7 +9,7 @@ export class MediaStatus {
   }
 
   public static NotYetAired($m: IMedia) {
-    if ($m.status === "NOT_YET_RELEASED" && $m.nextAiringEpisode !== null) {
+    if ($m.status === "NOT_YET_RELEASED" && $m.nextAiringEpisode !== null && $m.nextAiringEpisode.airingAt) {
       return true;
     }
     return false;
