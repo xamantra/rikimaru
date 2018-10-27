@@ -23,6 +23,7 @@ export class Query {
           conn.query(sql, (err, result) => {
             if (err !== undefined && err !== null) {
               console.log(`Error 2: ${err}`);
+              conn.end();
               reject(err);
             } else {
               conn.end();
