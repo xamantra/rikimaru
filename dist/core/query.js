@@ -25,23 +25,28 @@ class Query {
     }
     static async Execute(sql, callback) {
         return new Promise((resolve, reject) => {
-            const conn = data_helper_1.DataHelper.Conn;
-            conn.query(sql, (error, results, fields) => {
-                if (error !== null && error !== undefined) {
-                    reject(error);
-                }
-                else {
-                    conn.end((err) => {
-                        if (err !== null && err !== undefined) {
-                            reject(err);
-                        }
-                        else {
-                            if (callback !== null && callback !== undefined)
-                                callback(results);
-                            resolve(results);
-                        }
-                    });
-                }
+            this.Connect()
+                .then(conn => {
+                conn.query(sql, (error, results, fields) => {
+                    if (error !== null && error !== undefined) {
+                        reject(error);
+                    }
+                    else {
+                        conn.end((err) => {
+                            if (err !== null && err !== undefined) {
+                                reject(err);
+                            }
+                            else {
+                                if (callback !== null && callback !== undefined)
+                                    callback(results);
+                                resolve(results);
+                            }
+                        });
+                    }
+                });
+            })
+                .catch((err) => {
+                console.warn(`${err.message}`);
             });
         });
         // return new Promise((resolve, reject) => {

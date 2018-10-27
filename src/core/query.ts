@@ -24,22 +24,27 @@ export class Query {
 
   public static async Execute(sql: string, callback?: (result: any) => void) {
     return new Promise<any>((resolve, reject) => {
-      const conn = DataHelper.Conn;
-      conn.query(sql, (error, results, fields) => {
-        if (error !== null && error !== undefined) {
-          reject(error);
-        } else {
-          conn.end((err: MysqlError) => {
-            if (err !== null && err !== undefined) {
-              reject(err);
+      this.Connect()
+        .then(conn => {
+          conn.query(sql, (error, results, fields) => {
+            if (error !== null && error !== undefined) {
+              reject(error);
             } else {
-              if (callback !== null && callback !== undefined)
-                callback(results);
-              resolve(results);
+              conn.end((err: MysqlError) => {
+                if (err !== null && err !== undefined) {
+                  reject(err);
+                } else {
+                  if (callback !== null && callback !== undefined)
+                    callback(results);
+                  resolve(results);
+                }
+              });
             }
           });
-        }
-      });
+        })
+        .catch((err: MysqlError) => {
+          console.warn(`${err.message}`);
+        });
     });
     // return new Promise((resolve, reject) => {
     //   this.Connect()
