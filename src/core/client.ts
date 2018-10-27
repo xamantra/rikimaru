@@ -25,17 +25,18 @@ export class ClientManager {
     });
   }
 
-  private static async Login(client: Client) {
+  private static Login(client: Client) {
     return new Promise<Client>((resolve, reject) => {
-      client.login(Config.BOT_TOKEN)
-        .then(token => {
-          console.log(`"${client.user.username}" has successfully logged in! Token: "${token.substring(0, 20)}..."`);
-          resolve(client);
-        })
-        .catch(() => {
-          console.log(`Unable to login...Logging in again.`);
-          this.Login(client);
-        });
+      setInterval(() => {
+        client.login(Config.BOT_TOKEN)
+          .then(token => {
+            console.log(`"${client.user.username}" has successfully logged in! Token: "${token.substring(0, 20)}..."`);
+            resolve(client);
+          })
+          .catch(() => {
+            console.log(`Unable to login...Logging in again.`);
+          });
+      }, 1000);
     });
   }
 
@@ -49,7 +50,7 @@ export class ClientManager {
     });
   }
 
-  public static async GetUser(id: string) {
+  public static GetUser(id: string) {
     return new Promise<User>((resolve, reject) => {
       setInterval(() => {
         const user = this.Client.users.get(id);

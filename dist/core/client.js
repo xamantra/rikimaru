@@ -13,17 +13,18 @@ class ClientManager {
             botClient.user.setActivity(`as a Bot`);
         });
     }
-    static async Login(client) {
+    static Login(client) {
         return new Promise((resolve, reject) => {
-            client.login(config_1.Config.BOT_TOKEN)
-                .then(token => {
-                console.log(`"${client.user.username}" has successfully logged in! Token: "${token.substring(0, 20)}..."`);
-                resolve(client);
-            })
-                .catch(() => {
-                console.log(`Unable to login...Logging in again.`);
-                this.Login(client);
-            });
+            setInterval(() => {
+                client.login(config_1.Config.BOT_TOKEN)
+                    .then(token => {
+                    console.log(`"${client.user.username}" has successfully logged in! Token: "${token.substring(0, 20)}..."`);
+                    resolve(client);
+                })
+                    .catch(() => {
+                    console.log(`Unable to login...Logging in again.`);
+                });
+            }, 1000);
         });
     }
     static get GetClient() {
@@ -35,7 +36,7 @@ class ClientManager {
             }, 500);
         });
     }
-    static async GetUser(id) {
+    static GetUser(id) {
         return new Promise((resolve, reject) => {
             setInterval(() => {
                 const user = this.Client.users.get(id);
