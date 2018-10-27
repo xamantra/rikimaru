@@ -18,7 +18,7 @@ class QueueData {
             this.Clear()
                 .then(() => {
                 query_1.Query.Execute(this.DataHelper.QueueSelectAll(), async (result) => {
-                    const queues = json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Queue);
+                    const queues = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Queue);
                     if (queues === null || queues === undefined) {
                         reject(new Error(`"JsonHelper.ArrayConvert<Queue>(result, Queue)" is 'null' or 'undefined'`));
                     }
@@ -88,8 +88,8 @@ class QueueData {
         return new Promise((resolve, reject) => {
             this.Exists(mediaId).then(exists => {
                 if (exists === false) {
-                    query_1.Query.Execute(this.DataHelper.QueueInsert(mediaId, next_episode), result => {
-                        const res = json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
+                    query_1.Query.Execute(this.DataHelper.QueueInsert(mediaId, next_episode), async (result) => {
+                        const res = await json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
                         console.log(res);
                         if (res !== undefined && res !== null) {
                             const q = new subscription_model_1.Queue();

@@ -14,8 +14,8 @@ class SubscriptionData {
     }
     static async Init() {
         return new Promise((resolve, reject) => {
-            query_1.Query.Execute(this.DataHelper.SubsSelectAll(), result => {
-                const subs = json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Subscription);
+            query_1.Query.Execute(this.DataHelper.SubsSelectAll(), async (result) => {
+                const subs = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Subscription);
                 console.log(subs);
                 if (subs === null || subs === undefined) {
                     reject(new Error(`JsonHelper.ArrayConvert<Subscription>(result,Subscription);`));
@@ -53,7 +53,7 @@ class SubscriptionData {
                         }
                         else {
                             query_1.Query.Execute(this.DataHelper.SubsInsert(mediaId, userId), async (result) => {
-                                const res = json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
+                                const res = await json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
                                 if (res.InsertId !== undefined && res.InsertId !== null) {
                                     const sub = new subscription_model_1.Subscription();
                                     sub.Id = res.InsertId;

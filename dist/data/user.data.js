@@ -10,9 +10,9 @@ class UserData {
         return this.UserList;
     }
     static async Init() {
-        return new Promise((res, rej) => {
-            query_1.Query.Execute(this.DataHelper.UserSelectAll()).then(result => {
-                const users = json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.User);
+        return new Promise(async (res, rej) => {
+            query_1.Query.Execute(this.DataHelper.UserSelectAll()).then(async (result) => {
+                const users = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.User);
                 if (users !== undefined && users !== null) {
                     users.forEach(user => {
                         this.UserList.push(user);
@@ -38,13 +38,13 @@ class UserData {
         });
     }
     static async Insert(discordId) {
-        return new Promise((res, rej) => {
+        return new Promise(async (res, rej) => {
             this.Exists(discordId)
                 .then(exists => {
                 if (exists === false) {
-                    query_1.Query.Execute(this.DataHelper.UserInsert(discordId), result => {
+                    query_1.Query.Execute(this.DataHelper.UserInsert(discordId), async (result) => {
                         try {
-                            const myRes = json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
+                            const myRes = await json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
                             if (myRes !== null && myRes !== undefined && myRes.InsertId !== null && myRes.InsertId !== undefined) {
                                 const user = new subscription_model_1.User();
                                 user.Id = myRes.InsertId;

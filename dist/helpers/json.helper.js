@@ -13,7 +13,7 @@ class JsonHelper {
             const jsonString = JSON.stringify(json);
             const result = this.Converter.deserialize(JSON.parse(jsonString), t);
             if (result === null || result === undefined) {
-                reject(new Error(`Cannot deserialize the result.`));
+                reject(new Error(`"Convert<T>(json: any, t: any)" : Cannot deserialize the result.`));
             }
             else {
                 resolve(result);
@@ -21,9 +21,16 @@ class JsonHelper {
         });
     }
     static ArrayConvert(json, t) {
-        const jsonString = JSON.stringify(json);
-        const result = this.Converter.deserialize(JSON.parse(jsonString), t);
-        return result;
+        return new Promise((resolve, reject) => {
+            const jsonString = JSON.stringify(json);
+            const result = this.Converter.deserialize(JSON.parse(jsonString), t);
+            if (result === null || result === undefined) {
+                reject(new Error(`"Convert<T>(json: any, t: any)" : Cannot deserialize the result.`));
+            }
+            else {
+                resolve(result);
+            }
+        });
     }
 }
 exports.JsonHelper = JsonHelper;

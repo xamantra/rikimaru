@@ -22,7 +22,7 @@ class MediaData {
         return new Promise(async (resolve, reject) => {
             this.Clear().then(() => {
                 query_1.Query.Execute(this.DataHelper.MediaSelectAll(), async (result) => {
-                    const media = json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Media);
+                    const media = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Media);
                     if (media === undefined || media === null) {
                         reject(new Error(`"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`));
                     }
@@ -109,7 +109,7 @@ class MediaData {
             const exist = await this.Exists(media.idMal);
             if (exist === true) {
                 const result = await query_1.Query.Execute(this.DataHelper.MediaInsert(media.idMal, title));
-                const myRes = json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
+                const myRes = await json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
                 if (myRes.InsertId !== undefined && myRes.InsertId !== null) {
                     const m = new subscription_model_1.Media();
                     m.MalId = myRes.InsertId;
