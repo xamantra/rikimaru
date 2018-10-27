@@ -86,6 +86,9 @@ class MediaData {
                             });
                             console.log(`Pushed: ${lm.Title}`);
                             this.MediaList.push($m);
+                            if (iteration === locals.length) {
+                                res();
+                            }
                         }
                         else {
                             array_helper_1.ArrayHelper.remove(this.LocalList, lm, () => {
@@ -98,15 +101,15 @@ class MediaData {
                                         });
                                     });
                                 });
+                                if (iteration === locals.length) {
+                                    res();
+                                }
                             });
                         }
                     })
                         .catch(error => {
                         console.warn(`Error while searching : [MediaSearch.Find(${lm.MalId})]`);
                     });
-                    if (iteration === locals.length) {
-                        res();
-                    }
                 });
             }
         });
