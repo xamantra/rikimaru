@@ -26,6 +26,7 @@ class Query {
                         reject(err);
                     }
                     else {
+                        conn.end();
                         if (callback !== null && callback !== undefined)
                             callback(result);
                         resolve();
