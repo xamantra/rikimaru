@@ -20,25 +20,26 @@ class MediaData {
     }
     static async Init() {
         return new Promise(async (res, rej) => {
-            this.Clear();
-            query_1.Query.Execute(this.DataHelper.MediaSelectAll(), async (result) => {
-                const media = json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Media);
-                if (media === undefined || media === null) {
-                    rej(new Error(`"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`));
-                }
-                else {
-                    media.forEach(m => {
-                        this.LocalList.push(m);
+            this.Clear().then(() => {
+                query_1.Query.Execute(this.DataHelper.MediaSelectAll(), async (result) => {
+                    const media = json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Media);
+                    if (media === undefined || media === null) {
+                        rej(new Error(`"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`));
+                    }
+                    else {
+                        media.forEach(m => {
+                            this.LocalList.push(m);
+                        });
+                    }
+                }).then(() => {
+                    this.LoadFromApi()
+                        .then(() => {
+                        console.log(`Media List Length: ${this.MediaList.length}`);
+                        res();
+                    })
+                        .catch((reason) => {
+                        console.log(reason.message);
                     });
-                }
-            }).then(() => {
-                this.LoadFromApi()
-                    .then(() => {
-                    console.log(`Media List Length: ${this.MediaList.length}`);
-                    res();
-                })
-                    .catch((reason) => {
-                    console.log(reason.message);
                 });
             });
         });

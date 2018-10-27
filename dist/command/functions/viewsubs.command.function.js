@@ -45,8 +45,10 @@ class ViewSubsFunction {
                                 name: `\n${title}\nhttps://myanimelist.net/anime/${media.idMal}/`,
                                 value: `*Episode ${episode} :* ***${countdown}***\n-------------------------------------------------------------------`
                             });
+                            if (list.length === mediaSubs.length) {
+                                resolve(this.EmbedTemplate(user, mediaSubs, list));
+                            }
                         });
-                        resolve(this.EmbedTemplate(user, mediaSubs, list));
                     });
                 })
                     .catch((reason) => {

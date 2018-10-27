@@ -30,29 +30,30 @@ export class MediaData {
 
   public static async Init() {
     return new Promise(async (res, rej) => {
-      this.Clear();
-      Query.Execute(this.DataHelper.MediaSelectAll(), async result => {
-        const media = JsonHelper.ArrayConvert<Media>(result, Media);
-        if (media === undefined || media === null) {
-          rej(
-            new Error(
-              `"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`
-            )
-          );
-        } else {
-          media.forEach(m => {
-            this.LocalList.push(m);
-          });
-        }
-      }).then(() => {
-        this.LoadFromApi()
-          .then(() => {
-            console.log(`Media List Length: ${this.MediaList.length}`);
-            res();
-          })
-          .catch((reason: Error) => {
-            console.log(reason.message);
-          });
+      this.Clear().then(() => {
+        Query.Execute(this.DataHelper.MediaSelectAll(), async result => {
+          const media = JsonHelper.ArrayConvert<Media>(result, Media);
+          if (media === undefined || media === null) {
+            rej(
+              new Error(
+                `"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`
+              )
+            );
+          } else {
+            media.forEach(m => {
+              this.LocalList.push(m);
+            });
+          }
+        }).then(() => {
+          this.LoadFromApi()
+            .then(() => {
+              console.log(`Media List Length: ${this.MediaList.length}`);
+              res();
+            })
+            .catch((reason: Error) => {
+              console.log(reason.message);
+            });
+        });
       });
     });
   }

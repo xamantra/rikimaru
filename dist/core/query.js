@@ -2,26 +2,30 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const data_helper_1 = require("../helpers/data.helper");
 class Query {
-    // public static async Connect() {
-    //   return new Promise<Pool>((resolve, reject) => {
-    //     const pool = DataHelper.Pool;
-    //     pool.(err => {
-    //       if (err !== null && err !== undefined) {
-    //         console.log(`Error 1: ${err}`);
-    //         reject(err);
-    //       } else {
-    //         resolve(pool);
-    //       }
-    //     });
-    //   });
-    // }
+    static async Connect() {
+        return new Promise((resolve, reject) => {
+            const conn = data_helper_1.DataHelper.Conn;
+            conn.end();
+            conn.connect(err => {
+                if (err !== null && err !== undefined) {
+                    console.log(`Error 1: ${err}`);
+                    reject(err);
+                }
+                else {
+                    resolve(conn);
+                }
+            });
+        });
+    }
     static async Execute(sql, callback) {
         return new Promise((resolve, reject) => {
-            data_helper_1.DataHelper.Pool.query(sql, (error, results, fields) => {
+            const conn = data_helper_1.DataHelper.Conn;
+            conn.query(sql, (error, results, fields) => {
                 if (error !== null && error !== undefined) {
                     reject(error);
                 }
                 else {
+                    conn.end();
                     if (callback !== null && callback !== undefined)
                         callback(results);
                     resolve(results);

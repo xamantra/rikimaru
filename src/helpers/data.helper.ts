@@ -10,35 +10,35 @@ export class DataHelper {
     return this._instance || (this._instance = new this());
   }
 
-  public static get Pool() {
-    const pool = mysql.createPool({
+  public static get Conn() {
+    const conn = mysql.createConnection({
       host: Config.MYSQL_HOST,
       port: Config.MYSQL_PORT,
       user: Config.MYSQL_USERNAME,
       password: Config.MYSQL_PASSWORD,
       database: Config.MYSQL_DATABASE,
       timeout: Config.MYSQL_TIMEOUT,
-      connectTimeout: Config.MYSQL_CONNECTION_TIMEOUT,
-      connectionLimit: Config.MYSQL_CONNECTION_LIMIT,
-      waitForConnections: true
+      connectTimeout: Config.MYSQL_CONNECTION_TIMEOUT
+      // connectionLimit: Config.MYSQL_CONNECTION_LIMIT,
+      // waitForConnections: true
     });
 
-    pool.getConnection((err, connection) => {
-      if (err) {
-        if (err.code === "PROTOCOL_CONNECTION_LOST") {
-          console.log("Database connection was closed.");
-        }
-        if (err.code === "ER_CON_COUNT_ERROR") {
-          console.log("Database has too many connections.");
-        }
-        if (err.code === "ECONNREFUSED") {
-          console.log("Database connection was refused.");
-        }
-      }
-      if (connection) connection.release();
-      return;
-    });
-    return pool;
+    // pool.getConnection((err, connection) => {
+    //   if (err) {
+    //     if (err.code === "PROTOCOL_CONNECTION_LOST") {
+    //       console.log("Database connection was closed.");
+    //     }
+    //     if (err.code === "ER_CON_COUNT_ERROR") {
+    //       console.log("Database has too many connections.");
+    //     }
+    //     if (err.code === "ECONNREFUSED") {
+    //       console.log("Database connection was refused.");
+    //     }
+    //   }
+    //   if (connection) connection.release();
+    //   return;
+    // });
+    return conn;
   }
 
   private static _instance: DataHelper;
