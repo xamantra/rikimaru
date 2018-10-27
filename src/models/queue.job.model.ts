@@ -71,7 +71,11 @@ export class QueueJob {
     const countdown = moment(this.JobDate).toNow(true);
     const title = TitleHelper.Get(this.media.title);
     console.log(
-      `Queue Job { "${this.user.DiscordId}": ${title}  in  ${countdown} }`
+      `Queue Job { Queue Episode: "Episode ${this.queue.NextEpisode}" User: "${
+        this.user.DiscordId
+      }": "${title} Episode ${
+        this.media.nextAiringEpisode.next
+      }"  in  ${countdown} }`
     );
   }
 

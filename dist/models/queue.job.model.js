@@ -76,7 +76,7 @@ class QueueJob {
     Log() {
         const countdown = moment_1.default(this.JobDate).toNow(true);
         const title = title_helper_1.TitleHelper.Get(this.media.title);
-        console.log(`Queue Job { "${this.user.DiscordId}": ${title}  in  ${countdown} }`);
+        console.log(`Queue Job { Queue Episode: "Episode ${this.queue.NextEpisode}" User: "${this.user.DiscordId}": "${title} Episode ${this.media.nextAiringEpisode.next}"  in  ${countdown} }`);
     }
     Update() {
         // if (this.Job !== undefined && this.Job !== null) {
