@@ -11,7 +11,8 @@ import {
   logall,
   unsub,
   dmsub,
-  dmviewsubs
+  dmviewsubs,
+  dmunsub
 } from "./commands";
 
 export class CommandManager {
@@ -29,6 +30,7 @@ export class CommandManager {
     cmds.push(viewsubs);
     cmds.push(dmviewsubs);
     cmds.push(unsub);
+    cmds.push(dmunsub);
     cmds.push(ping);
     cmds.push(dmping);
     cmds.push(logall);
