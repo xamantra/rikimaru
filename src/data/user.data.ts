@@ -14,9 +14,9 @@ export class UserData {
   private static DataHelper = DataHelper.Instance;
 
   public static async Init() {
-    return new Promise<void>((res, rej) => {
-      Query.Execute(this.DataHelper.UserSelectAll()).then(result => {
-        const users = JsonHelper.ArrayConvert<User>(result, User);
+    return new Promise<void>(async (res, rej) => {
+      Query.Execute(this.DataHelper.UserSelectAll()).then(async result => {
+        const users = await JsonHelper.ArrayConvert<User>(result, User);
         if (users !== undefined && users !== null) {
           users.forEach(user => {
             this.UserList.push(user);
@@ -25,9 +25,7 @@ export class UserData {
           res();
         } else {
           rej(
-            new Error(
-              `"JsonHelper.ArrayConvert<User>(result, User)" is 'null' or 'undefined'.`
-            )
+            new Error(`"JsonHelper.ArrayConvert<User>(result, User)" is 'null' or 'undefined'.`)
           );
         }
       });
@@ -41,31 +39,21 @@ export class UserData {
         res(user);
       } else {
         rej(
-          new Error(
-            `"this.All.find(x => x.DiscordId === discordId)" is 'null' or 'undefined'.`
-          )
+          new Error(`"this.All.find(x => x.DiscordId === discordId)" is 'null' or 'undefined'.`)
         );
       }
     });
   }
 
   public static async Insert(discordId: string) {
-    return new Promise<number>((res, rej) => {
+    return new Promise<number>(async (res, rej) => {
       this.Exists(discordId)
         .then(exists => {
           if (exists === false) {
-            Query.Execute(this.DataHelper.UserInsert(discordId), result => {
+            Query.Execute(this.DataHelper.UserInsert(discordId), async result => {
               try {
-                const myRes = JsonHelper.Convert<MySqlResult>(
-                  result,
-                  MySqlResult
-                );
-                if (
-                  myRes !== null &&
-                  myRes !== undefined &&
-                  myRes.InsertId !== null &&
-                  myRes.InsertId !== undefined
-                ) {
+                const myRes = await JsonHelper.Convert<MySqlResult>(result, MySqlResult);
+                if (myRes !== null && myRes !== undefined && myRes.InsertId !== null && myRes.InsertId !== undefined) {
                   const user = new User();
                   user.Id = myRes.InsertId;
                   user.DiscordId = discordId;
@@ -80,9 +68,7 @@ export class UserData {
             rej(new Error(`DiscordId: "${discordId}" already exists.`));
           }
         })
-        .catch((err: Error) => {
-          rej(err);
-        });
+        .catch((err: Error) => { rej(err); });
     });
   }
 
@@ -102,9 +88,7 @@ export class UserData {
       if (this.All === undefined || this.All === null) {
         rej(new Error(`"UserData.All" is 'null' or 'undefined'.`));
       } else {
-        this.All.forEach(user => {
-          console.log(user);
-        });
+        this.All.forEach(user => { console.log(user); });
         res();
       }
     });

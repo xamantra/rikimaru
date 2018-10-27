@@ -23,16 +23,12 @@ class QueueData {
                         reject(new Error(`"JsonHelper.ArrayConvert<Queue>(result, Queue)" is 'null' or 'undefined'`));
                     }
                     else {
-                        queues.forEach(q => {
-                            this.Queues.push(q);
-                        });
+                        queues.forEach(q => { this.Queues.push(q); });
                         resolve();
                     }
                 });
             })
-                .catch((err) => {
-                console.log(err.message);
-            });
+                .catch((err) => { console.log(err.message); });
         });
     }
     static async Clear() {
@@ -85,7 +81,6 @@ class QueueData {
     static RemoveJob(queueJob) {
         array_helper_1.ArrayHelper.remove(this.QueueJobs, queueJob, () => {
             console.log(`Queue Job: "${queueJob}"`);
-            // queueJob.Cancel();
             queueJob = null;
         });
     }
@@ -156,12 +151,8 @@ class QueueData {
                 reject(new Error(`"Queues" is 'null' or 'undefined'.`));
             }
             else {
-                this.Queues.forEach(q => {
-                    console.log(q);
-                });
-                this.QueueJobs.forEach(qj => {
-                    qj.Log();
-                });
+                this.Queues.forEach(q => { console.log(q); });
+                this.QueueJobs.forEach(qj => { qj.Log(); });
                 resolve();
             }
         });

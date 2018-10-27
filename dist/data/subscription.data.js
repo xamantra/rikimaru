@@ -21,9 +21,7 @@ class SubscriptionData {
                     reject(new Error(`JsonHelper.ArrayConvert<Subscription>(result,Subscription);`));
                 }
                 else {
-                    subs.forEach(sub => {
-                        this.SubscriptionList.push(sub);
-                    });
+                    subs.forEach(sub => { this.SubscriptionList.push(sub); });
                     resolve();
                 }
             });
@@ -82,21 +80,15 @@ class SubscriptionData {
                     const sub = this.SubscriptionList.find(x => x.MediaId === mediaId && x.UserId === user.Id);
                     if (sub !== null && sub !== undefined) {
                         const queueJob = queue_data_1.QueueData.GetJobs.find(x => x.user.DiscordId === discordId && x.media.idMal === mediaId);
-                        array_helper_1.ArrayHelper.remove(this.SubscriptionList, sub, () => {
-                            queue_data_1.QueueData.RemoveJob(queueJob);
-                        });
+                        array_helper_1.ArrayHelper.remove(this.SubscriptionList, sub, () => { queue_data_1.QueueData.RemoveJob(queueJob); });
                         res();
                     }
                     else {
-                        rej(new Error(`"this.SubscriptionList.find(
-                  x => x.MediaId === mediaId && x.UserId === user.Id
-                )" is 'null' or 'undefined'.`));
+                        rej(new Error(`"this.SubscriptionList.find(   x => x.MediaId === mediaId && x.UserId === user.Id )" is 'null' or 'undefined'.`));
                     }
                 });
             })
-                .catch((reason) => {
-                rej(reason);
-            });
+                .catch((reason) => { rej(reason); });
         });
     }
     static async Exists(mediaId, userId) {
@@ -112,15 +104,11 @@ class SubscriptionData {
     }
     static async LogAll() {
         return new Promise((resolve, reject) => {
-            if (this.All === null ||
-                this.All === undefined ||
-                this.All.length === 0) {
+            if (this.All === null || this.All === undefined || this.All.length === 0) {
                 reject(new Error(`"this.All" is 'null' or 'undefined'.`));
             }
             else {
-                this.All.forEach(sub => {
-                    console.log(sub);
-                });
+                this.All.forEach(sub => { console.log(sub); });
                 resolve();
             }
         });

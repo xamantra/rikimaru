@@ -8,10 +8,17 @@ class JsonHelper {
         jsonConvert.valueCheckingMode = json2typescript_1.ValueCheckingMode.ALLOW_NULL;
         return jsonConvert;
     }
-    static Convert(json, t) {
-        const jsonString = JSON.stringify(json);
-        const result = this.Converter.deserialize(JSON.parse(jsonString), t);
-        return result;
+    static async Convert(json, t) {
+        return new Promise((resolve, reject) => {
+            const jsonString = JSON.stringify(json);
+            const result = this.Converter.deserialize(JSON.parse(jsonString), t);
+            if (result === null || result === undefined) {
+                reject(new Error(`Cannot deserialize the result.`));
+            }
+            else {
+                resolve(result);
+            }
+        });
     }
     static ArrayConvert(json, t) {
         const jsonString = JSON.stringify(json);

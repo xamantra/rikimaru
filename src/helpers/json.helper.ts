@@ -8,15 +8,27 @@ export class JsonHelper {
     return jsonConvert;
   }
 
-  public static Convert<T>(json: any, t: any) {
-    const jsonString = JSON.stringify(json);
-    const result = this.Converter.deserialize(JSON.parse(jsonString), t);
-    return result as T;
+  public static async Convert<T>(json: any, t: any) {
+    return new Promise<T>((resolve, reject) => {
+      const jsonString = JSON.stringify(json);
+      const result = this.Converter.deserialize(JSON.parse(jsonString), t);
+      if (result === null || result === undefined) {
+        reject(new Error(`"Convert<T>(json: any, t: any)" : Cannot deserialize the result.`));
+      } else {
+        resolve(result as T);
+      }
+    });
   }
 
   public static ArrayConvert<T>(json: any, t: any) {
-    const jsonString = JSON.stringify(json);
-    const result = this.Converter.deserialize(JSON.parse(jsonString), t);
-    return result as T[];
+    return new Promise<T[]>((resolve, reject) => {
+      const jsonString = JSON.stringify(json);
+      const result = this.Converter.deserialize(JSON.parse(jsonString), t);
+      if (result === null || result === undefined) {
+        reject(new Error(`"Convert<T>(json: any, t: any)" : Cannot deserialize the result.`));
+      } else {
+        resolve(result as T[]);
+      }
+    });
   }
 }

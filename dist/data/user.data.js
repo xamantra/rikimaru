@@ -45,10 +45,7 @@ class UserData {
                     query_1.Query.Execute(this.DataHelper.UserInsert(discordId), result => {
                         try {
                             const myRes = json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
-                            if (myRes !== null &&
-                                myRes !== undefined &&
-                                myRes.InsertId !== null &&
-                                myRes.InsertId !== undefined) {
+                            if (myRes !== null && myRes !== undefined && myRes.InsertId !== null && myRes.InsertId !== undefined) {
                                 const user = new subscription_model_1.User();
                                 user.Id = myRes.InsertId;
                                 user.DiscordId = discordId;
@@ -65,9 +62,7 @@ class UserData {
                     rej(new Error(`DiscordId: "${discordId}" already exists.`));
                 }
             })
-                .catch((err) => {
-                rej(err);
-            });
+                .catch((err) => { rej(err); });
         });
     }
     static async Exists(discordId) {
@@ -87,9 +82,7 @@ class UserData {
                 rej(new Error(`"UserData.All" is 'null' or 'undefined'.`));
             }
             else {
-                this.All.forEach(user => {
-                    console.log(user);
-                });
+                this.All.forEach(user => { console.log(user); });
                 res();
             }
         });

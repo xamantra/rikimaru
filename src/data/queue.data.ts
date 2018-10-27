@@ -24,24 +24,16 @@ export class QueueData {
       this.Clear()
         .then(() => {
           Query.Execute(this.DataHelper.QueueSelectAll(), async result => {
-            const queues = JsonHelper.ArrayConvert<Queue>(result, Queue);
+            const queues = await JsonHelper.ArrayConvert<Queue>(result, Queue);
             if (queues === null || queues === undefined) {
-              reject(
-                new Error(
-                  `"JsonHelper.ArrayConvert<Queue>(result, Queue)" is 'null' or 'undefined'`
-                )
-              );
+              reject(new Error(`"JsonHelper.ArrayConvert<Queue>(result, Queue)" is 'null' or 'undefined'`));
             } else {
-              queues.forEach(q => {
-                this.Queues.push(q);
-              });
+              queues.forEach(q => { this.Queues.push(q); });
               resolve();
             }
           });
         })
-        .catch((err: Error) => {
-          console.log(err.message);
-        });
+        .catch((err: Error) => { console.log(err.message); });
     });
   }
 
@@ -66,10 +58,7 @@ export class QueueData {
         resolve(q);
       } else {
         reject(
-          new Error(
-            `"this.All.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`
-          )
-        );
+          new Error(`"this.All.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`));
       }
     });
   }
@@ -102,7 +91,6 @@ export class QueueData {
   public static RemoveJob(queueJob: QueueJob) {
     ArrayHelper.remove(this.QueueJobs, queueJob, () => {
       console.log(`Queue Job: "${queueJob}"`);
-      // queueJob.Cancel();
       queueJob = null;
     });
   }
@@ -113,8 +101,8 @@ export class QueueData {
         if (exists === false) {
           Query.Execute(
             this.DataHelper.QueueInsert(mediaId, next_episode),
-            result => {
-              const res = JsonHelper.Convert<MySqlResult>(result, MySqlResult);
+            async result => {
+              const res = await JsonHelper.Convert<MySqlResult>(result, MySqlResult);
               console.log(res);
               if (res !== undefined && res !== null) {
                 const q = new Queue();
@@ -126,10 +114,7 @@ export class QueueData {
                 resolve(q.Id);
               } else {
                 reject(
-                  new Error(
-                    `JsonHelper.ArrayConvert<MySqlResult>(result, MySqlResult)[0] is 'null' or 'undefined'.`
-                  )
-                );
+                  new Error(`JsonHelper.ArrayConvert<MySqlResult>(result, MySqlResult)[0] is 'null' or 'undefined'.`));
               }
             }
           );
@@ -157,11 +142,7 @@ export class QueueData {
                 });
               });
             } else {
-              reject(
-                `User ${user.DiscordId} is not subscribe to Media ${
-                  media.idMal
-                }`
-              );
+              reject(`User ${user.DiscordId} is not subscribe to Media ${media.idMal}`);
             }
           });
         });
@@ -185,12 +166,8 @@ export class QueueData {
       if (this.Queues === null || this.Queues === undefined) {
         reject(new Error(`"Queues" is 'null' or 'undefined'.`));
       } else {
-        this.Queues.forEach(q => {
-          console.log(q);
-        });
-        this.QueueJobs.forEach(qj => {
-          qj.Log();
-        });
+        this.Queues.forEach(q => { console.log(q); });
+        this.QueueJobs.forEach(qj => { qj.Log(); });
         resolve();
       }
     });
