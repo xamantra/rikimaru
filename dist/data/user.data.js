@@ -13,12 +13,17 @@ class UserData {
         return new Promise(async (res, rej) => {
             query_1.Query.Execute(this.DataHelper.UserSelectAll()).then(async (result) => {
                 const users = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.User);
+                let iteration = 1;
                 if (users !== undefined && users !== null) {
                     users.forEach(user => {
                         this.UserList.push(user);
+                        if (iteration === users.length) {
+                            res();
+                        }
+                        else {
+                            iteration++;
+                        }
                     });
-                    console.log(`User List: ${this.UserList.length}`);
-                    res();
                 }
                 else {
                     rej(new Error(`"JsonHelper.ArrayConvert<User>(result, User)" is 'null' or 'undefined'.`));

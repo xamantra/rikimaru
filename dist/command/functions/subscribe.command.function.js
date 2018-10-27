@@ -84,8 +84,8 @@ class SubscribeFunction {
         });
     }
     // tslint:disable-next-line:member-ordering
-    Embed(media, newSub) {
-        const client = client_1.ClientManager.GetClient;
+    async Embed(media, newSub) {
+        const client = await client_1.ClientManager.GetClient;
         const t = title_helper_1.TitleHelper.Get(media.title);
         const embed = {
             embed: {

@@ -20,7 +20,7 @@ export class JsonHelper {
     });
   }
 
-  public static ArrayConvert<T>(json: any, t: any) {
+  public static async ArrayConvert<T>(json: any, t: any) {
     return new Promise<T[]>((resolve, reject) => {
       const jsonString = JSON.stringify(json);
       const result = this.Converter.deserialize(JSON.parse(jsonString), t);

@@ -7,8 +7,8 @@ const config_1 = require("../core/config");
 const media_result_1 = require("../core/media.result");
 const response_handler_1 = require("./response.handler");
 class MessageHandler {
-    static Init() {
-        const client = client_1.ClientManager.GetClient;
+    static async Init() {
+        const client = await client_1.ClientManager.GetClient;
         client.on("message", message => {
             console.log({
                 Message: {

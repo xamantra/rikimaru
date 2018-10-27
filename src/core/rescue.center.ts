@@ -4,8 +4,9 @@ import { Color } from "./colors";
 import { ClientManager } from "./client";
 
 export class RescueCenter {
-  public static RequireParameter(cmd: BotCommand, command: ICommand) {
+  public static async RequireParameter(cmd: BotCommand, command: ICommand) {
     let example: any = cmd.Example;
+    const client = await ClientManager.GetClient;
     if (example === undefined) {
       example = "";
     } else {
@@ -14,26 +15,26 @@ export class RescueCenter {
     const msg: any =
       cmd.ParameterRequired && command.Parameter.length === 0
         ? {
-            embed: {
-              color: Color.Random,
-              title: `**Rikimaru Rescue Center**`,
-              description: `The command ***-${
-                command.Name
+          embed: {
+            color: Color.Random,
+            title: `**Rikimaru Rescue Center**`,
+            description: `The command ***-${
+              command.Name
               }*** requires a parameter.`,
-              fields: [
-                {
-                  name: `Example|s for ***-${command.Name}*** : `,
-                  // tslint:disable-next-line:max-line-length
-                  value: example
-                }
-              ],
-              timestamp: new Date(),
-              footer: {
-                icon_url: ClientManager.GetClient.user.avatarURL,
-                text: "© Rikimaru"
+            fields: [
+              {
+                name: `Example|s for ***-${command.Name}*** : `,
+                // tslint:disable-next-line:max-line-length
+                value: example
               }
+            ],
+            timestamp: new Date(),
+            footer: {
+              icon_url: client.user.avatarURL,
+              text: "© Rikimaru"
             }
           }
+        }
         : `The command ***-${command.Name}*** doesn't need a parameter.`;
     return msg;
   }

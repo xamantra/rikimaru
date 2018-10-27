@@ -3,8 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const colors_1 = require("./colors");
 const client_1 = require("./client");
 class RescueCenter {
-    static RequireParameter(cmd, command) {
+    static async RequireParameter(cmd, command) {
         let example = cmd.Example;
+        const client = await client_1.ClientManager.GetClient;
         if (example === undefined) {
             example = "";
         }
@@ -26,7 +27,7 @@ class RescueCenter {
                     ],
                     timestamp: new Date(),
                     footer: {
-                        icon_url: client_1.ClientManager.GetClient.user.avatarURL,
+                        icon_url: client.user.avatarURL,
                         text: "© Rikimaru"
                     }
                 }

@@ -27,7 +27,10 @@ class MediaData {
                         reject(new Error(`"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`));
                     }
                     else {
-                        media.forEach(m => { this.LocalList.push(m); });
+                        media.forEach(m => {
+                            this.LocalList.push(m);
+                            console.log(m);
+                        });
                     }
                 }).then(() => {
                     this.LoadFromApi()
@@ -65,7 +68,11 @@ class MediaData {
                 rej(new Error(`"locals = this.LocalList" is 'null' or 'undefined'`));
             }
             else {
+                let iteration = 0;
+                console.log(`Iterating through "locals (${this.LocalList.length} items)"`);
                 locals.forEach(lm => {
+                    iteration++;
+                    console.log(`Iteration: ${iteration}`);
                     media_search_1.MediaSearch.Find(lm.MalId)
                         .then($m => {
                         if (media_status_1.MediaStatus.Ongoing($m) || media_status_1.MediaStatus.NotYetAired($m)) {
@@ -93,13 +100,13 @@ class MediaData {
                                 });
                             });
                         }
-                        if (this.LocalList.length === this.MediaList.length) {
-                            res();
-                        }
                     })
                         .catch(error => {
                         console.warn(`Error while searching : [MediaSearch.Find(${lm.MalId})]`);
                     });
+                    if (iteration === locals.length) {
+                        res();
+                    }
                 });
             }
         });
@@ -133,21 +140,16 @@ class MediaData {
     }
     static async LogAll() {
         return new Promise(async (res, rej) => {
-            if (this.LocalList.length === this.MediaList.length) {
-                let iteration = 1;
-                this.LocalList.forEach(m => {
-                    console.log(m);
-                    if (iteration === this.LocalList.length) {
-                        res();
-                    }
-                    else {
-                        iteration++;
-                    }
-                });
-            }
-            else {
-                rej(new Error(`"LocalList" and "Media List" is not yet synchronize.`));
-            }
+            let iteration = 1;
+            this.LocalList.forEach(m => {
+                console.log(m);
+                if (iteration === this.LocalList.length) {
+                    res();
+                }
+                else {
+                    iteration++;
+                }
+            });
         });
     }
     static async Exists(malId) {

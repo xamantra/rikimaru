@@ -12,7 +12,7 @@ import { IMedia } from "../../interfaces/page.interface";
 import { MediaResult } from "../../core/media.result";
 
 export class ViewSubsFunction implements ICommandFunction {
-  constructor() {}
+  constructor() { }
 
   public Execute(message?: Message, command?: ICommand, dm?: boolean) {
     this.Embed(message, dm).then(async embed => {
@@ -53,7 +53,7 @@ export class ViewSubsFunction implements ICommandFunction {
                 await list.push({
                   name: `\n${title}\nhttps://myanimelist.net/anime/${
                     media.idMal
-                  }/`,
+                    }/`,
                   value: `*Episode ${episode} :* ***${countdown}***\n-------------------------------------------------------------------`
                 });
                 if (iteration === list.length) {
@@ -71,8 +71,8 @@ export class ViewSubsFunction implements ICommandFunction {
     });
   }
 
-  private EmbedTemplate(user: User, mediaSubs: IMedia[], list: any[]) {
-    const client = ClientManager.GetClient;
+  private async EmbedTemplate(user: User, mediaSubs: IMedia[], list: any[]) {
+    const client = await ClientManager.GetClient;
     return {
       embed: {
         color: Color.Random,
@@ -82,7 +82,7 @@ export class ViewSubsFunction implements ICommandFunction {
         title: `***${user.username}***'s *Subscription List*`,
         description: `**${
           mediaSubs.length
-        } Anime**\n\nPlease Note: *The airing schedule for the streaming site you are using might be different.*\n`,
+          } Anime**\n\nPlease Note: *The airing schedule for the streaming site you are using might be different.*\n`,
         fields: list,
         timestamp: new Date(),
         footer: {

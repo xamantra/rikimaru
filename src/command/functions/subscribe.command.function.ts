@@ -34,7 +34,7 @@ export class SubscribeFunction implements ICommandFunction {
       .then(res => {
         console.log(
           `There are "${res.length} results" for the search "${
-            command.Parameter
+          command.Parameter
           }".`
         );
         const ongoing = MediaHandler.OngoingMedia(res);
@@ -116,8 +116,8 @@ export class SubscribeFunction implements ICommandFunction {
   }
 
   // tslint:disable-next-line:member-ordering
-  private Embed(media: IMedia, newSub: boolean) {
-    const client = ClientManager.GetClient;
+  private async Embed(media: IMedia, newSub: boolean) {
+    const client = await ClientManager.GetClient;
     const t = TitleHelper.Get(media.title);
     const embed = {
       embed: {

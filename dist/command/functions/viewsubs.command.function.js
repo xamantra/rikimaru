@@ -60,8 +60,8 @@ class ViewSubsFunction {
             });
         });
     }
-    EmbedTemplate(user, mediaSubs, list) {
-        const client = client_1.ClientManager.GetClient;
+    async EmbedTemplate(user, mediaSubs, list) {
+        const client = await client_1.ClientManager.GetClient;
         return {
             embed: {
                 color: colors_1.Color.Random,

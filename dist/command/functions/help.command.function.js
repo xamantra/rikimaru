@@ -21,7 +21,7 @@ class HelpFunction {
     }
     async Embed(message) {
         const commands = manager_command_1.CommandManager.Commands;
-        const client = client_1.ClientManager.GetClient;
+        const client = await client_1.ClientManager.GetClient;
         const list = [];
         await commands.forEach(async (command) => {
             if (command.DevOnly === false) {

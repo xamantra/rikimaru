@@ -90,8 +90,8 @@ export class QueueJob {
     });
   }
 
-  private Embed(media: IMedia, episode: number) {
-    const client = ClientManager.GetClient;
+  private async Embed(media: IMedia, episode: number) {
+    const client = await ClientManager.GetClient;
     const t = TitleHelper.Get(media.title);
     const embed = {
       embed: {

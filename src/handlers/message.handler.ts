@@ -6,8 +6,8 @@ import { MediaResult } from "../core/media.result";
 import { ResponseHandler } from "./response.handler";
 
 export class MessageHandler {
-  public static Init() {
-    const client = ClientManager.GetClient;
+  public static async Init() {
+    const client = await ClientManager.GetClient;
     client.on("message", message => {
       console.log({
         Message: {
@@ -23,7 +23,7 @@ export class MessageHandler {
         MediaResult.SendInfo(
           message,
           `Go me nasai! ***${
-            message.author.username
+          message.author.username
           }***, I don't talk to strangers.`,
           true
         );

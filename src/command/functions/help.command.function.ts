@@ -26,7 +26,7 @@ export class HelpFunction implements ICommandFunction {
 
   private async Embed(message: Message) {
     const commands = CommandManager.Commands;
-    const client = ClientManager.GetClient;
+    const client = await ClientManager.GetClient;
     const list: any[] = [];
     await commands.forEach(async command => {
       if (command.DevOnly === false) {
@@ -45,7 +45,7 @@ export class HelpFunction implements ICommandFunction {
         title: `***Rikimaru Help Center***`,
         description: `Hey **${
           message.member.user.username
-        }**! This are my command list:`,
+          }**! This are my command list:`,
         fields: list,
         timestamp: new Date(),
         footer: {

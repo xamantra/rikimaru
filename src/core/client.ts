@@ -4,31 +4,49 @@ import { Config } from "./config";
 export class ClientManager {
   private static Client: Client;
 
-  public static async Init(botClient: Client) {
-    botClient.login(Config.BOT_TOKEN);
-    const client = botClient;
+  public static async Init(client: Client) {
+    const botClient = await this.Login(client);
     this.Client = botClient;
-
-    client.on("guildCreate", guild => {
+    botClient.on("guildCreate", guild => {
       console.log(
         `New server joined: ${guild.name} (Id: ${guild.id}). This server has ${
-          guild.memberCount
+        guild.memberCount
         } members!`
       );
     });
 
-    client.on("ready", () => {
+    botClient.on("ready", () => {
       console.log(
-        `Bot has started, with ${client.users.size} users, in ${
-          this.Client.channels.size
-        } channels of ${client.guilds.size} servers.`
+        `Bot has started, with ${botClient.users.size} users, in ${
+        botClient.channels.size
+        } channels of ${botClient.guilds.size} servers.`
       );
-      this.Client.user.setActivity(`as a Bot`);
+      botClient.user.setActivity(`as a Bot`);
+    });
+  }
+
+  private static async Login(client: Client) {
+    return new Promise<Client>((resolve, reject) => {
+      client.login(Config.BOT_TOKEN)
+        .then(token => {
+          console.log(`"${client.user.username}" has successfully logged in! Token: "${token.substring(0, 20)}..."`);
+          resolve(client);
+        })
+        .catch(() => {
+          console.log(`Unable to login...Logging in again.`);
+          this.Login(client);
+        });
     });
   }
 
   public static get GetClient() {
-    return this.Client;
+    return new Promise<Client>((resolve, reject) => {
+      setInterval(() => {
+        if (this.Client !== null && this.Client !== undefined) {
+          resolve(this.Client);
+        }
+      }, 500);
+    });
   }
 
   public static async GetUser(id: string) {

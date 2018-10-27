@@ -3,7 +3,8 @@ import { GuildMember, Guild } from "discord.js";
 import { ClientManager } from "../core/client";
 
 export class EmbedHelper {
-  public WelcomeEmbed(server: Guild, member: GuildMember) {
+  public async WelcomeEmbed(server: Guild, member: GuildMember) {
+    const client = await ClientManager.GetClient;
     const embed = {
       embed: {
         color: Color.Random,
@@ -12,7 +13,7 @@ export class EmbedHelper {
         },
         title: `Hello ${member.user.username}!, Welcome to **${
           server.name
-        }**! Server`,
+          }**! Server`,
         fields: [
           {
             name: `**Who am I?**`,
@@ -25,7 +26,7 @@ export class EmbedHelper {
         ],
         timestamp: new Date(),
         footer: {
-          icon_url: ClientManager.GetClient.user.avatarURL,
+          icon_url: client.user.avatarURL,
           text: "© Rikimaru"
         }
       }

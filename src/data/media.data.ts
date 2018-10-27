@@ -32,7 +32,10 @@ export class MediaData {
           if (media === undefined || media === null) {
             reject(new Error(`"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`));
           } else {
-            media.forEach(m => { this.LocalList.push(m); });
+            media.forEach(m => {
+              this.LocalList.push(m);
+              console.log(m);
+            });
           }
         }).then(() => {
           this.LoadFromApi()
@@ -69,7 +72,11 @@ export class MediaData {
       } else if (locals === undefined || locals === null) {
         rej(new Error(`"locals = this.LocalList" is 'null' or 'undefined'`));
       } else {
+        let iteration = 0;
+        console.log(`Iterating through "locals (${this.LocalList.length} items)"`);
         locals.forEach(lm => {
+          iteration++;
+          console.log(`Iteration: ${iteration}`);
           MediaSearch.Find(lm.MalId)
             .then($m => {
               if (MediaStatus.Ongoing($m) || MediaStatus.NotYetAired($m)) {
@@ -98,13 +105,13 @@ export class MediaData {
                   });
                 });
               }
-              if (this.LocalList.length === this.MediaList.length) {
-                res();
-              }
             })
             .catch(error => {
               console.warn(`Error while searching : [MediaSearch.Find(${lm.MalId})]`);
             });
+          if (iteration === locals.length) {
+            res();
+          }
         });
       }
     });
@@ -141,19 +148,15 @@ export class MediaData {
 
   public static async LogAll() {
     return new Promise(async (res, rej) => {
-      if (this.LocalList.length === this.MediaList.length) {
-        let iteration = 1;
-        this.LocalList.forEach(m => {
-          console.log(m);
-          if (iteration === this.LocalList.length) {
-            res();
-          } else {
-            iteration++;
-          }
-        });
-      } else {
-        rej(new Error(`"LocalList" and "Media List" is not yet synchronize.`));
-      }
+      let iteration = 1;
+      this.LocalList.forEach(m => {
+        console.log(m);
+        if (iteration === this.LocalList.length) {
+          res();
+        } else {
+          iteration++;
+        }
+      });
     });
   }
 

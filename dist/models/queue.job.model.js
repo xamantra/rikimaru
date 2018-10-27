@@ -79,8 +79,8 @@ class QueueJob {
             });
         });
     }
-    Embed(media, episode) {
-        const client = client_1.ClientManager.GetClient;
+    async Embed(media, episode) {
+        const client = await client_1.ClientManager.GetClient;
         const t = title_helper_1.TitleHelper.Get(media.title);
         const embed = {
             embed: {

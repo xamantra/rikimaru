@@ -3,7 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const colors_1 = require("./../core/colors");
 const client_1 = require("../core/client");
 class EmbedHelper {
-    WelcomeEmbed(server, member) {
+    async WelcomeEmbed(server, member) {
+        const client = await client_1.ClientManager.GetClient;
         const embed = {
             embed: {
                 color: colors_1.Color.Random,
@@ -23,7 +24,7 @@ class EmbedHelper {
                 ],
                 timestamp: new Date(),
                 footer: {
-                    icon_url: client_1.ClientManager.GetClient.user.avatarURL,
+                    icon_url: client.user.avatarURL,
                     text: "© Rikimaru"
                 }
             }

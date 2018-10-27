@@ -17,12 +17,12 @@ export class UserData {
     return new Promise<void>(async (res, rej) => {
       Query.Execute(this.DataHelper.UserSelectAll()).then(async result => {
         const users = await JsonHelper.ArrayConvert<User>(result, User);
+        let iteration = 1;
         if (users !== undefined && users !== null) {
           users.forEach(user => {
             this.UserList.push(user);
+            if (iteration === users.length) { res(); } else { iteration++; }
           });
-          console.log(`User List: ${this.UserList.length}`);
-          res();
         } else {
           rej(
             new Error(`"JsonHelper.ArrayConvert<User>(result, User)" is 'null' or 'undefined'.`)

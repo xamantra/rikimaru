@@ -28,10 +28,7 @@ class DataHelper {
             password: config_1.Config.MYSQL_PASSWORD,
             database: config_1.Config.MYSQL_DATABASE,
             timeout: config_1.Config.MYSQL_TIMEOUT,
-            connectTimeout: config_1.Config.MYSQL_CONNECTION_TIMEOUT,
-            ssl: {
-                rejectUnauthorized: false
-            }
+            connectTimeout: config_1.Config.MYSQL_CONNECTION_TIMEOUT
         });
         return conn;
     }
