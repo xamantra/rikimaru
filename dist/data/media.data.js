@@ -19,27 +19,23 @@ class MediaData {
         return this.MediaList;
     }
     static async Init() {
-        return new Promise(async (res, rej) => {
+        return new Promise(async (resolve, reject) => {
             this.Clear().then(() => {
                 query_1.Query.Execute(this.DataHelper.MediaSelectAll(), async (result) => {
-                    const media = json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Media);
+                    const media = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Media);
                     if (media === undefined || media === null) {
-                        rej(new Error(`"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`));
+                        reject(new Error(`"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`));
                     }
                     else {
-                        media.forEach(m => {
-                            this.LocalList.push(m);
-                        });
+                        media.forEach(m => { this.LocalList.push(m); });
                     }
                 }).then(() => {
                     this.LoadFromApi()
                         .then(() => {
                         console.log(`Media List Length: ${this.MediaList.length}`);
-                        res();
+                        resolve();
                     })
-                        .catch((reason) => {
-                        console.log(reason.message);
-                    });
+                        .catch((reason) => { console.log(reason.message); });
                 });
             });
         });
@@ -109,34 +105,30 @@ class MediaData {
         });
     }
     static async Insert(media, title, user = null) {
-        return new Promise((res, rej) => {
-            this.Exists(media.idMal).then(async (exists) => {
-                if (exists === false) {
-                    query_1.Query.Execute(this.DataHelper.MediaInsert(media.idMal, title), async (result) => {
-                        const myRes = json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
-                        if (myRes.InsertId !== undefined && myRes.InsertId !== null) {
-                            const m = new subscription_model_1.Media();
-                            m.MalId = myRes.InsertId;
-                            m.Title = title;
-                            this.LocalList.push(m);
-                            if (media_status_1.MediaStatus.Ongoing(media) ||
-                                media_status_1.MediaStatus.NotYetAired(media)) {
-                                this.MediaList.push(media);
-                                queue_data_1.QueueData.Insert(media.idMal, media.nextAiringEpisode.next)
-                                    .then(qId => {
-                                    res(media.idMal);
-                                })
-                                    .catch((reason) => {
-                                    console.log(reason.message);
-                                });
-                            }
-                        }
-                    });
+        return new Promise(async (resolve, reject) => {
+            const exist = await this.Exists(media.idMal);
+            if (exist === true) {
+                const result = await query_1.Query.Execute(this.DataHelper.MediaInsert(media.idMal, title));
+                const myRes = await json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
+                if (myRes.InsertId !== undefined && myRes.InsertId !== null) {
+                    const m = new subscription_model_1.Media();
+                    m.MalId = myRes.InsertId;
+                    m.Title = title;
+                    this.LocalList.push(m);
+                    if (media_status_1.MediaStatus.Ongoing(media) ||
+                        media_status_1.MediaStatus.NotYetAired(media)) {
+                        this.MediaList.push(media);
+                        queue_data_1.QueueData.Insert(media.idMal, media.nextAiringEpisode.next)
+                            .then(qId => {
+                            resolve(media.idMal);
+                        })
+                            .catch((reason) => { console.log(reason.message); });
+                    }
                 }
-                else {
-                    res(media.idMal);
-                }
-            });
+            }
+            else {
+                resolve(media.idMal);
+            }
         });
     }
     static async LogAll() {

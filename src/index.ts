@@ -1,9 +1,9 @@
-import { QueueData } from "./data/queue.data";
+import { QueueData } from './data/queue.data';
 import { Client } from "discord.js";
 import { SubscriptionData } from "./data/subscription.data";
 import { MediaData } from "./data/media.data";
 import { UserData } from "./data/user.data";
-import { DataHelper } from "./helpers/data.helper";
+import { DataHelper } from './helpers/data.helper';
 import { ClientManager } from "./core/client";
 import { CommandManager } from "./command/manager.command";
 import { MessageHandler } from "./handlers/message.handler";

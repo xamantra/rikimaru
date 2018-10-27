@@ -1,11 +1,5 @@
 import { Message } from "discord.js";
 import { ResponseMessage } from "../models/response.message.model";
-import {
-  IOngoingResponse,
-  IUnreleasedWithDate,
-  IUnreleasedNoDate,
-  ICompleted
-} from "../interfaces/message.response.interface";
 
 export class MediaResult {
   public static SendMessage(
@@ -41,29 +35,29 @@ export class MediaResult {
         name = `*Episode ${rsMessage.Current}*`;
         value = `Will air in approximately **${
           rsMessage.Countdown
-        }**\nLast update: *${rsMessage.UpdatedAt}*`;
+          }**\nLast update: *${rsMessage.UpdatedAt}*`;
         break;
       case "NOT_YET_RELEASED":
         if (rsMessage.Countdown !== null) {
           name = `*Not Yet Aired*`;
           value = `Will air in approximately **${
             rsMessage.Countdown
-          }**\nStarts airing at: **${rsMessage.StartDate}**\nLast update: *${
+            }**\nStarts airing at: **${rsMessage.StartDate}**\nLast update: *${
             rsMessage.UpdatedAt
-          }*`;
+            }*`;
         }
         if (rsMessage.Countdown === null) {
           name = `*Not Yet Aired*`;
           value = `Will be aired on **${rsMessage.StartDate}**\nLast update: *${
             rsMessage.UpdatedAt
-          }*`;
+            }*`;
         }
         break;
       case "FINISHED":
         name = `*Already Completed!*`;
         value = `Aired: From **${rsMessage.StartDate}**  to  **${
           rsMessage.EndDate
-        }**`;
+          }**`;
         break;
       default:
         break;

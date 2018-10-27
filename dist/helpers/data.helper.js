@@ -28,28 +28,14 @@ class DataHelper {
             password: config_1.Config.MYSQL_PASSWORD,
             database: config_1.Config.MYSQL_DATABASE,
             timeout: config_1.Config.MYSQL_TIMEOUT,
-            connectTimeout: config_1.Config.MYSQL_CONNECTION_TIMEOUT
-            // connectionLimit: Config.MYSQL_CONNECTION_LIMIT,
-            // waitForConnections: true
+            connectTimeout: config_1.Config.MYSQL_CONNECTION_TIMEOUT,
+            ssl: {
+                rejectUnauthorized: false
+            }
         });
-        // pool.getConnection((err, connection) => {
-        //   if (err) {
-        //     if (err.code === "PROTOCOL_CONNECTION_LOST") {
-        //       console.log("Database connection was closed.");
-        //     }
-        //     if (err.code === "ER_CON_COUNT_ERROR") {
-        //       console.log("Database has too many connections.");
-        //     }
-        //     if (err.code === "ECONNREFUSED") {
-        //       console.log("Database connection was refused.");
-        //     }
-        //   }
-        //   if (connection) connection.release();
-        //   return;
-        // });
         return conn;
     }
-    Init() {
+    async Init() {
         return new Promise((resolve, reject) => {
             const userTable = "CREATE TABLE IF NOT EXISTS `user` (`id` int(255) NOT NULL AUTO_INCREMENT,`discord_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
             const mediaTable = "CREATE TABLE IF NOT EXISTS `media` (`mal_id` int(255) NOT NULL,`title` varchar(1000) COLLATE utf8_unicode_ci NOT NULL,PRIMARY KEY (`mal_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";

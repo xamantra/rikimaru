@@ -4,7 +4,7 @@ import { Config } from "../core/config";
 import * as util from "util";
 
 export class DataHelper {
-  private constructor() {}
+  private constructor() { }
 
   public static get Instance() {
     return this._instance || (this._instance = new this());
@@ -18,26 +18,11 @@ export class DataHelper {
       password: Config.MYSQL_PASSWORD,
       database: Config.MYSQL_DATABASE,
       timeout: Config.MYSQL_TIMEOUT,
-      connectTimeout: Config.MYSQL_CONNECTION_TIMEOUT
-      // connectionLimit: Config.MYSQL_CONNECTION_LIMIT,
-      // waitForConnections: true
+      connectTimeout: Config.MYSQL_CONNECTION_TIMEOUT,
+      ssl: {
+        rejectUnauthorized: false
+      }
     });
-
-    // pool.getConnection((err, connection) => {
-    //   if (err) {
-    //     if (err.code === "PROTOCOL_CONNECTION_LOST") {
-    //       console.log("Database connection was closed.");
-    //     }
-    //     if (err.code === "ER_CON_COUNT_ERROR") {
-    //       console.log("Database has too many connections.");
-    //     }
-    //     if (err.code === "ECONNREFUSED") {
-    //       console.log("Database connection was refused.");
-    //     }
-    //   }
-    //   if (connection) connection.release();
-    //   return;
-    // });
     return conn;
   }
 
@@ -47,7 +32,7 @@ export class DataHelper {
   private subscription = "subscription";
   private queue = "queue";
 
-  public Init() {
+  public async Init() {
     return new Promise((resolve, reject) => {
       const userTable =
         "CREATE TABLE IF NOT EXISTS `user` (`id` int(255) NOT NULL AUTO_INCREMENT,`discord_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
@@ -76,7 +61,7 @@ export class DataHelper {
   public UserInsert(discordId: string) {
     return `INSERT IGNORE INTO ${
       this.user
-    } (discord_id) VALUES('${discordId}')`;
+      } (discord_id) VALUES('${discordId}')`;
   }
 
   public UserSelect(discordId: string) {
@@ -90,7 +75,7 @@ export class DataHelper {
   public MediaInsert(mal_id: number, title: string) {
     return `INSERT IGNORE INTO ${
       this.media
-    } (mal_id, title) VALUES(${mal_id}, "${title}")`;
+      } (mal_id, title) VALUES(${mal_id}, "${title}")`;
   }
 
   public MediaDelete(mediaId: number) {
@@ -108,19 +93,19 @@ export class DataHelper {
   public SubsInsert(mediaId: number, userId: number) {
     return `INSERT IGNORE INTO ${
       this.subscription
-    } (media_id, user_id) VALUES(${mediaId},${userId})`;
+      } (media_id, user_id) VALUES(${mediaId},${userId})`;
   }
 
   public SubsDelete(mediaId: number, userId: number) {
     return `DELETE FROM ${
       this.subscription
-    } WHERE media_id=${mediaId} AND user_id=${userId}`;
+      } WHERE media_id=${mediaId} AND user_id=${userId}`;
   }
 
   public SubsSelect(mediaId: number, userId: number) {
     return `SELECT * FROM ${
       this.subscription
-    } WHERE media_id=${mediaId} AND user_id=${userId} LIMIT 1`;
+      } WHERE media_id=${mediaId} AND user_id=${userId} LIMIT 1`;
   }
 
   public SubsSelectAll() {
@@ -130,7 +115,7 @@ export class DataHelper {
   public QueueInsert(mediaId: number, nextEpisode: number) {
     return `INSERT IGNORE INTO ${
       this.queue
-    } (media_id, next_episode) VALUES (${mediaId}, ${nextEpisode})`;
+      } (media_id, next_episode) VALUES (${mediaId}, ${nextEpisode})`;
   }
 
   public QueueSelect(mediaId: number) {
@@ -144,6 +129,6 @@ export class DataHelper {
   public QueueUpdate(mediaId: number, next_episode: number) {
     return `UPDATE ${
       this.queue
-    } SET next_episode=${next_episode} WHERE media_id=${mediaId}`;
+      } SET next_episode=${next_episode} WHERE media_id=${mediaId}`;
   }
 }
