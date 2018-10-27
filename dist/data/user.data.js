@@ -39,7 +39,8 @@ class UserData {
     }
     static async Insert(discordId) {
         return new Promise((res, rej) => {
-            this.Exists(discordId).then(exists => {
+            this.Exists(discordId)
+                .then(exists => {
                 if (exists === false) {
                     query_1.Query.Execute(this.DataHelper.UserInsert(discordId), result => {
                         try {
@@ -63,6 +64,9 @@ class UserData {
                 else {
                     rej(new Error(`DiscordId: "${discordId}" already exists.`));
                 }
+            })
+                .catch((err) => {
+                rej(err);
             });
         });
     }

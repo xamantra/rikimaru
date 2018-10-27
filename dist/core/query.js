@@ -46,7 +46,7 @@ class Query {
                 });
             })
                 .catch((err) => {
-                console.warn(`${err.message}`);
+                console.warn(new Error(`${err.message}`));
             });
         });
         // return new Promise((resolve, reject) => {

@@ -37,6 +37,7 @@ class ViewSubsFunction {
                             const media = mediaList.find(x => x.idMal === sub.MediaId);
                             mediaSubs.push(media);
                         });
+                        let iteration = 1;
                         mediaSubs.forEach(async (media) => {
                             const title = title_helper_1.TitleHelper.Get(media.title);
                             const episode = media.nextAiringEpisode.next;
@@ -45,9 +46,10 @@ class ViewSubsFunction {
                                 name: `\n${title}\nhttps://myanimelist.net/anime/${media.idMal}/`,
                                 value: `*Episode ${episode} :* ***${countdown}***\n-------------------------------------------------------------------`
                             });
-                            if (list.length === mediaSubs.length) {
+                            if (iteration === list.length) {
                                 resolve(this.EmbedTemplate(user, mediaSubs, list));
                             }
+                            iteration++;
                         });
                     });
                 })

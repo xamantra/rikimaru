@@ -51,34 +51,38 @@ export class UserData {
 
   public static async Insert(discordId: string) {
     return new Promise<number>((res, rej) => {
-      this.Exists(discordId).then(exists => {
-        if (exists === false) {
-          Query.Execute(this.DataHelper.UserInsert(discordId), result => {
-            try {
-              const myRes = JsonHelper.Convert<MySqlResult>(
-                result,
-                MySqlResult
-              );
-              if (
-                myRes !== null &&
-                myRes !== undefined &&
-                myRes.InsertId !== null &&
-                myRes.InsertId !== undefined
-              ) {
-                const user = new User();
-                user.Id = myRes.InsertId;
-                user.DiscordId = discordId;
-                this.UserList.push(user);
+      this.Exists(discordId)
+        .then(exists => {
+          if (exists === false) {
+            Query.Execute(this.DataHelper.UserInsert(discordId), result => {
+              try {
+                const myRes = JsonHelper.Convert<MySqlResult>(
+                  result,
+                  MySqlResult
+                );
+                if (
+                  myRes !== null &&
+                  myRes !== undefined &&
+                  myRes.InsertId !== null &&
+                  myRes.InsertId !== undefined
+                ) {
+                  const user = new User();
+                  user.Id = myRes.InsertId;
+                  user.DiscordId = discordId;
+                  this.UserList.push(user);
+                }
+                res(myRes.InsertId);
+              } catch (error) {
+                rej(new Error(`Unknown error occured.`));
               }
-              res(myRes.InsertId);
-            } catch (error) {
-              rej(new Error(`Unknown error occured.`));
-            }
-          });
-        } else {
-          rej(new Error(`DiscordId: "${discordId}" already exists.`));
-        }
-      });
+            });
+          } else {
+            rej(new Error(`DiscordId: "${discordId}" already exists.`));
+          }
+        })
+        .catch((err: Error) => {
+          rej(err);
+        });
     });
   }
 
