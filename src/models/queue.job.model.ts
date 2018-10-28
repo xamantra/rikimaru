@@ -15,21 +15,25 @@ export class QueueJob {
   constructor(public media: IMedia, public queue: Queue) {}
 
   public Check() {
+    const nextEpisode = this.queue.NextEpisode;
+    const media = this.media;
+    const title = TitleHelper.Get(media.title);
+    this.JobDate = unix(media.nextAiringEpisode.airingAt).toDate();
+    if (MediaStatus.Completed(media) && media.episodes === 1) {
+      this.FindUser(title, nextEpisode, media);
+    } else if (nextEpisode < media.nextAiringEpisode.next) {
+      this.FindUser(title, nextEpisode, media);
+    }
+  }
+
+  private FindUser(title: string, nextEpisode: number, media: IMedia) {
     SubscriptionData.GetSubscribers(this.media.idMal).then(subscribers => {
       subscribers.forEach(subscriber => {
         console.log(subscriber);
         ClientManager.GetUser(subscriber.DiscordId)
           .then(user => {
             if (user.id === subscriber.DiscordId) {
-              const nextEpisode = this.queue.NextEpisode;
-              const media = this.media;
-              const title = TitleHelper.Get(media.title);
-              this.JobDate = unix(media.nextAiringEpisode.airingAt).toDate();
-              if (MediaStatus.Completed(media) && media.episodes === 1) {
-                this.Send(title, nextEpisode, media, user);
-              } else if (nextEpisode < media.nextAiringEpisode.next) {
-                this.Send(title, nextEpisode, media, user);
-              }
+              this.SendMessage(title, nextEpisode, media, user);
             }
           })
           .catch((err: Error) => {
@@ -39,9 +43,14 @@ export class QueueJob {
     });
   }
 
-  private Send(title: string, nextEpisode: number, media: IMedia, user: User) {
+  private SendMessage(
+    title: string,
+    nextEpisode: number,
+    media: IMedia,
+    user: User
+  ) {
     console.log(`Oh!, ${title} Episode ${nextEpisode} has been released!`);
-    this.Embed(media, nextEpisode).then(embed => {
+    this.EmbedTemplate(media, nextEpisode).then(embed => {
       user
         .send(embed)
         .then(() => {
@@ -86,7 +95,7 @@ export class QueueJob {
       });
   }
 
-  private async Embed(media: IMedia, episode: number) {
+  private async EmbedTemplate(media: IMedia, episode: number) {
     return new Promise<any>((resolve, reject) => {
       ClientManager.GetClient().then(client => {
         const t = TitleHelper.Get(media.title);
