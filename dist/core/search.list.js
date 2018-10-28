@@ -4,7 +4,7 @@ const colors_1 = require("./colors");
 const client_1 = require("./client");
 class SearchList {
     static async Embed(command, fields) {
-        const client = await client_1.ClientManager.GetClient;
+        const client = await client_1.ClientManager.GetClient();
         return {
             embed: {
                 color: colors_1.Color.Random,

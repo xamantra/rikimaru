@@ -4,7 +4,7 @@ import { ClientManager } from "./client";
 
 export class SearchList {
   public static async Embed(command: ICommand, fields: any) {
-    const client = await ClientManager.GetClient;
+    const client = await ClientManager.GetClient();
     return {
       embed: {
         color: Color.Random,

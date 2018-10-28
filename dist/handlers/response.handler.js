@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
 require("class-transformer");
 const rescue_center_1 = require("../core/rescue.center");
-const media_result_1 = require("../core/media.result");
 const manager_command_1 = require("../command/manager.command");
+const sender_1 = require("./../core/sender");
 class ResponseHandler {
     static Get(message, command) {
         const commands = manager_command_1.CommandManager.Commands;
@@ -40,7 +40,7 @@ class ResponseHandler {
             }
             else {
                 if (iteration === commands.length) {
-                    media_result_1.MediaResult.SendInfo(message, `The command ***${command.Name}*** doesn't exists. Type the command: ***-help***  to see all commands.`, false);
+                    sender_1.Sender.SendInfo(message, `The command ***${command.Name}*** doesn't exists. Type the command: ***-help***  to see all commands.`, false);
                     return;
                 }
             }
@@ -48,7 +48,7 @@ class ResponseHandler {
         });
     }
     static SendRescue(message, dm, botCommand, command) {
-        media_result_1.MediaResult.SendInfo(message, rescue_center_1.RescueCenter.RequireParameter(botCommand, command), dm);
+        sender_1.Sender.SendInfo(message, rescue_center_1.RescueCenter.RequireParameter(botCommand, command), dm);
     }
 }
 exports.ResponseHandler = ResponseHandler;

@@ -13,7 +13,7 @@ class ClientManager {
             client.user.setActivity(`as a Bot`);
         });
     }
-    static get GetClient() {
+    static GetClient() {
         return new Promise((resolve, reject) => {
             setInterval(() => {
                 if (this.Client !== null && this.Client !== undefined) {

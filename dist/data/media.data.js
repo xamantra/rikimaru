@@ -21,24 +21,27 @@ class MediaData {
     static async Init() {
         return new Promise(async (resolve, reject) => {
             this.Clear().then(() => {
-                query_1.Query.Execute(this.DataHelper.MediaSelectAll(), async (result) => {
-                    const media = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Media);
-                    if (media === undefined || media === null) {
+                query_1.Query.Execute(this.DataHelper.MediaSelectAll()).then(async (result) => {
+                    const $result = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Media);
+                    console.log($result);
+                    if ($result === undefined || $result === null) {
                         reject(new Error(`"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`));
                     }
                     else {
-                        media.forEach(m => {
+                        let iteration = 0;
+                        $result.forEach(m => {
+                            iteration++;
                             this.LocalList.push(m);
-                            console.log(m);
+                            if (iteration === $result.length) {
+                                this.LoadFromApi()
+                                    .then(() => {
+                                    console.log(`Media List Length: ${this.MediaList.length}`);
+                                    resolve();
+                                })
+                                    .catch((reason) => { console.log(reason.message); });
+                            }
                         });
                     }
-                }).then(() => {
-                    this.LoadFromApi()
-                        .then(() => {
-                        console.log(`Media List Length: ${this.MediaList.length}`);
-                        resolve();
-                    })
-                        .catch((reason) => { console.log(reason.message); });
                 });
             });
         });
@@ -61,6 +64,7 @@ class MediaData {
         return new Promise(async (res, rej) => {
             const userDatas = user_data_1.UserData.All;
             const locals = this.LocalList;
+            console.log(this.LocalList);
             if (userDatas === undefined || userDatas === null) {
                 rej(new Error(`"userDatas = this.UserData.All" is 'null' or 'undefined'`));
             }
@@ -117,7 +121,7 @@ class MediaData {
     static async Insert(media, title, user = null) {
         return new Promise(async (resolve, reject) => {
             const exist = await this.Exists(media.idMal);
-            if (exist === true) {
+            if (exist === false) {
                 const result = await query_1.Query.Execute(this.DataHelper.MediaInsert(media.idMal, title));
                 const myRes = await json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
                 if (myRes.InsertId !== undefined && myRes.InsertId !== null) {
@@ -139,6 +143,20 @@ class MediaData {
             else {
                 resolve(media.idMal);
             }
+        });
+    }
+    static GetMedia(malId) {
+        return new Promise((resolve, reject) => {
+            let iteration = 0;
+            this.MediaList.forEach($m => {
+                iteration++;
+                if ($m.idMal === malId) {
+                    resolve($m);
+                }
+                if (iteration === this.MediaList.length) {
+                    reject(new Error(`NO media with id "${malId}" was found.`));
+                }
+            });
         });
     }
     static async LogAll() {

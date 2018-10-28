@@ -36,7 +36,7 @@ class QueueJob {
                         .then(() => {
                         setTimeout(() => {
                             this.Update();
-                        }, 1800000);
+                        }, 180000);
                     })
                         .catch((error) => {
                         console.log(error.message);
@@ -45,15 +45,17 @@ class QueueJob {
             }
             else if (nextEpisode < media.nextAiringEpisode.next) {
                 console.log(`Oh!, ${media.title.romaji} Episode ${media.nextAiringEpisode.next} is NOT synced with the api!`);
-                user
-                    .send(this.Embed(media, nextEpisode))
-                    .then(() => {
-                    setTimeout(() => {
-                        this.Update();
-                    }, 2000);
-                })
-                    .catch((error) => {
-                    console.log(error.message);
+                this.Embed(media, nextEpisode).then(embed => {
+                    user
+                        .send(embed)
+                        .then(() => {
+                        setTimeout(() => {
+                            this.Update();
+                        }, 2000);
+                    })
+                        .catch((error) => {
+                        console.log(`Queue Job: "${error.message}"`);
+                    });
                 });
             }
             else {
@@ -80,29 +82,35 @@ class QueueJob {
         });
     }
     async Embed(media, episode) {
-        const client = await client_1.ClientManager.GetClient;
-        const t = title_helper_1.TitleHelper.Get(media.title);
-        const embed = {
-            embed: {
-                color: colors_1.Color.Random,
-                thumbnail: {
-                    url: media.coverImage.large
-                },
-                title: `***${t}***`,
-                url: `https://myanimelist.net/anime/${media.idMal}/`,
-                description: `**Episode ${episode}** *has been aired!*`,
-                fields: [
-                    { name: `To unsubscribe, type:`, value: `\`-unsub ${t}\`` },
-                    { name: `To view all subscription, type:`, value: `\`-viewsubs\`` }
-                ],
-                timestamp: new Date(),
-                footer: {
-                    icon_url: client.user.avatarURL,
-                    text: "© Rikimaru"
-                }
-            }
-        };
-        return embed;
+        return new Promise((resolve, reject) => {
+            client_1.ClientManager.GetClient().then(client => {
+                const t = title_helper_1.TitleHelper.Get(media.title);
+                const embed = {
+                    embed: {
+                        color: colors_1.Color.Random,
+                        thumbnail: {
+                            url: media.coverImage.large
+                        },
+                        title: `***${t}***`,
+                        url: `https://myanimelist.net/anime/${media.idMal}/`,
+                        description: `**Episode ${episode}** *has been aired!*`,
+                        fields: [
+                            { name: `To unsubscribe, type:`, value: `\`-unsub ${t}\`` },
+                            {
+                                name: `To view all subscription, type:`,
+                                value: `\`-viewsubs\``
+                            }
+                        ],
+                        timestamp: new Date(),
+                        footer: {
+                            icon_url: client.user.avatarURL,
+                            text: "© Rikimaru"
+                        }
+                    }
+                };
+                resolve(embed);
+            });
+        });
     }
 }
 exports.QueueJob = QueueJob;

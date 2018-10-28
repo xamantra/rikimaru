@@ -1,19 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const sender_1 = require("./sender");
 class MediaResult {
     static SendMessage(message, isDM = false, responseMessage) {
-        this.Send(message, this.EmbedTemplate(responseMessage), isDM);
-    }
-    static Send(message, content, isDM = false) {
-        if (isDM) {
-            message.author.send(content);
-        }
-        else {
-            message.reply(content);
-        }
-    }
-    static async SendInfo(message, content, isDM = false) {
-        await this.Send(message, content, isDM);
+        sender_1.Sender.Send(message, this.EmbedTemplate(responseMessage), isDM);
     }
     static EmbedTemplate(rsMessage) {
         let name = "";

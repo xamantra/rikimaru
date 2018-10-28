@@ -5,11 +5,10 @@ import { Message, User } from "discord.js";
 import { ICommand } from "../../interfaces/command.interface";
 import { IMedia } from "../../interfaces/page.interface";
 import { UserData } from "../../data/user.data";
-import { MediaResult } from "../../core/media.result";
 import { MediaFormatHandler } from "../../handlers/media.list.handler";
 import { SearchList } from "../../core/search.list";
 import { TitleHelper } from "../../helpers/title.helper";
-import { QueueData } from "../../data/queue.data";
+import { Sender } from "./../../core/sender";
 
 export class UnsubFunction implements ICommandFunction {
   public async Execute(
@@ -44,7 +43,7 @@ export class UnsubFunction implements ICommandFunction {
               }
             });
             if (filteredMedia.length === 0) {
-              MediaResult.SendInfo(
+              Sender.SendInfo(
                 message,
                 `Hmm..It seems that you are not subscribe to any anime that matches your keyword  ***${title}***.`,
                 dm
@@ -52,7 +51,7 @@ export class UnsubFunction implements ICommandFunction {
             } else if (filteredMedia.length === 1) {
               SubscriptionData.Delete(filteredMedia[0].idMal, discordId).then(
                 () => {
-                  MediaResult.SendInfo(
+                  Sender.SendInfo(
                     message,
                     `You are now unsubscribed from  ***${TitleHelper.Get(
                       filteredMedia[0].title
@@ -62,7 +61,7 @@ export class UnsubFunction implements ICommandFunction {
                 }
               );
             } else {
-              MediaResult.SendInfo(
+              Sender.SendInfo(
                 message,
                 SearchList.Embed(command, formattedResults),
                 dm
@@ -70,7 +69,9 @@ export class UnsubFunction implements ICommandFunction {
             }
           })
           .catch(error => {
-            console.warn(`Error while searching : [MediaSearch.All(${command.Parameter})]`);
+            console.warn(
+              `Error while searching : [MediaSearch.All(${command.Parameter})]`
+            );
           });
       })
       .catch((reason: Error) => {

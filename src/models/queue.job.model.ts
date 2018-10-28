@@ -11,7 +11,7 @@ import { Color } from "../core/colors";
 export class QueueJob {
   private Job: Job;
   private JobDate: Date;
-  constructor(public user: User, public media: IMedia, public queue: Queue) { }
+  constructor(public user: User, public media: IMedia, public queue: Queue) {}
 
   public StartQueue() {
     ClientManager.GetUser(this.user.DiscordId).then(user => {
@@ -24,7 +24,7 @@ export class QueueJob {
       if (nextEpisode === media.nextAiringEpisode.next) {
         console.log(
           `${media.title.romaji} Episode ${
-          media.nextAiringEpisode.next
+            media.nextAiringEpisode.next
           } is synced with the api, Cool!`
         );
         this.JobDate = unix(media.nextAiringEpisode.airingAt).toDate();
@@ -34,7 +34,7 @@ export class QueueJob {
             .then(() => {
               setTimeout(() => {
                 this.Update();
-              }, 1800000);
+              }, 180000);
             })
             .catch((error: Error) => {
               console.log(error.message);
@@ -43,19 +43,21 @@ export class QueueJob {
       } else if (nextEpisode < media.nextAiringEpisode.next) {
         console.log(
           `Oh!, ${media.title.romaji} Episode ${
-          media.nextAiringEpisode.next
+            media.nextAiringEpisode.next
           } is NOT synced with the api!`
         );
-        user
-          .send(this.Embed(media, nextEpisode))
-          .then(() => {
-            setTimeout(() => {
-              this.Update();
-            }, 2000);
-          })
-          .catch((error: Error) => {
-            console.log(error.message);
-          });
+        this.Embed(media, nextEpisode).then(embed => {
+          user
+            .send(embed)
+            .then(() => {
+              setTimeout(() => {
+                this.Update();
+              }, 2000);
+            })
+            .catch((error: Error) => {
+              console.log(`Queue Job: "${error.message}"`);
+            });
+        });
       } else {
         setTimeout(() => {
           this.Update();
@@ -69,9 +71,9 @@ export class QueueJob {
     const title = TitleHelper.Get(this.media.title);
     console.log(
       `Queue Job { Queue Episode: "Episode ${this.queue.NextEpisode}" User: "${
-      this.user.DiscordId
+        this.user.DiscordId
       }": "${title} Episode ${
-      this.media.nextAiringEpisode.next
+        this.media.nextAiringEpisode.next
       }"  in  ${countdown} }`
     );
   }
@@ -91,28 +93,34 @@ export class QueueJob {
   }
 
   private async Embed(media: IMedia, episode: number) {
-    const client = await ClientManager.GetClient;
-    const t = TitleHelper.Get(media.title);
-    const embed = {
-      embed: {
-        color: Color.Random,
-        thumbnail: {
-          url: media.coverImage.large
-        },
-        title: `***${t}***`,
-        url: `https://myanimelist.net/anime/${media.idMal}/`,
-        description: `**Episode ${episode}** *has been aired!*`,
-        fields: [
-          { name: `To unsubscribe, type:`, value: `\`-unsub ${t}\`` },
-          { name: `To view all subscription, type:`, value: `\`-viewsubs\`` }
-        ],
-        timestamp: new Date(),
-        footer: {
-          icon_url: client.user.avatarURL,
-          text: "© Rikimaru"
-        }
-      }
-    };
-    return embed;
+    return new Promise<any>((resolve, reject) => {
+      ClientManager.GetClient().then(client => {
+        const t = TitleHelper.Get(media.title);
+        const embed = {
+          embed: {
+            color: Color.Random,
+            thumbnail: {
+              url: media.coverImage.large
+            },
+            title: `***${t}***`,
+            url: `https://myanimelist.net/anime/${media.idMal}/`,
+            description: `**Episode ${episode}** *has been aired!*`,
+            fields: [
+              { name: `To unsubscribe, type:`, value: `\`-unsub ${t}\`` },
+              {
+                name: `To view all subscription, type:`,
+                value: `\`-viewsubs\``
+              }
+            ],
+            timestamp: new Date(),
+            footer: {
+              icon_url: client.user.avatarURL,
+              text: "© Rikimaru"
+            }
+          }
+        };
+        resolve(embed);
+      });
+    });
   }
 }

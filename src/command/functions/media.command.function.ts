@@ -10,6 +10,7 @@ import { RootPage } from "../../models/root.model";
 import { Message } from "discord.js";
 import { IMedia } from "../../interfaces/page.interface";
 import { Color } from "../../core/colors";
+import { Sender } from "../../core/sender";
 
 export class MediaFunction implements ICommandFunction {
   constructor() {
@@ -71,7 +72,7 @@ export class MediaFunction implements ICommandFunction {
               );
             });
           } else {
-            MediaResult.SendInfo(
+            Sender.SendInfo(
               message,
               `I found ***${completed.length}*** anime with your keyword ***${
                 command.Parameter
@@ -80,7 +81,7 @@ export class MediaFunction implements ICommandFunction {
             );
           }
         } else {
-          MediaResult.SendInfo(
+          Sender.SendInfo(
             message,
             `Go me nasai!, I didn't find anime that matches your keyword ***"${
               command.Parameter

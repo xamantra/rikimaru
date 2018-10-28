@@ -1,5 +1,6 @@
-import { Message } from "discord.js";
+import { Message, DiscordAPIError } from "discord.js";
 import { ResponseMessage } from "../models/response.message.model";
+import { Sender } from "./sender";
 
 export class MediaResult {
   public static SendMessage(
@@ -7,23 +8,7 @@ export class MediaResult {
     isDM: boolean = false,
     responseMessage: ResponseMessage
   ) {
-    this.Send(message, this.EmbedTemplate(responseMessage), isDM);
-  }
-
-  private static Send(message: Message, content: any, isDM: boolean = false) {
-    if (isDM) {
-      message.author.send(content);
-    } else {
-      message.reply(content);
-    }
-  }
-
-  public static async SendInfo(
-    message: Message,
-    content: any,
-    isDM: boolean = false
-  ) {
-    await this.Send(message, content, isDM);
+    Sender.Send(message, this.EmbedTemplate(responseMessage), isDM);
   }
 
   private static EmbedTemplate(rsMessage: ResponseMessage) {
@@ -35,29 +20,29 @@ export class MediaResult {
         name = `*Episode ${rsMessage.Current}*`;
         value = `Will air in approximately **${
           rsMessage.Countdown
-          }**\nLast update: *${rsMessage.UpdatedAt}*`;
+        }**\nLast update: *${rsMessage.UpdatedAt}*`;
         break;
       case "NOT_YET_RELEASED":
         if (rsMessage.Countdown !== null) {
           name = `*Not Yet Aired*`;
           value = `Will air in approximately **${
             rsMessage.Countdown
-            }**\nStarts airing at: **${rsMessage.StartDate}**\nLast update: *${
+          }**\nStarts airing at: **${rsMessage.StartDate}**\nLast update: *${
             rsMessage.UpdatedAt
-            }*`;
+          }*`;
         }
         if (rsMessage.Countdown === null) {
           name = `*Not Yet Aired*`;
           value = `Will be aired on **${rsMessage.StartDate}**\nLast update: *${
             rsMessage.UpdatedAt
-            }*`;
+          }*`;
         }
         break;
       case "FINISHED":
         name = `*Already Completed!*`;
         value = `Aired: From **${rsMessage.StartDate}**  to  **${
           rsMessage.EndDate
-          }**`;
+        }**`;
         break;
       default:
         break;

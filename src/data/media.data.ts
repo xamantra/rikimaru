@@ -27,23 +27,26 @@ export class MediaData {
   public static async Init() {
     return new Promise(async (resolve, reject) => {
       this.Clear().then(() => {
-        Query.Execute(this.DataHelper.MediaSelectAll(), async result => {
-          const media = await JsonHelper.ArrayConvert<Media>(result, Media);
-          if (media === undefined || media === null) {
+        Query.Execute(this.DataHelper.MediaSelectAll()).then(async result => {
+          const $result = await JsonHelper.ArrayConvert<Media>(result, Media);
+          console.log($result);
+          if ($result === undefined || $result === null) {
             reject(new Error(`"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`));
           } else {
-            media.forEach(m => {
+            let iteration = 0;
+            $result.forEach(m => {
+              iteration++;
               this.LocalList.push(m);
-              console.log(m);
+              if (iteration === $result.length) {
+                this.LoadFromApi()
+                  .then(() => {
+                    console.log(`Media List Length: ${this.MediaList.length}`);
+                    resolve();
+                  })
+                  .catch((reason: Error) => { console.log(reason.message); });
+              }
             });
           }
-        }).then(() => {
-          this.LoadFromApi()
-            .then(() => {
-              console.log(`Media List Length: ${this.MediaList.length}`);
-              resolve();
-            })
-            .catch((reason: Error) => { console.log(reason.message); });
         });
       });
     });
@@ -67,6 +70,7 @@ export class MediaData {
     return new Promise<void>(async (res, rej) => {
       const userDatas = UserData.All;
       const locals = this.LocalList;
+      console.log(this.LocalList);
       if (userDatas === undefined || userDatas === null) {
         rej(new Error(`"userDatas = this.UserData.All" is 'null' or 'undefined'`));
       } else if (locals === undefined || locals === null) {
@@ -123,7 +127,7 @@ export class MediaData {
   public static async Insert(media: IMedia, title: string, user: User = null) {
     return new Promise<number>(async (resolve, reject) => {
       const exist = await this.Exists(media.idMal);
-      if (exist === true) {
+      if (exist === false) {
         const result = await Query.Execute(this.DataHelper.MediaInsert(media.idMal, title));
         const myRes = await JsonHelper.Convert<MySqlResult>(result, MySqlResult);
         if (myRes.InsertId !== undefined && myRes.InsertId !== null) {
@@ -146,6 +150,21 @@ export class MediaData {
       } else {
         resolve(media.idMal);
       }
+    });
+  }
+
+  public static GetMedia(malId: number) {
+    return new Promise<IMedia>((resolve, reject) => {
+      let iteration = 0;
+      this.MediaList.forEach($m => {
+        iteration++;
+        if ($m.idMal === malId) {
+          resolve($m);
+        }
+        if (iteration === this.MediaList.length) {
+          reject(new Error(`NO media with id "${malId}" was found.`));
+        }
+      });
     });
   }
 

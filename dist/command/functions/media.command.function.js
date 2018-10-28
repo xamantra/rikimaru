@@ -5,6 +5,7 @@ const media_result_1 = require("../../core/media.result");
 const media_handler_1 = require("../../handlers/media.handler");
 const response_message_helper_1 = require("../../helpers/response.message.helper");
 const colors_1 = require("../../core/colors");
+const sender_1 = require("../../core/sender");
 class MediaFunction {
     constructor() {
         console.log(`Constructed: "${MediaFunction.name}"`);
@@ -47,11 +48,11 @@ class MediaFunction {
                     });
                 }
                 else {
-                    media_result_1.MediaResult.SendInfo(message, `I found ***${completed.length}*** anime with your keyword ***${command.Parameter}*** and all of them is already completed.`, isDM);
+                    sender_1.Sender.SendInfo(message, `I found ***${completed.length}*** anime with your keyword ***${command.Parameter}*** and all of them is already completed.`, isDM);
                 }
             }
             else {
-                media_result_1.MediaResult.SendInfo(message, `Go me nasai!, I didn't find anime that matches your keyword ***"${command.Parameter}"***, try checking your spelling or another keyword.`, isDM);
+                sender_1.Sender.SendInfo(message, `Go me nasai!, I didn't find anime that matches your keyword ***"${command.Parameter}"***, try checking your spelling or another keyword.`, isDM);
             }
         })
             .catch(error => {

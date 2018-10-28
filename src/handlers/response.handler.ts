@@ -4,8 +4,8 @@ import "class-transformer";
 import { ICommand } from "../interfaces/command.interface";
 import { Message } from "discord.js";
 import { RescueCenter } from "../core/rescue.center";
-import { MediaResult } from "../core/media.result";
 import { CommandManager } from "../command/manager.command";
+import { Sender } from "./../core/sender";
 
 export class ResponseHandler {
   public static Get(message: Message, command: ICommand) {
@@ -42,7 +42,7 @@ export class ResponseHandler {
         return;
       } else {
         if (iteration === commands.length) {
-          MediaResult.SendInfo(
+          Sender.SendInfo(
             message,
             `The command ***${
               command.Name
@@ -62,7 +62,7 @@ export class ResponseHandler {
     botCommand: BotCommand,
     command: ICommand
   ) {
-    MediaResult.SendInfo(
+    Sender.SendInfo(
       message,
       RescueCenter.RequireParameter(botCommand, command),
       dm

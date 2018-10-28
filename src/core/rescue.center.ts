@@ -6,7 +6,7 @@ import { ClientManager } from "./client";
 export class RescueCenter {
   public static async RequireParameter(cmd: BotCommand, command: ICommand) {
     let example: any = cmd.Example;
-    const client = await ClientManager.GetClient;
+    const client = await ClientManager.GetClient();
     if (example === undefined) {
       example = "";
     } else {

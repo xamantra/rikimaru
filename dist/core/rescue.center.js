@@ -5,7 +5,7 @@ const client_1 = require("./client");
 class RescueCenter {
     static async RequireParameter(cmd, command) {
         let example = cmd.Example;
-        const client = await client_1.ClientManager.GetClient;
+        const client = await client_1.ClientManager.GetClient();
         if (example === undefined) {
             example = "";
         }

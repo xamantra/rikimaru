@@ -8,7 +8,7 @@ class JsonHelper {
         jsonConvert.valueCheckingMode = json2typescript_1.ValueCheckingMode.ALLOW_NULL;
         return jsonConvert;
     }
-    static async Convert(json, t) {
+    static Convert(json, t) {
         return new Promise((resolve, reject) => {
             const jsonString = JSON.stringify(json);
             const result = this.Converter.deserialize(JSON.parse(jsonString), t);
@@ -20,7 +20,7 @@ class JsonHelper {
             }
         });
     }
-    static async ArrayConvert(json, t) {
+    static ArrayConvert(json, t) {
         return new Promise((resolve, reject) => {
             const jsonString = JSON.stringify(json);
             const result = this.Converter.deserialize(JSON.parse(jsonString), t);

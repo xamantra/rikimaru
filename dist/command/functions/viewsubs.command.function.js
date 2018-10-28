@@ -12,7 +12,15 @@ class ViewSubsFunction {
     Execute(message, command, dm) {
         this.Embed(message, dm).then(async (embed) => {
             if (dm === true) {
-                message.author.send(embed);
+                message.author
+                    .send(embed)
+                    .then(($m) => {
+                    console.log(`Message <${$m.id}> was sent to <${message.author.username}>.`);
+                })
+                    .catch((err) => {
+                    message.reply(`Oh! it seems that I can't DM you.`);
+                    console.log(err.name);
+                });
             }
             else {
                 message.reply(embed);
@@ -27,57 +35,59 @@ class ViewSubsFunction {
             }
             const discordId = mentionId === null ? message.author.id : mentionId;
             const list = [];
-            const mediaSubs = [];
-            const mediaList = media_data_1.MediaData.GetMediaList;
             client_1.ClientManager.GetUser(discordId).then(user => {
                 user_data_1.UserData.GetUser(discordId)
                     .then(u => {
                     subscription_data_1.SubscriptionData.GetUserSubs(u.Id).then(subs => {
-                        subs.forEach(sub => {
-                            const media = mediaList.find(x => x.idMal === sub.MediaId);
-                            mediaSubs.push(media);
-                        });
-                        let iteration = 1;
-                        mediaSubs.forEach(async (media) => {
-                            const title = title_helper_1.TitleHelper.Get(media.title);
-                            const episode = media.nextAiringEpisode.next;
-                            const countdown = await time_helper_1.TimeHelper.Countdown(media.nextAiringEpisode.timeUntilAiring);
-                            await list.push({
-                                name: `\n${title}\nhttps://myanimelist.net/anime/${media.idMal}/`,
+                        let iteration = 0;
+                        subs.forEach(async (sub) => {
+                            iteration++;
+                            const $m = await media_data_1.MediaData.GetMedia(sub.MediaId);
+                            const title = title_helper_1.TitleHelper.Get($m.title);
+                            const episode = $m.nextAiringEpisode.next;
+                            const countdown = time_helper_1.TimeHelper.Countdown($m.nextAiringEpisode.timeUntilAiring);
+                            list.push({
+                                name: `\n${title}\nhttps://myanimelist.net/anime/${$m.idMal}/`,
                                 value: `*Episode ${episode} :* ***${countdown}***\n-------------------------------------------------------------------`
                             });
-                            if (iteration === list.length) {
-                                resolve(this.EmbedTemplate(user, mediaSubs, list));
+                            if (iteration === subs.length) {
+                                this.EmbedTemplate(user, subs.length, list).then(template => {
+                                    resolve(template);
+                                });
                             }
-                            iteration++;
                         });
                     });
                 })
                     .catch((reason) => {
-                    resolve(this.EmbedTemplate(user, mediaSubs, list));
+                    this.EmbedTemplate(user, 0, list).then(template => {
+                        resolve(template);
+                    });
                     console.log(reason.message);
                 });
             });
         });
     }
-    async EmbedTemplate(user, mediaSubs, list) {
-        const client = await client_1.ClientManager.GetClient;
-        return {
-            embed: {
-                color: colors_1.Color.Random,
-                thumbnail: {
-                    url: user.avatarURL
-                },
-                title: `***${user.username}***'s *Subscription List*`,
-                description: `**${mediaSubs.length} Anime**\n\nPlease Note: *The airing schedule for the streaming site you are using might be different.*\n`,
-                fields: list,
-                timestamp: new Date(),
-                footer: {
-                    icon_url: client.user.avatarURL,
-                    text: "© Rikimaru"
-                }
-            }
-        };
+    async EmbedTemplate(user, count, list) {
+        return new Promise((resolve, reject) => {
+            client_1.ClientManager.GetClient().then(client => {
+                resolve({
+                    embed: {
+                        color: colors_1.Color.Random,
+                        thumbnail: {
+                            url: user.avatarURL
+                        },
+                        title: `***${user.username}***'s *Subscription List*`,
+                        description: `**${count} Anime**\n\nPlease Note: *The airing schedule for the streaming site you are using might be different.*\n`,
+                        fields: list,
+                        timestamp: new Date(),
+                        footer: {
+                            icon_url: client.user.avatarURL,
+                            text: "© Rikimaru"
+                        }
+                    }
+                });
+            });
+        });
     }
 }
 exports.ViewSubsFunction = ViewSubsFunction;

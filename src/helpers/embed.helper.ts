@@ -4,7 +4,7 @@ import { ClientManager } from "../core/client";
 
 export class EmbedHelper {
   public async WelcomeEmbed(server: Guild, member: GuildMember) {
-    const client = await ClientManager.GetClient;
+    const client = await ClientManager.GetClient();
     const embed = {
       embed: {
         color: Color.Random,

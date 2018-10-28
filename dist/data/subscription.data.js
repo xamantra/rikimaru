@@ -33,6 +33,7 @@ class SubscriptionData {
             this.SubscriptionList.forEach(sub => {
                 if (sub.UserId === userId) {
                     subs.push(sub);
+                    // console.log(`Pushed: ${sub.Id}`);
                 }
             });
             resolve(subs);

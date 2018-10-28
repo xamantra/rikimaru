@@ -25,7 +25,7 @@ export class ClientManager {
     });
   }
 
-  public static get GetClient() {
+  public static GetClient() {
     return new Promise<Client>((resolve, reject) => {
       setInterval(() => {
         if (this.Client !== null && this.Client !== undefined) {
