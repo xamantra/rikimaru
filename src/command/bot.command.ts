@@ -8,8 +8,8 @@ export class BotCommand {
   public ParameterRequired: boolean;
   public MentionRequired: boolean;
   public DevOnly = false;
-  public Function: ICommandFunction;
   public DMResponse = false;
+  public Function: ICommandFunction;
   public Example: ICommandExample;
 
   constructor(
