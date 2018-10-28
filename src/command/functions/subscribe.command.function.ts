@@ -42,9 +42,10 @@ export class SubscribeFunction implements ICommandFunction {
         if (ongoing.length === 0 && unreleased.length === 0) {
           Sender.SendInfo(
             message,
-            "There is nothing to subscribe. The anime you search might be already completed or it is not yet aired and the release date is currently unknown, or try another keyword.",
+            "There is nothing to subscribe. The anime you search might be **already completed** or it is **not yet aired and the release date is currently unknown**, or try **another keyword**.",
             dm
           );
+          return;
         }
         const results: IMedia[] = [];
         const formattedResults: any[] = [];
@@ -59,46 +60,48 @@ export class SubscribeFunction implements ICommandFunction {
         if (results.length === 1) {
           const discordId = message.author.id;
           const media = results[0];
+          console.log(media);
           const title = TitleHelper.Get(results[0].title);
           MediaData.Insert(media, title)
             .then(insertId => {
-              QueueData.GetQueue(media.idMal).then(queue => {
-                const queueJob = new QueueJob(media, queue);
-                QueueData.AddJob(queueJob).then(() => {
-                  this.Embed(media, true).then(embed => {
-                    Sender.SendInfo(message, embed, dm);
-                    console.log(`Added to queue: ${insertId}`);
-                  });
-                });
-              });
               UserData.GetUser(discordId)
                 .then(user => {
                   SubscriptionData.Insert(media.idMal, user.Id)
                     .then(() => {
-                      console.log(
-                        `User "${
-                          user.DiscordId
-                        }" subscribed to "${TitleHelper.Get(media.title)}".`
-                      );
+                      QueueData.GetQueue(media.idMal).then(queue => {
+                        const queueJob = new QueueJob(media, queue);
+                        QueueData.AddJob(queueJob).then(() => {
+                          this.Embed(media, true).then(embed => {
+                            Sender.SendInfo(message, embed, dm);
+                            console.log(`Added to queue: ${insertId}`);
+                            return;
+                          });
+                        });
+                      });
                     })
                     .catch((reason: string) => {
                       if (reason === "EXISTS") {
                         this.Embed(media, false).then(embed => {
                           Sender.SendInfo(message, embed, dm);
+                          return;
                         });
                       } else {
                         console.log(reason);
+                        return;
                       }
                     });
                 })
                 .catch((reason: Error) => {
                   console.log(reason.message);
+                  return;
                 });
             })
             .catch((reason: Error) => {
               console.log(reason.message);
+              return;
             });
-        } else {
+          return;
+        } else if (results.length > 1) {
           SearchList.Embed(command, formattedResults).then(embed => {
             Sender.SendInfo(message, embed, dm);
           });
@@ -107,7 +110,7 @@ export class SubscribeFunction implements ICommandFunction {
       .catch((reason: Error) => {
         Sender.SendInfo(
           message,
-          "There is nothing to subscribe. The anime you search might be already completed or it is not yet aired and the release date is currently unknown, or try another keyword.",
+          "SYSTEM ERROR!!!. I couldn't apprehend. Please try again.",
           dm
         );
         console.log(reason.message);

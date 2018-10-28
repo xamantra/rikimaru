@@ -27,7 +27,8 @@ class SubscribeFunction {
             const ongoing = media_handler_1.MediaHandler.OngoingMedia(res);
             const unreleased = media_handler_1.MediaHandler.UnreleasedMedia(res);
             if (ongoing.length === 0 && unreleased.length === 0) {
-                sender_1.Sender.SendInfo(message, "There is nothing to subscribe. The anime you search might be already completed or it is not yet aired and the release date is currently unknown, or try another keyword.", dm);
+                sender_1.Sender.SendInfo(message, "There is nothing to subscribe. The anime you search might be **already completed** or it is **not yet aired and the release date is currently unknown**, or try **another keyword**.", dm);
+                return;
             }
             const results = [];
             const formattedResults = [];
@@ -42,51 +43,57 @@ class SubscribeFunction {
             if (results.length === 1) {
                 const discordId = message.author.id;
                 const media = results[0];
+                console.log(media);
                 const title = title_helper_1.TitleHelper.Get(results[0].title);
                 media_data_1.MediaData.Insert(media, title)
                     .then(insertId => {
-                    queue_data_1.QueueData.GetQueue(media.idMal).then(queue => {
-                        const queueJob = new queue_job_model_1.QueueJob(media, queue);
-                        queue_data_1.QueueData.AddJob(queueJob).then(() => {
-                            this.Embed(media, true).then(embed => {
-                                sender_1.Sender.SendInfo(message, embed, dm);
-                                console.log(`Added to queue: ${insertId}`);
-                            });
-                        });
-                    });
                     user_data_1.UserData.GetUser(discordId)
                         .then(user => {
                         subscription_data_1.SubscriptionData.Insert(media.idMal, user.Id)
                             .then(() => {
-                            console.log(`User "${user.DiscordId}" subscribed to "${title_helper_1.TitleHelper.Get(media.title)}".`);
+                            queue_data_1.QueueData.GetQueue(media.idMal).then(queue => {
+                                const queueJob = new queue_job_model_1.QueueJob(media, queue);
+                                queue_data_1.QueueData.AddJob(queueJob).then(() => {
+                                    this.Embed(media, true).then(embed => {
+                                        sender_1.Sender.SendInfo(message, embed, dm);
+                                        console.log(`Added to queue: ${insertId}`);
+                                        return;
+                                    });
+                                });
+                            });
                         })
                             .catch((reason) => {
                             if (reason === "EXISTS") {
                                 this.Embed(media, false).then(embed => {
                                     sender_1.Sender.SendInfo(message, embed, dm);
+                                    return;
                                 });
                             }
                             else {
                                 console.log(reason);
+                                return;
                             }
                         });
                     })
                         .catch((reason) => {
                         console.log(reason.message);
+                        return;
                     });
                 })
                     .catch((reason) => {
                     console.log(reason.message);
+                    return;
                 });
+                return;
             }
-            else {
+            else if (results.length > 1) {
                 search_list_1.SearchList.Embed(command, formattedResults).then(embed => {
                     sender_1.Sender.SendInfo(message, embed, dm);
                 });
             }
         })
             .catch((reason) => {
-            sender_1.Sender.SendInfo(message, "There is nothing to subscribe. The anime you search might be already completed or it is not yet aired and the release date is currently unknown, or try another keyword.", dm);
+            sender_1.Sender.SendInfo(message, "SYSTEM ERROR!!!. I couldn't apprehend. Please try again.", dm);
             console.log(reason.message);
         });
     }

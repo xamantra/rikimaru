@@ -24,7 +24,8 @@ class QueueJob {
         subscription_data_1.SubscriptionData.GetSubscribers(this.media.idMal).then(subscribers => {
             subscribers.forEach(subscriber => {
                 console.log(subscriber);
-                client_1.ClientManager.GetUser(subscriber.DiscordId).then(user => {
+                client_1.ClientManager.GetUser(subscriber.DiscordId)
+                    .then(user => {
                     if (user.id === subscriber.DiscordId) {
                         const nextEpisode = this.queue.NextEpisode;
                         const media = this.media;
@@ -37,6 +38,9 @@ class QueueJob {
                             this.Send(title, nextEpisode, media, user);
                         }
                     }
+                })
+                    .catch((err) => {
+                    console.log(err.message);
                 });
             });
         });

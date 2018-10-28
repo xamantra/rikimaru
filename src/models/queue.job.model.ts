@@ -18,19 +18,23 @@ export class QueueJob {
     SubscriptionData.GetSubscribers(this.media.idMal).then(subscribers => {
       subscribers.forEach(subscriber => {
         console.log(subscriber);
-        ClientManager.GetUser(subscriber.DiscordId).then(user => {
-          if (user.id === subscriber.DiscordId) {
-            const nextEpisode = this.queue.NextEpisode;
-            const media = this.media;
-            const title = TitleHelper.Get(media.title);
-            this.JobDate = unix(media.nextAiringEpisode.airingAt).toDate();
-            if (MediaStatus.Completed(media) && media.episodes === 1) {
-              this.Send(title, nextEpisode, media, user);
-            } else if (nextEpisode < media.nextAiringEpisode.next) {
-              this.Send(title, nextEpisode, media, user);
+        ClientManager.GetUser(subscriber.DiscordId)
+          .then(user => {
+            if (user.id === subscriber.DiscordId) {
+              const nextEpisode = this.queue.NextEpisode;
+              const media = this.media;
+              const title = TitleHelper.Get(media.title);
+              this.JobDate = unix(media.nextAiringEpisode.airingAt).toDate();
+              if (MediaStatus.Completed(media) && media.episodes === 1) {
+                this.Send(title, nextEpisode, media, user);
+              } else if (nextEpisode < media.nextAiringEpisode.next) {
+                this.Send(title, nextEpisode, media, user);
+              }
             }
-          }
-        });
+          })
+          .catch((err: Error) => {
+            console.log(err.message);
+          });
       });
     });
   }

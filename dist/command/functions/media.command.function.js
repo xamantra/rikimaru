@@ -56,6 +56,7 @@ class MediaFunction {
             }
         })
             .catch(error => {
+            sender_1.Sender.SendInfo(message, `Go me nasai!, I didn't find anime that matches your keyword ***"${command.Parameter}"***, try checking your spelling or another keyword.`, isDM);
             console.warn(`Error while searching : [MediaSearch.All(${command.Parameter})]`);
         });
     }
