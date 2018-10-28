@@ -42,19 +42,24 @@ class ViewSubsFunction {
                         let iteration = 0;
                         subs.forEach(async (sub) => {
                             iteration++;
-                            const $m = await media_data_1.MediaData.GetMedia(sub.MediaId);
-                            const title = title_helper_1.TitleHelper.Get($m.title);
-                            const episode = $m.nextAiringEpisode.next;
-                            const countdown = time_helper_1.TimeHelper.Countdown($m.nextAiringEpisode.timeUntilAiring);
-                            list.push({
-                                name: `\n${title}\nhttps://myanimelist.net/anime/${$m.idMal}/`,
-                                value: `*Episode ${episode} :* ***${countdown}***\n-------------------------------------------------------------------`
-                            });
-                            if (iteration === subs.length) {
-                                this.EmbedTemplate(user, subs.length, list).then(template => {
-                                    resolve(template);
+                            media_data_1.MediaData.GetMedia(sub.MediaId)
+                                .then($m => {
+                                const title = title_helper_1.TitleHelper.Get($m.title);
+                                const episode = $m.nextAiringEpisode.next;
+                                const countdown = time_helper_1.TimeHelper.Countdown($m.nextAiringEpisode.timeUntilAiring);
+                                list.push({
+                                    name: `\n${title}\nhttps://myanimelist.net/anime/${$m.idMal}/`,
+                                    value: `*Episode ${episode} :* ***${countdown}***\n-------------------------------------------------------------------`
                                 });
-                            }
+                                if (iteration === subs.length) {
+                                    this.EmbedTemplate(user, subs.length, list).then(template => {
+                                        resolve(template);
+                                    });
+                                }
+                            })
+                                .catch((err) => {
+                                console.log(err.message);
+                            });
                         });
                     });
                 })

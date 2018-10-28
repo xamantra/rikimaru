@@ -48,23 +48,30 @@ export class ViewSubsFunction implements ICommandFunction {
               let iteration = 0;
               subs.forEach(async sub => {
                 iteration++;
-                const $m = await MediaData.GetMedia(sub.MediaId);
-                const title = TitleHelper.Get($m.title);
-                const episode = $m.nextAiringEpisode.next;
-                const countdown = TimeHelper.Countdown(
-                  $m.nextAiringEpisode.timeUntilAiring
-                );
-                list.push({
-                  name: `\n${title}\nhttps://myanimelist.net/anime/${
-                    $m.idMal
-                  }/`,
-                  value: `*Episode ${episode} :* ***${countdown}***\n-------------------------------------------------------------------`
-                });
-                if (iteration === subs.length) {
-                  this.EmbedTemplate(user, subs.length, list).then(template => {
-                    resolve(template);
+                MediaData.GetMedia(sub.MediaId)
+                  .then($m => {
+                    const title = TitleHelper.Get($m.title);
+                    const episode = $m.nextAiringEpisode.next;
+                    const countdown = TimeHelper.Countdown(
+                      $m.nextAiringEpisode.timeUntilAiring
+                    );
+                    list.push({
+                      name: `\n${title}\nhttps://myanimelist.net/anime/${
+                        $m.idMal
+                      }/`,
+                      value: `*Episode ${episode} :* ***${countdown}***\n-------------------------------------------------------------------`
+                    });
+                    if (iteration === subs.length) {
+                      this.EmbedTemplate(user, subs.length, list).then(
+                        template => {
+                          resolve(template);
+                        }
+                      );
+                    }
+                  })
+                  .catch((err: Error) => {
+                    console.log(err.message);
                   });
-                }
               });
             });
           })
