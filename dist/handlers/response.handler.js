@@ -5,46 +5,66 @@ require("class-transformer");
 const rescue_center_1 = require("../core/rescue.center");
 const manager_command_1 = require("../command/manager.command");
 const sender_1 = require("./../core/sender");
+const cooldown_model_1 = require("../models/cooldown.model");
 class ResponseHandler {
     static Get(message, command) {
-        const commands = manager_command_1.CommandManager.Commands;
-        let iteration = 1;
-        commands.forEach(async (cmd) => {
-            if (cmd.Name === command.Name) {
-                const parameter = command.Parameter;
-                const paramRequired = cmd.ParameterRequired;
-                if (cmd.MentionRequired &&
-                    message.mentions !== null &&
-                    message.mentions !== undefined) {
-                    cmd.Function.Execute(message, command, cmd.DMResponse);
-                    return;
-                }
-                else if (parameter.length === 0 && paramRequired) {
-                    this.SendRescue(message, cmd.DMResponse, cmd, command);
-                }
-                else if (parameter.length > 0 && !paramRequired) {
-                    this.SendRescue(message, cmd.DMResponse, cmd, command);
-                }
-                else {
-                    if (cmd.Function !== null) {
-                        if (cmd.DevOnly === true &&
-                            message.author.id === "442621672714010625") {
-                            cmd.Function.Execute(message, command, cmd.DMResponse);
+        manager_command_1.CommandManager.Validate(command)
+            .then(cmd => {
+            cooldown_model_1.Cooldown.Get(cmd, message.member.user).then(cooldown => {
+                cooldown.Register(message).then(response => {
+                    if (response === null) {
+                        const parameter = command.Parameter;
+                        const paramRequired = cmd.ParameterRequired;
+                        if (cmd.CanHaveMention &&
+                            message.mentions !== null &&
+                            message.mentions !== undefined) {
+                            cmd.Function.Execute(message, command, cmd.DirectMessage);
                             return;
                         }
-                        cmd.Function.Execute(message, command, cmd.DMResponse);
+                        else if (parameter.length === 0 && paramRequired) {
+                            this.SendRescue(message, cmd.DirectMessage, cmd, command);
+                            return;
+                        }
+                        else if (parameter.length > 0 && !paramRequired) {
+                            this.SendRescue(message, cmd.DirectMessage, cmd, command);
+                            return;
+                        }
+                        else {
+                            if (cmd.Function !== null) {
+                                if (cmd.DevOnly === true &&
+                                    message.author.id === "442621672714010625") {
+                                    cmd.Function.Execute(message, command, cmd.DirectMessage);
+                                    return;
+                                }
+                                cmd.Function.Execute(message, command, cmd.DirectMessage);
+                                return;
+                            }
+                        }
                         return;
                     }
-                }
-                return;
-            }
-            else {
-                if (iteration === commands.length) {
-                    sender_1.Sender.SendInfo(message, `The command ***${command.Name}*** doesn't exists. Type the command: ***-help***  to see all commands.`, false);
-                    return;
-                }
-            }
-            iteration++;
+                    else {
+                        message.channel
+                            .send(`${response.content} -  \`${response.countdown}s\``)
+                            .then(($m) => {
+                            if (message.deletable) {
+                                message.delete();
+                            }
+                            setInterval(() => {
+                                if ($m !== null && $m !== undefined) {
+                                    const temp = response.countdown - 1;
+                                    $m.edit(`${response.content} -  \`${temp}s\``);
+                                }
+                            }, 1000);
+                            setTimeout(() => {
+                                $m.delete();
+                            }, response.timeout);
+                        });
+                    }
+                });
+            });
+        })
+            .catch((err) => {
+            message.reply(err.message);
         });
     }
     static SendRescue(message, dm, botCommand, command) {

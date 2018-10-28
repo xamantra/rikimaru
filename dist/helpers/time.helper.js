@@ -36,6 +36,17 @@ class TimeHelper {
         }
         return yearmonthday;
     }
+    static Seconds(milliseconds) {
+        const diff = milliseconds / 1000;
+        const diffString = diff.toString();
+        return diffString.substr(0, 3);
+    }
+    static DiffSeconds(a, b) {
+        const bMoment = moment_1.default(b);
+        const aMoment = moment_1.default(a);
+        const diff = aMoment.diff(bMoment);
+        return Number(this.Seconds(diff));
+    }
 }
 exports.TimeHelper = TimeHelper;
 //# sourceMappingURL=time.helper.js.map

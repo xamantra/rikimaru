@@ -37,4 +37,17 @@ export class TimeHelper {
     }
     return yearmonthday;
   }
+
+  public static Seconds(milliseconds: number) {
+    const diff = milliseconds / 1000;
+    const diffString = diff.toString();
+    return diffString.substr(0, 3);
+  }
+
+  public static DiffSeconds(a: Date, b: Date) {
+    const bMoment = moment(b);
+    const aMoment = moment(a);
+    const diff = aMoment.diff(bMoment);
+    return Number(this.Seconds(diff));
+  }
 }

@@ -6,54 +6,68 @@ import { Message } from "discord.js";
 import { RescueCenter } from "../core/rescue.center";
 import { CommandManager } from "../command/manager.command";
 import { Sender } from "./../core/sender";
+import { Cooldown } from "../models/cooldown.model";
 
 export class ResponseHandler {
   public static Get(message: Message, command: ICommand) {
-    const commands = CommandManager.Commands;
-    let iteration = 1;
-    commands.forEach(async cmd => {
-      if (cmd.Name === command.Name) {
-        const parameter = command.Parameter;
-        const paramRequired = cmd.ParameterRequired;
-        if (
-          cmd.MentionRequired &&
-          message.mentions !== null &&
-          message.mentions !== undefined
-        ) {
-          cmd.Function.Execute(message, command, cmd.DMResponse);
-          return;
-        } else if (parameter.length === 0 && paramRequired) {
-          this.SendRescue(message, cmd.DMResponse, cmd, command);
-        } else if (parameter.length > 0 && !paramRequired) {
-          this.SendRescue(message, cmd.DMResponse, cmd, command);
-        } else {
-          if (cmd.Function !== null) {
-            if (
-              cmd.DevOnly === true &&
-              message.author.id === "442621672714010625"
-            ) {
-              cmd.Function.Execute(message, command, cmd.DMResponse);
+    CommandManager.Validate(command)
+      .then(cmd => {
+        Cooldown.Get(cmd, message.member.user).then(cooldown => {
+          cooldown.Register(message).then(response => {
+            if (response === null) {
+              const parameter = command.Parameter;
+              const paramRequired = cmd.ParameterRequired;
+              if (
+                cmd.CanHaveMention &&
+                message.mentions !== null &&
+                message.mentions !== undefined
+              ) {
+                cmd.Function.Execute(message, command, cmd.DirectMessage);
+                return;
+              } else if (parameter.length === 0 && paramRequired) {
+                this.SendRescue(message, cmd.DirectMessage, cmd, command);
+                return;
+              } else if (parameter.length > 0 && !paramRequired) {
+                this.SendRescue(message, cmd.DirectMessage, cmd, command);
+                return;
+              } else {
+                if (cmd.Function !== null) {
+                  if (
+                    cmd.DevOnly === true &&
+                    message.author.id === "442621672714010625"
+                  ) {
+                    cmd.Function.Execute(message, command, cmd.DirectMessage);
+                    return;
+                  }
+                  cmd.Function.Execute(message, command, cmd.DirectMessage);
+                  return;
+                }
+              }
               return;
+            } else {
+              message.channel
+                .send(`${response.content} -  \`${response.countdown}s\``)
+                .then(($m: Message) => {
+                  if (message.deletable) {
+                    message.delete();
+                  }
+                  setInterval(() => {
+                    if ($m !== null && $m !== undefined) {
+                      const temp = response.countdown - 1;
+                      $m.edit(`${response.content} -  \`${temp}s\``);
+                    }
+                  }, 1000);
+                  setTimeout(() => {
+                    $m.delete();
+                  }, response.timeout);
+                });
             }
-            cmd.Function.Execute(message, command, cmd.DMResponse);
-            return;
-          }
-        }
-        return;
-      } else {
-        if (iteration === commands.length) {
-          Sender.SendInfo(
-            message,
-            `The command ***${
-              command.Name
-            }*** doesn't exists. Type the command: ***-help***  to see all commands.`,
-            false
-          );
-          return;
-        }
-      }
-      iteration++;
-    });
+          });
+        });
+      })
+      .catch((err: Error) => {
+        message.reply(err.message);
+      });
   }
 
   private static SendRescue(

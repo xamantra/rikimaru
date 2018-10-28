@@ -14,6 +14,7 @@ import {
   dmviewsubs,
   dmunsub
 } from "./commands";
+import { ICommand } from "../interfaces/command.interface";
 
 export class CommandManager {
   private static BotCommands: BotCommand[] = [];
@@ -40,5 +41,27 @@ export class CommandManager {
 
   public static get Commands() {
     return this.BotCommands;
+  }
+
+  public static Validate(command: ICommand) {
+    return new Promise<BotCommand>((resolve, reject) => {
+      let iteration = 0;
+      this.BotCommands.forEach(cmd => {
+        iteration++;
+        if (cmd.Name === command.Name) {
+          resolve(cmd);
+        } else {
+          if (iteration === this.BotCommands.length) {
+            reject(
+              new Error(
+                `The command ***-${
+                  command.Name
+                }*** doesn't exists. Type the command: ***-help***  to see all commands.`
+              )
+            );
+          }
+        }
+      });
+    });
   }
 }

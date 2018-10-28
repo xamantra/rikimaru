@@ -22,6 +22,22 @@ class CommandManager {
     static get Commands() {
         return this.BotCommands;
     }
+    static Validate(command) {
+        return new Promise((resolve, reject) => {
+            let iteration = 0;
+            this.BotCommands.forEach(cmd => {
+                iteration++;
+                if (cmd.Name === command.Name) {
+                    resolve(cmd);
+                }
+                else {
+                    if (iteration === this.BotCommands.length) {
+                        reject(new Error(`The command ***-${command.Name}*** doesn't exists. Type the command: ***-help***  to see all commands.`));
+                    }
+                }
+            });
+        });
+    }
 }
 CommandManager.BotCommands = [];
 exports.CommandManager = CommandManager;

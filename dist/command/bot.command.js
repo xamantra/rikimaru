@@ -2,28 +2,28 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const enums_1 = require("./../core/enums");
 class BotCommand {
-    constructor(name, description, requireParameter, requireMention, responseType, commandFunction, example, devOnly = false) {
+    constructor(Name, Description, ParameterRequired, CanHaveMention, responseType, Cooldown, Function, Example, DevOnly = false) {
+        this.Name = Name;
+        this.Description = Description;
+        this.ParameterRequired = ParameterRequired;
+        this.CanHaveMention = CanHaveMention;
         this.responseType = responseType;
-        this.DevOnly = false;
-        this.DMResponse = false;
-        this.Name = name;
-        this.Description = description;
-        this.ParameterRequired = requireParameter;
-        this.MentionRequired = requireMention;
-        this.Function = commandFunction;
-        this.Example = example;
-        this.DevOnly = devOnly;
+        this.Cooldown = Cooldown;
+        this.Function = Function;
+        this.Example = Example;
+        this.DevOnly = DevOnly;
+        this.DirectMessage = false;
         switch (this.responseType) {
             case enums_1.Response.ChannelReply:
-                this.DMResponse = false;
+                this.DirectMessage = false;
                 break;
             case enums_1.Response.DirectMessage:
-                this.DMResponse = true;
+                this.DirectMessage = true;
                 break;
             default:
                 break;
         }
-        if (this.DMResponse) {
+        if (this.DirectMessage) {
             this.Description += "\nIt DMs you with the response.";
         }
         if (!this.ParameterRequired) {

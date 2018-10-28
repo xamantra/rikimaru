@@ -17,6 +17,7 @@ export const help = new BotCommand(
   false,
   false,
   Response.ChannelReply,
+  5,
   helpFunction
 );
 export const dmhelp = new BotCommand(
@@ -25,6 +26,7 @@ export const dmhelp = new BotCommand(
   false,
   false,
   Response.DirectMessage,
+  5,
   helpFunction
 );
 export const when = new BotCommand(
@@ -33,6 +35,7 @@ export const when = new BotCommand(
   true,
   false,
   Response.ChannelReply,
+  5,
   whenAnimeFunction,
   mediaExample
 );
@@ -42,6 +45,7 @@ export const dmwhen = new BotCommand(
   true,
   false,
   Response.DirectMessage,
+  5,
   whenAnimeFunction,
   mediaExample
 );
@@ -51,6 +55,7 @@ export const sub = new BotCommand(
   true,
   false,
   Response.ChannelReply,
+  5,
   subscribeFunction,
   mediaExample
 );
@@ -60,6 +65,7 @@ export const dmsub = new BotCommand(
   true,
   false,
   Response.DirectMessage,
+  5,
   subscribeFunction,
   mediaExample
 );
@@ -69,6 +75,7 @@ export const viewsubs = new BotCommand(
   false,
   true,
   Response.ChannelReply,
+  20,
   viewSubsFunction
 );
 export const dmviewsubs = new BotCommand(
@@ -77,6 +84,7 @@ export const dmviewsubs = new BotCommand(
   false,
   true,
   Response.DirectMessage,
+  20,
   viewSubsFunction
 );
 export const unsub = new BotCommand(
@@ -85,6 +93,7 @@ export const unsub = new BotCommand(
   true,
   false,
   Response.ChannelReply,
+  5,
   unsubFunction,
   mediaExample
 );
@@ -94,6 +103,7 @@ export const dmunsub = new BotCommand(
   true,
   false,
   Response.DirectMessage,
+  5,
   unsubFunction,
   mediaExample
 );
@@ -103,6 +113,7 @@ export const ping = new BotCommand(
   false,
   false,
   Response.ChannelReply,
+  3,
   pingFunction
 );
 export const dmping = new BotCommand(
@@ -111,6 +122,7 @@ export const dmping = new BotCommand(
   false,
   false,
   Response.DirectMessage,
+  3,
   pingFunction
 );
 export const logall = new BotCommand(
@@ -119,6 +131,7 @@ export const logall = new BotCommand(
   false,
   false,
   Response.DirectMessage,
+  0,
   logAllFunction,
   null,
   true

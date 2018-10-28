@@ -3,45 +3,31 @@ import { ICommandExample } from "./../interfaces/command.example.interface";
 import { Response } from "./../core/enums";
 
 export class BotCommand {
-  public Name: string;
-  public Description: string;
-  public ParameterRequired: boolean;
-  public MentionRequired: boolean;
-  public DevOnly = false;
-  public DMResponse = false;
-  public Function: ICommandFunction;
-  public Example: ICommandExample;
+  public DirectMessage = false;
 
   constructor(
-    name: string,
-    description: string,
-    requireParameter: boolean,
-    requireMention: boolean,
+    public Name: string,
+    public Description: string,
+    public ParameterRequired: boolean,
+    public CanHaveMention: boolean,
     private responseType: Response,
-    commandFunction: ICommandFunction,
-    example?: ICommandExample,
-    devOnly: boolean = false
+    public Cooldown: number,
+    public Function: ICommandFunction,
+    public Example?: ICommandExample,
+    public DevOnly: boolean = false
   ) {
-    this.Name = name;
-    this.Description = description;
-    this.ParameterRequired = requireParameter;
-    this.MentionRequired = requireMention;
-    this.Function = commandFunction;
-    this.Example = example;
-    this.DevOnly = devOnly;
-
     switch (this.responseType) {
       case Response.ChannelReply:
-        this.DMResponse = false;
+        this.DirectMessage = false;
         break;
       case Response.DirectMessage:
-        this.DMResponse = true;
+        this.DirectMessage = true;
         break;
       default:
         break;
     }
 
-    if (this.DMResponse) {
+    if (this.DirectMessage) {
       this.Description += "\nIt DMs you with the response.";
     }
     if (!this.ParameterRequired) {
