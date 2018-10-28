@@ -43,18 +43,10 @@ class ResponseHandler {
                         return;
                     }
                     else {
-                        message.channel
-                            .send(`${response.content} -  \`${response.countdown}s\``)
-                            .then(($m) => {
+                        message.channel.send(response.content).then(($m) => {
                             if (message.deletable) {
                                 message.delete();
                             }
-                            setInterval(() => {
-                                if ($m !== null && $m !== undefined) {
-                                    const temp = response.countdown - 1;
-                                    $m.edit(`${response.content} -  \`${temp}s\``);
-                                }
-                            }, 1000);
                             setTimeout(() => {
                                 $m.delete();
                             }, response.timeout);

@@ -31,7 +31,7 @@ class Cooldown {
                 const diff = time_helper_1.TimeHelper.DiffSeconds(newMessage.createdAt, this.lastMessage.createdAt);
                 if (diff < this.command.Cooldown) {
                     const countdown = this.command.Cooldown - diff;
-                    resolve(new CooldownResponse(`:alarm_clock: **${this.user.username}** You are on cooldown for **-${this.command.Name}**`, countdown * 1000, countdown));
+                    resolve(new CooldownResponse(`:alarm_clock: **${this.user.username}** You are on cooldown for **-${this.command.Name}** - \`${countdown}s\``, countdown * 1000, countdown));
                 }
                 else {
                     this.lastMessage = newMessage;
