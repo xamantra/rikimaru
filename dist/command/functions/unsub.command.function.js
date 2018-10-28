@@ -43,10 +43,13 @@ class UnsubFunction {
                     });
                 }
                 else {
-                    sender_1.Sender.SendInfo(message, search_list_1.SearchList.Embed(command, formattedResults), dm);
+                    search_list_1.SearchList.Embed(command, formattedResults).then(embed => {
+                        sender_1.Sender.SendInfo(message, embed, dm);
+                    });
                 }
             })
                 .catch(error => {
+                sender_1.Sender.Send(message, `Ge mo nasai! I didn't find anime that matches your keyword \`${command.Parameter}\``, dm);
                 console.warn(`Error while searching : [MediaSearch.All(${command.Parameter})]`);
             });
         })

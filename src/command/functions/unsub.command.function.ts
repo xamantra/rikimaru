@@ -61,14 +61,19 @@ export class UnsubFunction implements ICommandFunction {
                 }
               );
             } else {
-              Sender.SendInfo(
-                message,
-                SearchList.Embed(command, formattedResults),
-                dm
-              );
+              SearchList.Embed(command, formattedResults).then(embed => {
+                Sender.SendInfo(message, embed, dm);
+              });
             }
           })
           .catch(error => {
+            Sender.Send(
+              message,
+              `Ge mo nasai! I didn't find anime that matches your keyword \`${
+                command.Parameter
+              }\``,
+              dm
+            );
             console.warn(
               `Error while searching : [MediaSearch.All(${command.Parameter})]`
             );

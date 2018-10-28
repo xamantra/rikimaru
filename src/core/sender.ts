@@ -12,7 +12,7 @@ export class Sender {
         })
         .catch((err: DiscordAPIError) => {
           message.reply(`Oh!, it seems that I can't dm you.`);
-          console.log(err.message);
+          console.log(`Sender.ts: "${err.message}"`);
         });
     } else {
       message
@@ -23,12 +23,12 @@ export class Sender {
           );
         })
         .catch((err: DiscordAPIError) => {
-          console.log(err.message);
+          console.log(`Sender.ts: "${err.message}"`);
         });
     }
   }
 
-  public static async SendInfo(
+  public static SendInfo(
     message: Message,
     content: any,
     isDM: boolean = false

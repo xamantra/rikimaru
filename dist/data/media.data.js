@@ -23,7 +23,6 @@ class MediaData {
             this.Clear().then(() => {
                 query_1.Query.Execute(this.DataHelper.MediaSelectAll()).then(async (result) => {
                     const $result = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Media);
-                    console.log($result);
                     if ($result === undefined || $result === null) {
                         reject(new Error(`"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`));
                     }
@@ -38,7 +37,9 @@ class MediaData {
                                     console.log(`Media List Length: ${this.MediaList.length}`);
                                     resolve();
                                 })
-                                    .catch((reason) => { console.log(reason.message); });
+                                    .catch((reason) => {
+                                    console.log(reason.message);
+                                });
                             }
                         });
                     }
@@ -75,39 +76,33 @@ class MediaData {
                 let iteration = 0;
                 console.log(`Iterating through "locals (${this.LocalList.length} items)"`);
                 locals.forEach(lm => {
-                    iteration++;
-                    console.log(`Iteration: ${iteration}`);
                     media_search_1.MediaSearch.Find(lm.MalId)
                         .then($m => {
+                        iteration++;
                         if (media_status_1.MediaStatus.Ongoing($m) || media_status_1.MediaStatus.NotYetAired($m)) {
                             queue_data_1.QueueData.Insert($m.idMal, $m.nextAiringEpisode.next)
                                 .then(insertId => {
-                                queue_data_1.QueueData.SetQueue($m);
+                                this.MediaList.push($m);
+                                console.log(`Pushed: ${lm.Title}`);
+                                this.Check(iteration, $m, res);
                             })
                                 .catch(() => {
-                                queue_data_1.QueueData.SetQueue($m);
+                                this.Check(iteration, $m, res);
                                 console.log(`No need to add. Already exists.`);
                             });
-                            console.log(`Pushed: ${lm.Title}`);
-                            this.MediaList.push($m);
-                            if (iteration === locals.length) {
-                                res();
-                            }
                         }
                         else {
                             array_helper_1.ArrayHelper.remove(this.LocalList, lm, () => {
                                 query_1.Query.Execute(this.DataHelper.MediaDelete($m.id), () => {
                                     userDatas.forEach(x => {
                                         subscription_data_1.SubscriptionData.Delete($m.idMal, x.DiscordId).then(() => {
-                                            const qj = queue_data_1.QueueData.GetJobs.find(j => j.user.Id === x.Id && j.media.idMal === $m.idMal);
+                                            const qj = queue_data_1.QueueData.GetJobs.find(j => j.media.idMal === $m.idMal);
                                             queue_data_1.QueueData.RemoveJob(qj);
                                             console.log(`All subscription of "${$m.title}" has been remove`);
                                         });
                                     });
                                 });
-                                if (iteration === locals.length) {
-                                    res();
-                                }
+                                this.Check(iteration, $m, res);
                             });
                         }
                     })
@@ -117,6 +112,13 @@ class MediaData {
                 });
             }
         });
+    }
+    static Check(iteration, $m, res) {
+        queue_data_1.QueueData.SetQueue($m);
+        if (iteration === this.LocalList.length) {
+            console.log(`Iteration: ${iteration}`);
+            res();
+        }
     }
     static async Insert(media, title, user = null) {
         return new Promise(async (resolve, reject) => {
@@ -129,14 +131,15 @@ class MediaData {
                     m.MalId = myRes.InsertId;
                     m.Title = title;
                     this.LocalList.push(m);
-                    if (media_status_1.MediaStatus.Ongoing(media) ||
-                        media_status_1.MediaStatus.NotYetAired(media)) {
+                    if (media_status_1.MediaStatus.Ongoing(media) || media_status_1.MediaStatus.NotYetAired(media)) {
                         this.MediaList.push(media);
                         queue_data_1.QueueData.Insert(media.idMal, media.nextAiringEpisode.next)
                             .then(qId => {
                             resolve(media.idMal);
                         })
-                            .catch((reason) => { console.log(reason.message); });
+                            .catch((reason) => {
+                            console.log(reason.message);
+                        });
                     }
                 }
             }

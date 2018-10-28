@@ -10,7 +10,7 @@ class Sender {
             })
                 .catch((err) => {
                 message.reply(`Oh!, it seems that I can't dm you.`);
-                console.log(err.message);
+                console.log(`Sender.ts: "${err.message}"`);
             });
         }
         else {
@@ -20,11 +20,11 @@ class Sender {
                 console.log(`Message <${$m.id}> was sent in <${message.channel.id}>.`);
             })
                 .catch((err) => {
-                console.log(err.message);
+                console.log(`Sender.ts: "${err.message}"`);
             });
         }
     }
-    static async SendInfo(message, content, isDM = false) {
+    static SendInfo(message, content, isDM = false) {
         this.Send(message, content, isDM);
     }
 }

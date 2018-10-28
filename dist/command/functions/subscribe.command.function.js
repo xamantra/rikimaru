@@ -45,19 +45,20 @@ class SubscribeFunction {
                 const title = title_helper_1.TitleHelper.Get(results[0].title);
                 media_data_1.MediaData.Insert(media, title)
                     .then(insertId => {
-                    console.log(`Media ID: ${insertId}`);
+                    queue_data_1.QueueData.GetQueue(media.idMal).then(queue => {
+                        const queueJob = new queue_job_model_1.QueueJob(media, queue);
+                        queue_data_1.QueueData.AddJob(queueJob).then(() => {
+                            this.Embed(media, true).then(embed => {
+                                sender_1.Sender.SendInfo(message, embed, dm);
+                                console.log(`Added to queue: ${insertId}`);
+                            });
+                        });
+                    });
                     user_data_1.UserData.GetUser(discordId)
                         .then(user => {
                         subscription_data_1.SubscriptionData.Insert(media.idMal, user.Id)
                             .then(() => {
-                            queue_data_1.QueueData.GetQueue(media.idMal).then(queue => {
-                                const queueJob = new queue_job_model_1.QueueJob(user, media, queue);
-                                queue_data_1.QueueData.AddJob(queueJob).then(() => {
-                                    this.Embed(media, true).then(embed => {
-                                        sender_1.Sender.SendInfo(message, embed, dm);
-                                    });
-                                });
-                            });
+                            console.log(`User "${user.DiscordId}" subscribed to "${title_helper_1.TitleHelper.Get(media.title)}".`);
                         })
                             .catch((reason) => {
                             if (reason === "EXISTS") {
@@ -79,7 +80,9 @@ class SubscribeFunction {
                 });
             }
             else {
-                sender_1.Sender.SendInfo(message, search_list_1.SearchList.Embed(command, formattedResults), dm);
+                search_list_1.SearchList.Embed(command, formattedResults).then(embed => {
+                    sender_1.Sender.SendInfo(message, embed, dm);
+                });
             }
         })
             .catch((reason) => {

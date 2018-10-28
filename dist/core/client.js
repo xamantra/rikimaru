@@ -19,17 +19,20 @@ class ClientManager {
                 if (this.Client !== null && this.Client !== undefined) {
                     resolve(this.Client);
                 }
-            }, 500);
+            }, 100);
         });
     }
-    static GetUser(id) {
+    static GetUser(discordId) {
         return new Promise((resolve, reject) => {
             setInterval(() => {
-                const user = this.Client.users.get(id);
+                const user = this.Client.users.get(discordId);
                 if (user !== null && user !== undefined) {
                     resolve(user);
                 }
-            }, 500);
+            }, 0);
+            setTimeout(() => {
+                reject(new Error(`Unable to get user <${discordId}>.`));
+            }, 10000);
         });
     }
 }

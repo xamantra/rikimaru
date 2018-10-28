@@ -26,14 +26,22 @@ export class QueueData {
           Query.Execute(this.DataHelper.QueueSelectAll(), async result => {
             const queues = await JsonHelper.ArrayConvert<Queue>(result, Queue);
             if (queues === null || queues === undefined) {
-              reject(new Error(`"JsonHelper.ArrayConvert<Queue>(result, Queue)" is 'null' or 'undefined'`));
+              reject(
+                new Error(
+                  `"JsonHelper.ArrayConvert<Queue>(result, Queue)" is 'null' or 'undefined'`
+                )
+              );
             } else {
-              queues.forEach(q => { this.Queues.push(q); });
+              queues.forEach(q => {
+                this.Queues.push(q);
+              });
               resolve();
             }
           });
         })
-        .catch((err: Error) => { console.log(err.message); });
+        .catch((err: Error) => {
+          console.log(err.message);
+        });
     });
   }
 
@@ -58,21 +66,26 @@ export class QueueData {
         resolve(q);
       } else {
         reject(
-          new Error(`"this.All.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`));
+          new Error(
+            `"this.All.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`
+          )
+        );
       }
     });
   }
 
   public static SetQueue($m: IMedia) {
-    QueueData.GetQueue($m.idMal).then(queue => {
-      UserData.All.forEach(user => {
-        SubscriptionData.Exists($m.idMal, user.Id).then(exists => {
-          if (exists === true) {
-            const queueJob = new QueueJob(user, $m, queue);
-            QueueData.AddJob(queueJob);
-          }
-        });
-      });
+    this.GetQueue($m.idMal).then(queue => {
+      const queueJob = new QueueJob($m, queue);
+      this.AddJob(queueJob);
+      // UserData.All.forEach(user => {
+      //   SubscriptionData.Exists($m.idMal, user.Id).then(exists => {
+      //     if (exists === true) {
+      //       const queueJob = new QueueJob($m, queue);
+      //       QueueData.AddJob(queueJob);
+      //     }
+      //   });
+      // });
     });
   }
 
@@ -82,7 +95,7 @@ export class QueueData {
 
   public static AddJob(queueJob: QueueJob) {
     return new Promise((resolve, reject) => {
-      queueJob.StartQueue();
+      queueJob.Check();
       this.QueueJobs.push(queueJob);
       resolve();
     });
@@ -90,7 +103,7 @@ export class QueueData {
 
   public static RemoveJob(queueJob: QueueJob) {
     ArrayHelper.remove(this.QueueJobs, queueJob, () => {
-      console.log(`Queue Job: "${queueJob}"`);
+      console.log(`Queue Job: "${queueJob.queue.MediaId}"`);
       queueJob = null;
     });
   }
@@ -102,7 +115,10 @@ export class QueueData {
           Query.Execute(
             this.DataHelper.QueueInsert(mediaId, next_episode),
             async result => {
-              const res = await JsonHelper.Convert<MySqlResult>(result, MySqlResult);
+              const res = await JsonHelper.Convert<MySqlResult>(
+                result,
+                MySqlResult
+              );
               console.log(res);
               if (res !== undefined && res !== null) {
                 const q = new Queue();
@@ -114,7 +130,10 @@ export class QueueData {
                 resolve(q.Id);
               } else {
                 reject(
-                  new Error(`JsonHelper.ArrayConvert<MySqlResult>(result, MySqlResult)[0] is 'null' or 'undefined'.`));
+                  new Error(
+                    `JsonHelper.ArrayConvert<MySqlResult>(result, MySqlResult)[0] is 'null' or 'undefined'.`
+                  )
+                );
               }
             }
           );
@@ -126,27 +145,45 @@ export class QueueData {
     });
   }
 
-  public static async Update(user: User, media: IMedia, queueJob: QueueJob) {
+  public static async Update(media: IMedia, queueJob: QueueJob) {
     return new Promise(async (resolve, reject) => {
       Query.Execute(
         this.DataHelper.QueueUpdate(media.idMal, media.nextAiringEpisode.next)
-      ).then(() => {
-        this.Init().then(() => {
-          SubscriptionData.Exists(media.idMal, user.Id).then(exists => {
-            if (exists === true) {
-              this.GetQueue(media.idMal).then(q => {
-                const qj = new QueueJob(user, media, q);
+      )
+        .then(() => {
+          this.Init().then(() => {
+            this.GetQueue(media.idMal)
+              .then(q => {
+                const qj = new QueueJob(media, q);
                 this.AddJob(qj).then(() => {
-                  this.RemoveJob(queueJob);
-                  resolve();
+                  console.log(`New/Refreshed queue job: ${qj.queue.MediaId}`);
                 });
+              })
+              .catch(err => {
+                console.log(err);
               });
-            } else {
-              reject(`User ${user.DiscordId} is not subscribe to Media ${media.idMal}`);
-            }
+            // SubscriptionData.Exists(media.idMal, user.Id).then(exists => {
+            //   if (exists === true) {
+            //     this.GetQueue(media.idMal).then(q => {
+            //       const qj = new QueueJob(media, q);
+            //       this.AddJob(qj).then(() => {
+            //         this.RemoveJob(queueJob);
+            //         resolve();
+            //       });
+            //     });
+            //   } else {
+            //     reject(
+            //       `User ${user.DiscordId} is not subscribe to Media ${
+            //         media.idMal
+            //       }`
+            //     );
+            //   }
+            // });
           });
+        })
+        .catch(err => {
+          console.log(err);
         });
-      });
     });
   }
 
@@ -166,8 +203,12 @@ export class QueueData {
       if (this.Queues === null || this.Queues === undefined) {
         reject(new Error(`"Queues" is 'null' or 'undefined'.`));
       } else {
-        this.Queues.forEach(q => { console.log(q); });
-        this.QueueJobs.forEach(qj => { qj.Log(); });
+        this.Queues.forEach(q => {
+          console.log(q);
+        });
+        this.QueueJobs.forEach(qj => {
+          qj.Log();
+        });
         resolve();
       }
     });

@@ -1,4 +1,4 @@
-import { Client, User } from "discord.js";
+import { Client, User, Collection } from "discord.js";
 import { Config } from "./config";
 
 export class ClientManager {
@@ -10,7 +10,7 @@ export class ClientManager {
     client.on("guildCreate", guild => {
       console.log(
         `New server joined: ${guild.name} (Id: ${guild.id}). This server has ${
-        guild.memberCount
+          guild.memberCount
         } members!`
       );
     });
@@ -18,7 +18,7 @@ export class ClientManager {
     client.on("ready", () => {
       console.log(
         `Bot has started, with ${client.users.size} users, in ${
-        client.channels.size
+          client.channels.size
         } channels of ${client.guilds.size} servers.`
       );
       client.user.setActivity(`as a Bot`);
@@ -31,18 +31,21 @@ export class ClientManager {
         if (this.Client !== null && this.Client !== undefined) {
           resolve(this.Client);
         }
-      }, 500);
+      }, 100);
     });
   }
 
-  public static GetUser(id: string) {
+  public static GetUser(discordId: string) {
     return new Promise<User>((resolve, reject) => {
       setInterval(() => {
-        const user = this.Client.users.get(id);
+        const user = this.Client.users.get(discordId);
         if (user !== null && user !== undefined) {
           resolve(user);
         }
-      }, 500);
+      }, 0);
+      setTimeout(() => {
+        reject(new Error(`Unable to get user <${discordId}>.`));
+      }, 10000);
     });
   }
 }

@@ -7,8 +7,6 @@ const json_helper_1 = require("./../helpers/json.helper");
 const query_1 = require("./../core/query");
 const data_helper_1 = require("../helpers/data.helper");
 const array_helper_1 = require("../helpers/array.helper");
-const subscription_data_1 = require("./subscription.data");
-const user_data_1 = require("./user.data");
 class QueueData {
     static get All() {
         return this.Queues;
@@ -23,12 +21,16 @@ class QueueData {
                         reject(new Error(`"JsonHelper.ArrayConvert<Queue>(result, Queue)" is 'null' or 'undefined'`));
                     }
                     else {
-                        queues.forEach(q => { this.Queues.push(q); });
+                        queues.forEach(q => {
+                            this.Queues.push(q);
+                        });
                         resolve();
                     }
                 });
             })
-                .catch((err) => { console.log(err.message); });
+                .catch((err) => {
+                console.log(err.message);
+            });
         });
     }
     static async Clear() {
@@ -57,15 +59,17 @@ class QueueData {
         });
     }
     static SetQueue($m) {
-        QueueData.GetQueue($m.idMal).then(queue => {
-            user_data_1.UserData.All.forEach(user => {
-                subscription_data_1.SubscriptionData.Exists($m.idMal, user.Id).then(exists => {
-                    if (exists === true) {
-                        const queueJob = new queue_job_model_1.QueueJob(user, $m, queue);
-                        QueueData.AddJob(queueJob);
-                    }
-                });
-            });
+        this.GetQueue($m.idMal).then(queue => {
+            const queueJob = new queue_job_model_1.QueueJob($m, queue);
+            this.AddJob(queueJob);
+            // UserData.All.forEach(user => {
+            //   SubscriptionData.Exists($m.idMal, user.Id).then(exists => {
+            //     if (exists === true) {
+            //       const queueJob = new QueueJob($m, queue);
+            //       QueueData.AddJob(queueJob);
+            //     }
+            //   });
+            // });
         });
     }
     static get GetJobs() {
@@ -73,14 +77,14 @@ class QueueData {
     }
     static AddJob(queueJob) {
         return new Promise((resolve, reject) => {
-            queueJob.StartQueue();
+            queueJob.Check();
             this.QueueJobs.push(queueJob);
             resolve();
         });
     }
     static RemoveJob(queueJob) {
         array_helper_1.ArrayHelper.remove(this.QueueJobs, queueJob, () => {
-            console.log(`Queue Job: "${queueJob}"`);
+            console.log(`Queue Job: "${queueJob.queue.MediaId}"`);
             queueJob = null;
         });
     }
@@ -112,25 +116,42 @@ class QueueData {
             });
         });
     }
-    static async Update(user, media, queueJob) {
+    static async Update(media, queueJob) {
         return new Promise(async (resolve, reject) => {
-            query_1.Query.Execute(this.DataHelper.QueueUpdate(media.idMal, media.nextAiringEpisode.next)).then(() => {
+            query_1.Query.Execute(this.DataHelper.QueueUpdate(media.idMal, media.nextAiringEpisode.next))
+                .then(() => {
                 this.Init().then(() => {
-                    subscription_data_1.SubscriptionData.Exists(media.idMal, user.Id).then(exists => {
-                        if (exists === true) {
-                            this.GetQueue(media.idMal).then(q => {
-                                const qj = new queue_job_model_1.QueueJob(user, media, q);
-                                this.AddJob(qj).then(() => {
-                                    this.RemoveJob(queueJob);
-                                    resolve();
-                                });
-                            });
-                        }
-                        else {
-                            reject(`User ${user.DiscordId} is not subscribe to Media ${media.idMal}`);
-                        }
+                    this.GetQueue(media.idMal)
+                        .then(q => {
+                        const qj = new queue_job_model_1.QueueJob(media, q);
+                        this.AddJob(qj).then(() => {
+                            console.log(`New/Refreshed queue job: ${qj.queue.MediaId}`);
+                        });
+                    })
+                        .catch(err => {
+                        console.log(err);
                     });
+                    // SubscriptionData.Exists(media.idMal, user.Id).then(exists => {
+                    //   if (exists === true) {
+                    //     this.GetQueue(media.idMal).then(q => {
+                    //       const qj = new QueueJob(media, q);
+                    //       this.AddJob(qj).then(() => {
+                    //         this.RemoveJob(queueJob);
+                    //         resolve();
+                    //       });
+                    //     });
+                    //   } else {
+                    //     reject(
+                    //       `User ${user.DiscordId} is not subscribe to Media ${
+                    //         media.idMal
+                    //       }`
+                    //     );
+                    //   }
+                    // });
                 });
+            })
+                .catch(err => {
+                console.log(err);
             });
         });
     }
@@ -151,8 +172,12 @@ class QueueData {
                 reject(new Error(`"Queues" is 'null' or 'undefined'.`));
             }
             else {
-                this.Queues.forEach(q => { console.log(q); });
-                this.QueueJobs.forEach(qj => { qj.Log(); });
+                this.Queues.forEach(q => {
+                    console.log(q);
+                });
+                this.QueueJobs.forEach(qj => {
+                    qj.Log();
+                });
                 resolve();
             }
         });

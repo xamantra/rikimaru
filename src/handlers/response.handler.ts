@@ -62,10 +62,8 @@ export class ResponseHandler {
     botCommand: BotCommand,
     command: ICommand
   ) {
-    Sender.SendInfo(
-      message,
-      RescueCenter.RequireParameter(botCommand, command),
-      dm
-    );
+    RescueCenter.RequireParameter(botCommand, command).then(embed => {
+      Sender.SendInfo(message, embed, dm);
+    });
   }
 }

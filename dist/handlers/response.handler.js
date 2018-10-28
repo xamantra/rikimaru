@@ -48,7 +48,9 @@ class ResponseHandler {
         });
     }
     static SendRescue(message, dm, botCommand, command) {
-        sender_1.Sender.SendInfo(message, rescue_center_1.RescueCenter.RequireParameter(botCommand, command), dm);
+        rescue_center_1.RescueCenter.RequireParameter(botCommand, command).then(embed => {
+            sender_1.Sender.SendInfo(message, embed, dm);
+        });
     }
 }
 exports.ResponseHandler = ResponseHandler;

@@ -1,68 +1,51 @@
-import { Queue, User } from "./subscription.model";
+import { Queue, Media } from "./subscription.model";
 import { QueueData } from "./../data/queue.data";
-import { Job } from "node-schedule";
 import moment, { unix } from "moment";
 import { ClientManager } from "../core/client";
 import { IMedia } from "../interfaces/page.interface";
 import { TitleHelper } from "../helpers/title.helper";
 import { MediaSearch } from "../core/media.search";
 import { Color } from "../core/colors";
+import { SubscriptionData } from "../data/subscription.data";
+import { User } from "discord.js";
+import { MediaStatus } from "../core/media.status";
 
 export class QueueJob {
-  private Job: Job;
   private JobDate: Date;
-  constructor(public user: User, public media: IMedia, public queue: Queue) {}
+  constructor(public media: IMedia, public queue: Queue) {}
 
-  public StartQueue() {
-    ClientManager.GetUser(this.user.DiscordId).then(user => {
-      const nextEpisode = this.queue.NextEpisode;
-      const media = this.media;
-      let timeout = media.nextAiringEpisode.timeUntilAiring * 1000;
-      if (timeout > 2147483647) {
-        timeout = 2147483647;
-      }
-      if (nextEpisode === media.nextAiringEpisode.next) {
-        console.log(
-          `${media.title.romaji} Episode ${
-            media.nextAiringEpisode.next
-          } is synced with the api, Cool!`
-        );
-        this.JobDate = unix(media.nextAiringEpisode.airingAt).toDate();
-        setTimeout(() => {
-          user
-            .send(this.Embed(media, media.nextAiringEpisode.next))
-            .then(() => {
-              setTimeout(() => {
-                this.Update();
-              }, 180000);
-            })
-            .catch((error: Error) => {
-              console.log(error.message);
-            });
-        }, timeout);
-      } else if (nextEpisode < media.nextAiringEpisode.next) {
-        console.log(
-          `Oh!, ${media.title.romaji} Episode ${
-            media.nextAiringEpisode.next
-          } is NOT synced with the api!`
-        );
-        this.Embed(media, nextEpisode).then(embed => {
-          user
-            .send(embed)
-            .then(() => {
-              setTimeout(() => {
-                this.Update();
-              }, 2000);
-            })
-            .catch((error: Error) => {
-              console.log(`Queue Job: "${error.message}"`);
-            });
+  public Check() {
+    SubscriptionData.GetSubscribers(this.media.idMal).then(subscribers => {
+      subscribers.forEach(subscriber => {
+        console.log(subscriber);
+        ClientManager.GetUser(subscriber.DiscordId).then(user => {
+          if (user.id === subscriber.DiscordId) {
+            const nextEpisode = this.queue.NextEpisode;
+            const media = this.media;
+            const title = TitleHelper.Get(media.title);
+            this.JobDate = unix(media.nextAiringEpisode.airingAt).toDate();
+            if (MediaStatus.Completed(media) && media.episodes === 1) {
+              this.Send(title, nextEpisode, media, user);
+            } else if (nextEpisode < media.nextAiringEpisode.next) {
+              this.Send(title, nextEpisode, media, user);
+            }
+          }
         });
-      } else {
-        setTimeout(() => {
+      });
+    });
+  }
+
+  private Send(title: string, nextEpisode: number, media: IMedia, user: User) {
+    console.log(`Oh!, ${title} Episode ${nextEpisode} has been released!`);
+    this.Embed(media, nextEpisode).then(embed => {
+      user
+        .send(embed)
+        .then(() => {
           this.Update();
-        }, 2000);
-      }
+        })
+        .catch((error: Error) => {
+          console.log(`Queue Job: "${error.message}"`);
+        });
     });
   }
 
@@ -70,26 +53,33 @@ export class QueueJob {
     const countdown = moment(this.JobDate).toNow(true);
     const title = TitleHelper.Get(this.media.title);
     console.log(
-      `Queue Job { Queue Episode: "Episode ${this.queue.NextEpisode}" User: "${
-        this.user.DiscordId
-      }": "${title} Episode ${
+      `Queue Job { Queue Episode: "${
+        this.queue.NextEpisode
+      }", "${title} Episode ${
         this.media.nextAiringEpisode.next
       }"  in  ${countdown} }`
     );
   }
 
   private Update() {
-    MediaSearch.Find(this.media.idMal).then(media => {
-      QueueData.Update(this.user, media, this)
-        .then(() => {
-          console.log(`Removed Queue: ${media.idMal}`);
-        })
-        .catch(error => {
-          console.warn(
-            `Error while searching : [MediaSearch.Find(${this.media.idMal})]`
-          );
-        });
-    });
+    MediaSearch.Find(this.media.idMal)
+      .then(media => {
+        QueueData.Update(media, this)
+          .then(() => {
+            console.log(`Removed Queue: ${media.idMal}`);
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      })
+      .catch(error => {
+        console.warn(
+          `Error while searching : [MediaSearch.Find(${
+            this.media.idMal
+          })]. Trying again...`
+        );
+        this.Update();
+      });
   }
 
   private async Embed(media: IMedia, episode: number) {

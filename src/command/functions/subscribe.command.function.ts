@@ -62,19 +62,24 @@ export class SubscribeFunction implements ICommandFunction {
           const title = TitleHelper.Get(results[0].title);
           MediaData.Insert(media, title)
             .then(insertId => {
-              console.log(`Media ID: ${insertId}`);
+              QueueData.GetQueue(media.idMal).then(queue => {
+                const queueJob = new QueueJob(media, queue);
+                QueueData.AddJob(queueJob).then(() => {
+                  this.Embed(media, true).then(embed => {
+                    Sender.SendInfo(message, embed, dm);
+                    console.log(`Added to queue: ${insertId}`);
+                  });
+                });
+              });
               UserData.GetUser(discordId)
                 .then(user => {
                   SubscriptionData.Insert(media.idMal, user.Id)
                     .then(() => {
-                      QueueData.GetQueue(media.idMal).then(queue => {
-                        const queueJob = new QueueJob(user, media, queue);
-                        QueueData.AddJob(queueJob).then(() => {
-                          this.Embed(media, true).then(embed => {
-                            Sender.SendInfo(message, embed, dm);
-                          });
-                        });
-                      });
+                      console.log(
+                        `User "${
+                          user.DiscordId
+                        }" subscribed to "${TitleHelper.Get(media.title)}".`
+                      );
                     })
                     .catch((reason: string) => {
                       if (reason === "EXISTS") {
@@ -94,11 +99,9 @@ export class SubscribeFunction implements ICommandFunction {
               console.log(reason.message);
             });
         } else {
-          Sender.SendInfo(
-            message,
-            SearchList.Embed(command, formattedResults),
-            dm
-          );
+          SearchList.Embed(command, formattedResults).then(embed => {
+            Sender.SendInfo(message, embed, dm);
+          });
         }
       })
       .catch((reason: Error) => {
