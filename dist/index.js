@@ -11,6 +11,7 @@ const manager_command_1 = require("./command/manager.command");
 const message_handler_1 = require("./handlers/message.handler");
 const openshift_1 = require("./others/openshift");
 const scheduler_1 = require("./core/scheduler");
+const presence_1 = require("./core/presence");
 class App {
     static get Instance() {
         return this._instance || (this._instance = new this());
@@ -28,7 +29,9 @@ class App {
                             scheduler_1.Scheduler.LoopJob(0, 1, 0, () => {
                                 console.log(`Refreshing Data....`);
                                 queue_data_1.QueueData.Init().then(() => {
-                                    media_data_1.MediaData.Init();
+                                    media_data_1.MediaData.Init().then(() => {
+                                        presence_1.BotPresence.Set();
+                                    });
                                 });
                             });
                         })

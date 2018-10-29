@@ -1,14 +1,15 @@
-import { QueueData } from './data/queue.data';
+import { QueueData } from "./data/queue.data";
 import { Client } from "discord.js";
 import { SubscriptionData } from "./data/subscription.data";
 import { MediaData } from "./data/media.data";
 import { UserData } from "./data/user.data";
-import { DataHelper } from './helpers/data.helper';
+import { DataHelper } from "./helpers/data.helper";
 import { ClientManager } from "./core/client";
 import { CommandManager } from "./command/manager.command";
 import { MessageHandler } from "./handlers/message.handler";
 import { OpenShiftUptimer } from "./others/openshift";
 import { Scheduler } from "./core/scheduler";
+import { BotPresence } from "./core/presence";
 
 class App {
   static _instance: App;
@@ -29,7 +30,9 @@ class App {
                       Scheduler.LoopJob(0, 1, 0, () => {
                         console.log(`Refreshing Data....`);
                         QueueData.Init().then(() => {
-                          MediaData.Init();
+                          MediaData.Init().then(() => {
+                            BotPresence.Set();
+                          });
                         });
                       });
                     })

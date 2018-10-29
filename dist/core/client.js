@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_1 = require("./config");
+const presence_1 = require("./presence");
 class ClientManager {
     static async Init(client) {
         client.login(config_1.Config.BOT_TOKEN);
@@ -10,7 +11,8 @@ class ClientManager {
         });
         client.on("ready", () => {
             console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} servers.`);
-            client.user.setActivity(`as a Bot`);
+            // client.user.setActivity(`as a Bot`);
+            presence_1.BotPresence.Set();
         });
     }
     static GetClient() {

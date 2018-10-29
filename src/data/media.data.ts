@@ -10,6 +10,7 @@ import { MySqlResult } from "../models/result.mysql.model";
 import { ArrayHelper } from "../helpers/array.helper";
 import { UserData } from "./user.data";
 import { QueueData } from "./queue.data";
+import { Randomizer } from "../helpers/random.helper";
 
 export class MediaData {
   public static get GetLocalList() {
@@ -190,6 +191,19 @@ export class MediaData {
           reject(new Error(`NO media with id "${malId}" was found.`));
         }
       });
+    });
+  }
+
+  public static GetRandom() {
+    return new Promise<IMedia>((resolve, reject) => {
+      setInterval(() => {
+        const media = this.MediaList[
+          Randomizer.randomInt(0, this.MediaList.length - 1)
+        ];
+        if (media !== null && media !== undefined) {
+          resolve(media);
+        }
+      }, 0);
     });
   }
 

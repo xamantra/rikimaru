@@ -35,31 +35,5 @@ export class Query {
           reject(new Error(`${err.message}`));
         });
     });
-    // return new Promise((resolve, reject) => {
-    //   this.Connect()
-    //     .then(async conn => {
-    //       conn.query(sql, (err, result) => {
-    //         if (err !== undefined && err !== null) {
-    //           console.log(`Error 2: ${err}`);
-    //           conn.end();
-    //           reject(err);
-    //         } else {
-    //           conn.end();
-    //           conn.on("end", (_err: MysqlError) => {
-    //             if (_err === null || _err === undefined) {
-    //               if (callback !== null && callback !== undefined)
-    //                 callback(result);
-    //               resolve();
-    //             } else {
-    //               reject(_err);
-    //             }
-    //           });
-    //         }
-    //       });
-    //     })
-    //     .catch(reason => {
-    //       console.log(reason);
-    //     });
-    // });
   }
 }

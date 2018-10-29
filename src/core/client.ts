@@ -1,5 +1,6 @@
 import { Client, User, Collection } from "discord.js";
 import { Config } from "./config";
+import { BotPresence } from "./presence";
 
 export class ClientManager {
   private static Client: Client;
@@ -21,7 +22,8 @@ export class ClientManager {
           client.channels.size
         } channels of ${client.guilds.size} servers.`
       );
-      client.user.setActivity(`as a Bot`);
+      // client.user.setActivity(`as a Bot`);
+      BotPresence.Set();
     });
   }
 

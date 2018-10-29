@@ -11,6 +11,7 @@ const result_mysql_model_1 = require("../models/result.mysql.model");
 const array_helper_1 = require("../helpers/array.helper");
 const user_data_1 = require("./user.data");
 const queue_data_1 = require("./queue.data");
+const random_helper_1 = require("../helpers/random.helper");
 class MediaData {
     static get GetLocalList() {
         return this.LocalList;
@@ -160,6 +161,16 @@ class MediaData {
                     reject(new Error(`NO media with id "${malId}" was found.`));
                 }
             });
+        });
+    }
+    static GetRandom() {
+        return new Promise((resolve, reject) => {
+            setInterval(() => {
+                const media = this.MediaList[random_helper_1.Randomizer.randomInt(0, this.MediaList.length - 1)];
+                if (media !== null && media !== undefined) {
+                    resolve(media);
+                }
+            }, 0);
         });
     }
     static async LogAll() {

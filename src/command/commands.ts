@@ -17,7 +17,7 @@ export const help = new BotCommand(
   false,
   false,
   Response.ChannelReply,
-  5,
+  10,
   helpFunction
 );
 export const dmhelp = new BotCommand(
@@ -26,7 +26,7 @@ export const dmhelp = new BotCommand(
   false,
   false,
   Response.DirectMessage,
-  5,
+  10,
   helpFunction
 );
 export const when = new BotCommand(
