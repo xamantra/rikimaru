@@ -6,6 +6,7 @@ class Cooldown {
         this.command = command;
         this.user = user;
         this.lastMessage = null;
+        this.lastResponse = null;
         Cooldown.List.push(this);
     }
     static Get(command, user) {
@@ -25,18 +26,44 @@ class Cooldown {
         return new Promise((resolve, reject) => {
             if (this.lastMessage === null) {
                 this.lastMessage = newMessage;
-                resolve(null);
+                resolve();
             }
             else {
                 const diff = time_helper_1.TimeHelper.DiffSeconds(newMessage.createdAt, this.lastMessage.createdAt);
                 if (diff < this.command.Cooldown) {
                     const countdown = this.command.Cooldown - diff;
-                    resolve(new CooldownResponse(`:alarm_clock: **${this.user.username}** You are on cooldown for **-${this.command.Name}** - \`${countdown}s\``, countdown * 1000, countdown));
+                    reject(new CooldownResponse(`:alarm_clock: **${this.user.username}** You are on cooldown for **-${this.command.Name}** - \`${countdown}s\``, countdown * 1000));
                 }
                 else {
                     this.lastMessage = newMessage;
-                    resolve(null);
+                    resolve();
                 }
+            }
+        });
+    }
+    Respond(newResponse) {
+        return new Promise((resolve, reject) => {
+            if (this.lastResponse !== null && this.lastResponse !== undefined) {
+                if (this.lastResponse.deletable) {
+                    this.lastResponse
+                        .delete()
+                        .then(() => {
+                        this.lastResponse = newResponse;
+                        resolve();
+                    })
+                        .catch(err => {
+                        this.lastResponse = newResponse;
+                        resolve();
+                    });
+                }
+                else {
+                    this.lastResponse = newResponse;
+                    resolve();
+                }
+            }
+            else {
+                this.lastResponse = newResponse;
+                resolve();
             }
         });
     }
@@ -44,10 +71,9 @@ class Cooldown {
 Cooldown.List = [];
 exports.Cooldown = Cooldown;
 class CooldownResponse {
-    constructor(content, timeout, countdown) {
+    constructor(content, timeout) {
         this.content = content;
         this.timeout = timeout;
-        this.countdown = countdown;
     }
 }
 exports.CooldownResponse = CooldownResponse;

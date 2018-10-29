@@ -6,15 +6,16 @@ import { Message } from "discord.js";
 import { RescueCenter } from "../core/rescue.center";
 import { CommandManager } from "../command/manager.command";
 import { Sender } from "./../core/sender";
-import { Cooldown } from "../models/cooldown.model";
+import { Cooldown, CooldownResponse } from "../models/cooldown.model";
 
 export class ResponseHandler {
   public static Get(message: Message, command: ICommand) {
     CommandManager.Validate(command)
       .then(cmd => {
         Cooldown.Get(cmd, message.member.user).then(cooldown => {
-          cooldown.Register(message).then(response => {
-            if (response === null) {
+          cooldown
+            .Register(message)
+            .then(() => {
               const parameter = command.Parameter;
               const paramRequired = cmd.ParameterRequired;
               if (
@@ -44,17 +45,19 @@ export class ResponseHandler {
                 }
               }
               return;
-            } else {
+            })
+            .catch((response: CooldownResponse) => {
               message.channel.send(response.content).then(($m: Message) => {
-                if (message.deletable) {
-                  message.delete();
-                }
-                setTimeout(() => {
-                  $m.delete();
-                }, response.timeout);
+                cooldown.Respond($m).then(() => {
+                  if (message.deletable) {
+                    message.delete();
+                  }
+                  setTimeout(() => {
+                    $m.delete();
+                  }, response.timeout);
+                });
               });
-            }
-          });
+            });
         });
       })
       .catch((err: Error) => {

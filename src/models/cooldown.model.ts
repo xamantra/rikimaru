@@ -9,6 +9,7 @@ export class Cooldown {
   private static List: Cooldown[] = [];
 
   private lastMessage: Message = null;
+  private lastResponse: Message = null;
 
   public static Get(command: BotCommand, user: User) {
     return new Promise<Cooldown>((resolve, reject) => {
@@ -26,10 +27,10 @@ export class Cooldown {
 
   public Register(newMessage: Message) {
     console.log(Cooldown.List.length);
-    return new Promise<CooldownResponse>((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       if (this.lastMessage === null) {
         this.lastMessage = newMessage;
-        resolve(null);
+        resolve();
       } else {
         const diff = TimeHelper.DiffSeconds(
           newMessage.createdAt,
@@ -37,30 +38,50 @@ export class Cooldown {
         );
         if (diff < this.command.Cooldown) {
           const countdown = this.command.Cooldown - diff;
-          resolve(
+          reject(
             new CooldownResponse(
               `:alarm_clock: **${
                 this.user.username
               }** You are on cooldown for **-${
                 this.command.Name
               }** - \`${countdown}s\``,
-              countdown * 1000,
-              countdown
+              countdown * 1000
             )
           );
         } else {
           this.lastMessage = newMessage;
-          resolve(null);
+          resolve();
         }
+      }
+    });
+  }
+
+  public Respond(newResponse: Message) {
+    return new Promise((resolve, reject) => {
+      if (this.lastResponse !== null && this.lastResponse !== undefined) {
+        if (this.lastResponse.deletable) {
+          this.lastResponse
+            .delete()
+            .then(() => {
+              this.lastResponse = newResponse;
+              resolve();
+            })
+            .catch(err => {
+              this.lastResponse = newResponse;
+              resolve();
+            });
+        } else {
+          this.lastResponse = newResponse;
+          resolve();
+        }
+      } else {
+        this.lastResponse = newResponse;
+        resolve();
       }
     });
   }
 }
 
 export class CooldownResponse {
-  constructor(
-    public content: string,
-    public timeout: number,
-    public countdown?: number
-  ) {}
+  constructor(public content: string, public timeout: number) {}
 }

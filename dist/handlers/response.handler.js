@@ -11,39 +11,41 @@ class ResponseHandler {
         manager_command_1.CommandManager.Validate(command)
             .then(cmd => {
             cooldown_model_1.Cooldown.Get(cmd, message.member.user).then(cooldown => {
-                cooldown.Register(message).then(response => {
-                    if (response === null) {
-                        const parameter = command.Parameter;
-                        const paramRequired = cmd.ParameterRequired;
-                        if (cmd.CanHaveMention &&
-                            message.mentions !== null &&
-                            message.mentions !== undefined) {
-                            cmd.Function.Execute(message, command, cmd.DirectMessage);
-                            return;
-                        }
-                        else if (parameter.length === 0 && paramRequired) {
-                            this.SendRescue(message, cmd.DirectMessage, cmd, command);
-                            return;
-                        }
-                        else if (parameter.length > 0 && !paramRequired) {
-                            this.SendRescue(message, cmd.DirectMessage, cmd, command);
-                            return;
-                        }
-                        else {
-                            if (cmd.Function !== null) {
-                                if (cmd.DevOnly === true &&
-                                    message.author.id === "442621672714010625") {
-                                    cmd.Function.Execute(message, command, cmd.DirectMessage);
-                                    return;
-                                }
-                                cmd.Function.Execute(message, command, cmd.DirectMessage);
-                                return;
-                            }
-                        }
+                cooldown
+                    .Register(message)
+                    .then(() => {
+                    const parameter = command.Parameter;
+                    const paramRequired = cmd.ParameterRequired;
+                    if (cmd.CanHaveMention &&
+                        message.mentions !== null &&
+                        message.mentions !== undefined) {
+                        cmd.Function.Execute(message, command, cmd.DirectMessage);
+                        return;
+                    }
+                    else if (parameter.length === 0 && paramRequired) {
+                        this.SendRescue(message, cmd.DirectMessage, cmd, command);
+                        return;
+                    }
+                    else if (parameter.length > 0 && !paramRequired) {
+                        this.SendRescue(message, cmd.DirectMessage, cmd, command);
                         return;
                     }
                     else {
-                        message.channel.send(response.content).then(($m) => {
+                        if (cmd.Function !== null) {
+                            if (cmd.DevOnly === true &&
+                                message.author.id === "442621672714010625") {
+                                cmd.Function.Execute(message, command, cmd.DirectMessage);
+                                return;
+                            }
+                            cmd.Function.Execute(message, command, cmd.DirectMessage);
+                            return;
+                        }
+                    }
+                    return;
+                })
+                    .catch((response) => {
+                    message.channel.send(response.content).then(($m) => {
+                        cooldown.Respond($m).then(() => {
                             if (message.deletable) {
                                 message.delete();
                             }
@@ -51,7 +53,7 @@ class ResponseHandler {
                                 $m.delete();
                             }, response.timeout);
                         });
-                    }
+                    });
                 });
             });
         })
