@@ -5,7 +5,6 @@ const command_model_1 = require("../models/command.model");
 const client_1 = require("../core/client");
 const config_1 = require("../core/config");
 const response_handler_1 = require("./response.handler");
-const sender_1 = require("../core/sender");
 class MessageHandler {
     static async Init() {
         const client = await client_1.ClientManager.GetClient();
@@ -18,11 +17,17 @@ class MessageHandler {
                         Message: message.content
                     }
                 });
-                const isDMChannel = message_helper_1.MessageHelper.IsDMChannel(message);
-                if (isDMChannel) {
-                    sender_1.Sender.SendInfo(message, `Go me nasai! ***${message.author.username}***, I don't talk to strangers.`, true);
-                    return;
-                }
+                // const isDMChannel = MessageHelper.IsDMChannel(message);
+                // if (isDMChannel) {
+                //   Sender.SendInfo(
+                //     message,
+                //     `Go me nasai! ***${
+                //       message.author.username
+                //     }***, I don't talk to strangers.`,
+                //     true
+                //   );
+                //   return;
+                // }
                 const isCommand = message_helper_1.MessageHelper.IsCommand(config_1.Config, message);
                 const cmdName = isCommand
                     ? message_helper_1.MessageHelper.GetCommand(config_1.Config, message).trim()

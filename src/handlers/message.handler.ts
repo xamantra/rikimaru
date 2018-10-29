@@ -20,17 +20,17 @@ export class MessageHandler {
           }
         });
 
-        const isDMChannel = MessageHelper.IsDMChannel(message);
-        if (isDMChannel) {
-          Sender.SendInfo(
-            message,
-            `Go me nasai! ***${
-              message.author.username
-            }***, I don't talk to strangers.`,
-            true
-          );
-          return;
-        }
+        // const isDMChannel = MessageHelper.IsDMChannel(message);
+        // if (isDMChannel) {
+        //   Sender.SendInfo(
+        //     message,
+        //     `Go me nasai! ***${
+        //       message.author.username
+        //     }***, I don't talk to strangers.`,
+        //     true
+        //   );
+        //   return;
+        // }
         const isCommand = MessageHelper.IsCommand(Config, message);
         const cmdName = isCommand
           ? MessageHelper.GetCommand(Config, message).trim()
