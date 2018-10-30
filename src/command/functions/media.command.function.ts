@@ -22,6 +22,7 @@ export class MediaFunction implements ICommandFunction {
   }
 
   public async Handle(message: Message, command: ICommand, isDM: boolean) {
+    const color = message.member.highestRole.color;
     MediaSearch.All(command.Parameter)
       .then(res => {
         const ongoing = MediaHandler.OngoingMedia(res);
@@ -32,7 +33,7 @@ export class MediaFunction implements ICommandFunction {
 
         if (exactMedia.length > 0) {
           exactMedia.forEach(async m => {
-            ResponseMessageHelper.CreateMessage(m, m.status, Color.Random).then(
+            ResponseMessageHelper.CreateMessage(m, m.status, color).then(
               response => {
                 MediaResult.SendMessage(message, isDM, response);
               }
@@ -40,7 +41,7 @@ export class MediaFunction implements ICommandFunction {
           });
         } else if (ongoing.length > 0) {
           ongoing.forEach(async m => {
-            ResponseMessageHelper.CreateMessage(m, m.status, Color.Random).then(
+            ResponseMessageHelper.CreateMessage(m, m.status, color).then(
               response => {
                 MediaResult.SendMessage(message, isDM, response);
               }
@@ -48,7 +49,7 @@ export class MediaFunction implements ICommandFunction {
           });
         } else if (unreleased.length > 0) {
           unreleased.forEach(async m => {
-            ResponseMessageHelper.CreateMessage(m, m.status, Color.Random).then(
+            ResponseMessageHelper.CreateMessage(m, m.status, color).then(
               response => {
                 MediaResult.SendMessage(message, isDM, response);
               }
@@ -56,7 +57,7 @@ export class MediaFunction implements ICommandFunction {
           });
         } else if (unreleasedNoDate.length > 0) {
           unreleasedNoDate.forEach(async m => {
-            ResponseMessageHelper.CreateMessage(m, m.status, Color.Random).then(
+            ResponseMessageHelper.CreateMessage(m, m.status, color).then(
               response => {
                 MediaResult.SendMessage(message, isDM, response);
               }
@@ -65,13 +66,11 @@ export class MediaFunction implements ICommandFunction {
         } else if (completed.length > 0) {
           if (completed.length === 1) {
             completed.forEach(async m => {
-              ResponseMessageHelper.CreateMessage(
-                m,
-                m.status,
-                Color.Random
-              ).then(response => {
-                MediaResult.SendMessage(message, isDM, response);
-              });
+              ResponseMessageHelper.CreateMessage(m, m.status, color).then(
+                response => {
+                  MediaResult.SendMessage(message, isDM, response);
+                }
+              );
             });
           } else {
             Sender.SendInfo(

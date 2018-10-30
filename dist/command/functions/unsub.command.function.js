@@ -43,7 +43,7 @@ class UnsubFunction {
                     });
                 }
                 else {
-                    search_list_1.SearchList.Embed(command, formattedResults).then(embed => {
+                    search_list_1.SearchList.Embed(message, command, formattedResults).then(embed => {
                         sender_1.Sender.SendInfo(message, embed, dm);
                     });
                 }

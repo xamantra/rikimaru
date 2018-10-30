@@ -1,14 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const colors_1 = require("./colors");
 const client_1 = require("./client");
 class SearchList {
-    static async Embed(command, fields) {
+    static async Embed(message, command, fields) {
         return new Promise((resolve, reject) => {
             client_1.ClientManager.GetClient().then(client => {
                 const embed = {
                     embed: {
-                        color: colors_1.Color.Random,
+                        color: message.member.highestRole.color,
                         title: `**Rikimaru Subscription Center**`,
                         thumbnail: { url: client.user.avatarURL },
                         description: `*Please select an anime you want to subscribe/unsubscribe by its exact title.`,

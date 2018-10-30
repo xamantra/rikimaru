@@ -1,13 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const colors_1 = require("./../core/colors");
 const client_1 = require("../core/client");
 class EmbedHelper {
     async WelcomeEmbed(server, member) {
         const client = await client_1.ClientManager.GetClient();
         const embed = {
             embed: {
-                color: colors_1.Color.Random,
+                color: member.highestRole.color,
                 thumbnail: {
                     url: member.user.avatarURL
                 },

@@ -59,10 +59,10 @@ export class ViewSubsFunction implements ICommandFunction {
                       name: `\n${title}\nhttps://myanimelist.net/anime/${
                         $m.idMal
                       }/`,
-                      value: `*Episode ${episode} :* ***${countdown}***\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬  :small_orange_diamond: :small_orange_diamond: :small_orange_diamond:   ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`
+                      value: `*Episode ${episode} :* ***${countdown}***\n▬▬▬▬▬▬▬▬▬▬  :small_orange_diamond: :small_orange_diamond: :small_orange_diamond: ▬▬▬▬▬▬▬▬▬▬`
                     });
                     if (iteration === subs.length) {
-                      this.EmbedTemplate(user, subs.length, list).then(
+                      this.EmbedTemplate(message, user, subs.length, list).then(
                         template => {
                           resolve(template);
                         }
@@ -76,7 +76,7 @@ export class ViewSubsFunction implements ICommandFunction {
             });
           })
           .catch((reason: Error) => {
-            this.EmbedTemplate(user, 0, list).then(template => {
+            this.EmbedTemplate(message, user, 0, list).then(template => {
               resolve(template);
             });
             console.log(reason.message);
@@ -85,12 +85,18 @@ export class ViewSubsFunction implements ICommandFunction {
     });
   }
 
-  private async EmbedTemplate(user: User, count: number, list: any[]) {
+  private async EmbedTemplate(
+    message: Message,
+    user: User,
+    count: number,
+    list: any[]
+  ) {
     return new Promise<any>((resolve, reject) => {
+      const member = message.guild.members.get(user.id);
       ClientManager.GetClient().then(client => {
         resolve({
           embed: {
-            color: Color.Random,
+            color: member.highestRole.color,
             thumbnail: {
               url: user.avatarURL
             },

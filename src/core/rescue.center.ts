@@ -2,9 +2,14 @@ import { BotCommand } from "./../command/bot.command";
 import { ICommand } from "../interfaces/command.interface";
 import { Color } from "./colors";
 import { ClientManager } from "./client";
+import { Message } from "discord.js";
 
 export class RescueCenter {
-  public static async RequireParameter(cmd: BotCommand, command: ICommand) {
+  public static async RequireParameter(
+    message: Message,
+    cmd: BotCommand,
+    command: ICommand
+  ) {
     return new Promise((resolve, reject) => {
       ClientManager.GetClient().then(client => {
         let example: any = cmd.Example;
@@ -17,7 +22,7 @@ export class RescueCenter {
           cmd.ParameterRequired && command.Parameter.length === 0
             ? {
                 embed: {
-                  color: Color.Random,
+                  color: message.member.highestRole.color,
                   title: `**Rikimaru Rescue Center**`,
                   description: `The command ***-${
                     command.Name

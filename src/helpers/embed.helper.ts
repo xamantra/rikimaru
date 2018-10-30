@@ -7,13 +7,13 @@ export class EmbedHelper {
     const client = await ClientManager.GetClient();
     const embed = {
       embed: {
-        color: Color.Random,
+        color: member.highestRole.color,
         thumbnail: {
           url: member.user.avatarURL
         },
         title: `Hello ${member.user.username}!, Welcome to **${
           server.name
-          }**! Server`,
+        }**! Server`,
         fields: [
           {
             name: `**Who am I?**`,

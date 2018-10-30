@@ -5,7 +5,6 @@ const subscription_data_1 = require("./../../data/subscription.data");
 const media_data_1 = require("./../../data/media.data");
 const title_helper_1 = require("../../helpers/title.helper");
 const time_helper_1 = require("../../helpers/time.helper");
-const colors_1 = require("../../core/colors");
 const client_1 = require("../../core/client");
 class ViewSubsFunction {
     constructor() { }
@@ -49,10 +48,10 @@ class ViewSubsFunction {
                                 const countdown = time_helper_1.TimeHelper.Countdown($m.nextAiringEpisode.timeUntilAiring);
                                 list.push({
                                     name: `\n${title}\nhttps://myanimelist.net/anime/${$m.idMal}/`,
-                                    value: `*Episode ${episode} :* ***${countdown}***\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬  :small_orange_diamond: :small_orange_diamond: :small_orange_diamond:   ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`
+                                    value: `*Episode ${episode} :* ***${countdown}***\n▬▬▬▬▬▬▬▬▬▬  :small_orange_diamond: :small_orange_diamond: :small_orange_diamond: ▬▬▬▬▬▬▬▬▬▬`
                                 });
                                 if (iteration === subs.length) {
-                                    this.EmbedTemplate(user, subs.length, list).then(template => {
+                                    this.EmbedTemplate(message, user, subs.length, list).then(template => {
                                         resolve(template);
                                     });
                                 }
@@ -64,7 +63,7 @@ class ViewSubsFunction {
                     });
                 })
                     .catch((reason) => {
-                    this.EmbedTemplate(user, 0, list).then(template => {
+                    this.EmbedTemplate(message, user, 0, list).then(template => {
                         resolve(template);
                     });
                     console.log(reason.message);
@@ -72,12 +71,13 @@ class ViewSubsFunction {
             });
         });
     }
-    async EmbedTemplate(user, count, list) {
+    async EmbedTemplate(message, user, count, list) {
         return new Promise((resolve, reject) => {
+            const member = message.guild.members.get(user.id);
             client_1.ClientManager.GetClient().then(client => {
                 resolve({
                     embed: {
-                        color: colors_1.Color.Random,
+                        color: member.highestRole.color,
                         thumbnail: {
                             url: user.avatarURL
                         },

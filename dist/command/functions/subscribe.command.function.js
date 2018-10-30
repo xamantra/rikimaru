@@ -11,7 +11,6 @@ const search_list_1 = require("./../../core/search.list");
 const media_list_handler_1 = require("./../../handlers/media.list.handler");
 const media_handler_1 = require("../../handlers/media.handler");
 const client_1 = require("../../core/client");
-const colors_1 = require("../../core/colors");
 const sender_1 = require("../../core/sender");
 class SubscribeFunction {
     async Execute(message, command, dm) {
@@ -56,7 +55,7 @@ class SubscribeFunction {
                             queue_data_1.QueueData.GetQueue(media.idMal).then(queue => {
                                 const queueJob = new queue_job_model_1.QueueJob(media, queue);
                                 queue_data_1.QueueData.AddJob(queueJob).then(() => {
-                                    this.Embed(media, true).then(embed => {
+                                    this.Embed(message, media, true).then(embed => {
                                         sender_1.Sender.SendInfo(message, embed, dm);
                                         console.log(`Added to queue: ${insertId}`);
                                         return;
@@ -66,7 +65,7 @@ class SubscribeFunction {
                         })
                             .catch((reason) => {
                             if (reason === "EXISTS") {
-                                this.Embed(media, false).then(embed => {
+                                this.Embed(message, media, false).then(embed => {
                                     sender_1.Sender.SendInfo(message, embed, dm);
                                     return;
                                 });
@@ -89,7 +88,7 @@ class SubscribeFunction {
                 return;
             }
             else if (results.length > 1) {
-                search_list_1.SearchList.Embed(command, formattedResults).then(embed => {
+                search_list_1.SearchList.Embed(message, command, formattedResults).then(embed => {
                     sender_1.Sender.SendInfo(message, embed, dm);
                 });
             }
@@ -100,16 +99,14 @@ class SubscribeFunction {
         });
     }
     // tslint:disable-next-line:member-ordering
-    async Embed(media, newSub) {
+    async Embed(message, media, newSub) {
         return new Promise((resolve, reject) => {
             client_1.ClientManager.GetClient().then(client => {
                 const t = title_helper_1.TitleHelper.Get(media.title);
                 const embed = {
                     embed: {
-                        color: colors_1.Color.Random,
-                        thumbnail: {
-                            url: media.coverImage.large
-                        },
+                        color: message.member.highestRole.color,
+                        thumbnail: { url: media.coverImage.large },
                         title: `***${t}***`,
                         url: `https://myanimelist.net/anime/${media.idMal}/`,
                         description: newSub
@@ -123,10 +120,7 @@ class SubscribeFunction {
                             }
                         ],
                         timestamp: new Date(),
-                        footer: {
-                            icon_url: client.user.avatarURL,
-                            text: "© Rikimaru"
-                        }
+                        footer: { icon_url: client.user.avatarURL, text: "© Rikimaru" }
                     }
                 };
                 resolve(embed);

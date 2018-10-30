@@ -73,7 +73,7 @@ export class SubscribeFunction implements ICommandFunction {
                       QueueData.GetQueue(media.idMal).then(queue => {
                         const queueJob = new QueueJob(media, queue);
                         QueueData.AddJob(queueJob).then(() => {
-                          this.Embed(media, true).then(embed => {
+                          this.Embed(message, media, true).then(embed => {
                             Sender.SendInfo(message, embed, dm);
                             console.log(`Added to queue: ${insertId}`);
                             return;
@@ -83,7 +83,7 @@ export class SubscribeFunction implements ICommandFunction {
                     })
                     .catch((reason: string) => {
                       if (reason === "EXISTS") {
-                        this.Embed(media, false).then(embed => {
+                        this.Embed(message, media, false).then(embed => {
                           Sender.SendInfo(message, embed, dm);
                           return;
                         });
@@ -104,7 +104,7 @@ export class SubscribeFunction implements ICommandFunction {
             });
           return;
         } else if (results.length > 1) {
-          SearchList.Embed(command, formattedResults).then(embed => {
+          SearchList.Embed(message, command, formattedResults).then(embed => {
             Sender.SendInfo(message, embed, dm);
           });
         }
@@ -120,16 +120,14 @@ export class SubscribeFunction implements ICommandFunction {
   }
 
   // tslint:disable-next-line:member-ordering
-  private async Embed(media: IMedia, newSub: boolean) {
+  private async Embed(message: Message, media: IMedia, newSub: boolean) {
     return new Promise<any>((resolve, reject) => {
       ClientManager.GetClient().then(client => {
         const t = TitleHelper.Get(media.title);
         const embed = {
           embed: {
-            color: Color.Random,
-            thumbnail: {
-              url: media.coverImage.large
-            },
+            color: message.member.highestRole.color,
+            thumbnail: { url: media.coverImage.large },
             title: `***${t}***`,
             url: `https://myanimelist.net/anime/${media.idMal}/`,
             description: newSub
@@ -143,10 +141,7 @@ export class SubscribeFunction implements ICommandFunction {
               }
             ],
             timestamp: new Date(),
-            footer: {
-              icon_url: client.user.avatarURL,
-              text: "© Rikimaru"
-            }
+            footer: { icon_url: client.user.avatarURL, text: "© Rikimaru" }
           }
         };
         resolve(embed);

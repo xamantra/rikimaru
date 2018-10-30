@@ -61,9 +61,11 @@ export class UnsubFunction implements ICommandFunction {
                 }
               );
             } else {
-              SearchList.Embed(command, formattedResults).then(embed => {
-                Sender.SendInfo(message, embed, dm);
-              });
+              SearchList.Embed(message, command, formattedResults).then(
+                embed => {
+                  Sender.SendInfo(message, embed, dm);
+                }
+              );
             }
           })
           .catch(error => {

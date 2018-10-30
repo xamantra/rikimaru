@@ -1,9 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const colors_1 = require("./colors");
 const client_1 = require("./client");
 class RescueCenter {
-    static async RequireParameter(cmd, command) {
+    static async RequireParameter(message, cmd, command) {
         return new Promise((resolve, reject) => {
             client_1.ClientManager.GetClient().then(client => {
                 let example = cmd.Example;
@@ -16,7 +15,7 @@ class RescueCenter {
                 const msg = cmd.ParameterRequired && command.Parameter.length === 0
                     ? {
                         embed: {
-                            color: colors_1.Color.Random,
+                            color: message.member.highestRole.color,
                             title: `**Rikimaru Rescue Center**`,
                             description: `The command ***-${command.Name}*** requires a parameter.`,
                             fields: [

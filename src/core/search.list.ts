@@ -1,29 +1,15 @@
 import { Color } from "./colors";
 import { ICommand } from "../interfaces/command.interface";
 import { ClientManager } from "./client";
+import { Message } from "discord.js";
 
 export class SearchList {
-  public static async Embed(command: ICommand, fields: any) {
-    return new Promise<{
-      embed: {
-        color: number;
-        title: string;
-        thumbnail: {
-          url: string;
-        };
-        description: string;
-        fields: any;
-        timestamp: Date;
-        footer: {
-          icon_url: string;
-          text: string;
-        };
-      };
-    }>((resolve, reject) => {
+  public static async Embed(message: Message, command: ICommand, fields: any) {
+    return new Promise<any>((resolve, reject) => {
       ClientManager.GetClient().then(client => {
         const embed = {
           embed: {
-            color: Color.Random,
+            color: message.member.highestRole.color,
             title: `**Rikimaru Subscription Center**`,
             thumbnail: { url: client.user.avatarURL },
             description: `*Please select an anime you want to subscribe/unsubscribe by its exact title.`,
