@@ -89,3 +89,4 @@ db.json
 TODO.*
 *.old.ts
 api/
+temp.json
