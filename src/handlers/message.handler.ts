@@ -2,9 +2,7 @@ import { MessageHelper } from "../helpers/message.helper";
 import { Command } from "../models/command.model";
 import { ClientManager } from "../core/client";
 import { Config } from "../core/config";
-import { MediaResult } from "../core/media.result";
 import { ResponseHandler } from "./response.handler";
-import { Sender } from "../core/sender";
 
 export class MessageHandler {
   public static async Init() {
@@ -20,17 +18,6 @@ export class MessageHandler {
           }
         });
 
-        // const isDMChannel = MessageHelper.IsDMChannel(message);
-        // if (isDMChannel) {
-        //   Sender.SendInfo(
-        //     message,
-        //     `Go me nasai! ***${
-        //       message.author.username
-        //     }***, I don't talk to strangers.`,
-        //     true
-        //   );
-        //   return;
-        // }
         const isCommand = MessageHelper.IsCommand(Config, message);
         const cmdName = isCommand
           ? MessageHelper.GetCommand(Config, message).trim()

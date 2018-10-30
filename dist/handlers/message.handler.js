@@ -17,17 +17,6 @@ class MessageHandler {
                         Message: message.content
                     }
                 });
-                // const isDMChannel = MessageHelper.IsDMChannel(message);
-                // if (isDMChannel) {
-                //   Sender.SendInfo(
-                //     message,
-                //     `Go me nasai! ***${
-                //       message.author.username
-                //     }***, I don't talk to strangers.`,
-                //     true
-                //   );
-                //   return;
-                // }
                 const isCommand = message_helper_1.MessageHelper.IsCommand(config_1.Config, message);
                 const cmdName = isCommand
                     ? message_helper_1.MessageHelper.GetCommand(config_1.Config, message).trim()

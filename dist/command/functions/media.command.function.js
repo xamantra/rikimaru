@@ -23,28 +23,38 @@ class MediaFunction {
             const exactMedia = media_handler_1.MediaHandler.ExactMedia(res, command.Parameter);
             if (exactMedia.length > 0) {
                 exactMedia.forEach(async (m) => {
-                    media_result_1.MediaResult.SendMessage(message, isDM, response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random));
+                    response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random).then(response => {
+                        media_result_1.MediaResult.SendMessage(message, isDM, response);
+                    });
                 });
             }
             else if (ongoing.length > 0) {
                 ongoing.forEach(async (m) => {
-                    media_result_1.MediaResult.SendMessage(message, isDM, response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random));
+                    response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random).then(response => {
+                        media_result_1.MediaResult.SendMessage(message, isDM, response);
+                    });
                 });
             }
             else if (unreleased.length > 0) {
                 unreleased.forEach(async (m) => {
-                    media_result_1.MediaResult.SendMessage(message, isDM, response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random));
+                    response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random).then(response => {
+                        media_result_1.MediaResult.SendMessage(message, isDM, response);
+                    });
                 });
             }
             else if (unreleasedNoDate.length > 0) {
                 unreleasedNoDate.forEach(async (m) => {
-                    media_result_1.MediaResult.SendMessage(message, isDM, response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random));
+                    response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random).then(response => {
+                        media_result_1.MediaResult.SendMessage(message, isDM, response);
+                    });
                 });
             }
             else if (completed.length > 0) {
                 if (completed.length === 1) {
                     completed.forEach(async (m) => {
-                        media_result_1.MediaResult.SendMessage(message, isDM, response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random));
+                        response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, colors_1.Color.Random).then(response => {
+                            media_result_1.MediaResult.SendMessage(message, isDM, response);
+                        });
                     });
                 }
                 else {

@@ -32,44 +32,46 @@ export class MediaFunction implements ICommandFunction {
 
         if (exactMedia.length > 0) {
           exactMedia.forEach(async m => {
-            MediaResult.SendMessage(
-              message,
-              isDM,
-              ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
+            ResponseMessageHelper.CreateMessage(m, m.status, Color.Random).then(
+              response => {
+                MediaResult.SendMessage(message, isDM, response);
+              }
             );
           });
         } else if (ongoing.length > 0) {
           ongoing.forEach(async m => {
-            MediaResult.SendMessage(
-              message,
-              isDM,
-              ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
+            ResponseMessageHelper.CreateMessage(m, m.status, Color.Random).then(
+              response => {
+                MediaResult.SendMessage(message, isDM, response);
+              }
             );
           });
         } else if (unreleased.length > 0) {
           unreleased.forEach(async m => {
-            MediaResult.SendMessage(
-              message,
-              isDM,
-              ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
+            ResponseMessageHelper.CreateMessage(m, m.status, Color.Random).then(
+              response => {
+                MediaResult.SendMessage(message, isDM, response);
+              }
             );
           });
         } else if (unreleasedNoDate.length > 0) {
           unreleasedNoDate.forEach(async m => {
-            MediaResult.SendMessage(
-              message,
-              isDM,
-              ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
+            ResponseMessageHelper.CreateMessage(m, m.status, Color.Random).then(
+              response => {
+                MediaResult.SendMessage(message, isDM, response);
+              }
             );
           });
         } else if (completed.length > 0) {
           if (completed.length === 1) {
             completed.forEach(async m => {
-              MediaResult.SendMessage(
-                message,
-                isDM,
-                ResponseMessageHelper.CreateMessage(m, m.status, Color.Random)
-              );
+              ResponseMessageHelper.CreateMessage(
+                m,
+                m.status,
+                Color.Random
+              ).then(response => {
+                MediaResult.SendMessage(message, isDM, response);
+              });
             });
           } else {
             Sender.SendInfo(
