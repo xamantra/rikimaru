@@ -25,7 +25,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "DiscordId", void 0);
 User = __decorate([
-    json2typescript_1.JsonObject("RowDataPacket")
+    json2typescript_1.JsonObject("")
 ], User);
 exports.User = User;
 let Media = class Media {
@@ -35,7 +35,7 @@ let Media = class Media {
     }
 };
 __decorate([
-    json2typescript_1.JsonProperty("mal_id", Number),
+    json2typescript_1.JsonProperty("_id", Number),
     __metadata("design:type", Number)
 ], Media.prototype, "MalId", void 0);
 __decorate([
@@ -43,7 +43,7 @@ __decorate([
     __metadata("design:type", String)
 ], Media.prototype, "Title", void 0);
 Media = __decorate([
-    json2typescript_1.JsonObject("RowDataPacket")
+    json2typescript_1.JsonObject("")
 ], Media);
 exports.Media = Media;
 let Subscription = class Subscription {
@@ -66,7 +66,7 @@ __decorate([
     __metadata("design:type", String)
 ], Subscription.prototype, "UserId", void 0);
 Subscription = __decorate([
-    json2typescript_1.JsonObject("RowDataPacket")
+    json2typescript_1.JsonObject("")
 ], Subscription);
 exports.Subscription = Subscription;
 let Queue = class Queue {
@@ -89,7 +89,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Queue.prototype, "NextEpisode", void 0);
 Queue = __decorate([
-    json2typescript_1.JsonObject("RowDataPacket")
+    json2typescript_1.JsonObject("")
 ], Queue);
 exports.Queue = Queue;
 //# sourceMappingURL=subscription.model.js.map

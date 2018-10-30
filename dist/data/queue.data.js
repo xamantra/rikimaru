@@ -81,14 +81,16 @@ class QueueData {
         });
     }
     static async Insert(mediaId, next_episode) {
+        console.log(`inserting queue...`);
         return new Promise((resolve, reject) => {
             this.Exists(mediaId).then(exists => {
                 if (exists === false) {
+                    console.log(`new queue....`);
                     const data = { media_id: mediaId, next_episode: next_episode };
                     mongo_1.Mongo.Insert(data_helper_1.DataHelper.queue, data).then(result => {
-                        if (result.InsertId !== undefined && result.InsertId !== null) {
+                        if (result.insertedId !== undefined && result.insertedId !== null) {
                             const q = new subscription_model_1.Queue();
-                            q.Id = result.InsertId;
+                            q.Id = result.insertedId;
                             q.MediaId = mediaId;
                             q.NextEpisode = next_episode;
                             this.Queues.push(q);
@@ -96,7 +98,7 @@ class QueueData {
                             resolve(q.Id);
                         }
                         else {
-                            reject(new Error(`JsonHelper.ArrayConvert<MySqlResult>(result, MySqlResult)[0] is 'null' or 'undefined'.`));
+                            reject(new Error(`ERROR: 654567898765`));
                         }
                     });
                 }

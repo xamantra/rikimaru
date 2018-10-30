@@ -16,6 +16,7 @@ class UserData {
                 if (users !== undefined && users !== null) {
                     users.forEach(user => {
                         this.UserList.push(user);
+                        console.log(`user....`);
                         console.log(user);
                         if (iteration === users.length) {
                             res();
@@ -54,7 +55,7 @@ class UserData {
         });
     }
     static async Insert(discordId) {
-        return new Promise(async (res, rej) => {
+        return new Promise(async (resolve, reject) => {
             this.Exists(discordId)
                 .then(exists => {
                 if (exists === false) {
@@ -64,19 +65,19 @@ class UserData {
                         if (result.insertedId !== null &&
                             result.insertedId !== undefined) {
                             const user = new subscription_model_1.User();
-                            user.Id = result.InsertId;
+                            user.Id = result.insertedId;
                             user.DiscordId = discordId;
                             this.UserList.push(user);
                         }
-                        res(result.InsertId);
+                        resolve(result.insertedId);
                     });
                 }
                 else {
-                    rej(new Error(`DiscordId: "${discordId}" already exists.`));
+                    reject(new Error(`DiscordId: "${discordId}" already exists.`));
                 }
             })
                 .catch((err) => {
-                rej(err);
+                reject(err);
             });
         });
     }

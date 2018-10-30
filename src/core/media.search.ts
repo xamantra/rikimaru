@@ -12,7 +12,7 @@ export class MediaSearch {
         .then($p => {
           media = (JsonHelper.Converter.deserialize($p, RootPage) as RootPage)
             .DataPage.Page.media;
-          if (media !== undefined && media !== null && media.length > 0) {
+          if (media !== undefined && media !== null) {
             resolve(media);
           } else {
             reject(

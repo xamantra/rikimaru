@@ -47,8 +47,10 @@ class SubscribeFunction {
                 const title = title_helper_1.TitleHelper.Get(results[0].title);
                 media_data_1.MediaData.Insert(media, title)
                     .then(insertId => {
+                    console.log(insertId);
                     user_data_1.UserData.GetUser(discordId)
                         .then(user => {
+                        console.log(user);
                         subscription_data_1.SubscriptionData.Insert(media.idMal, user.Id)
                             .then(() => {
                             queue_data_1.QueueData.GetQueue(media.idMal).then(queue => {

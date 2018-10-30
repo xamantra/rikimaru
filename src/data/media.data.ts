@@ -147,20 +147,25 @@ export class MediaData {
   }
 
   public static async Insert(media: IMedia, title: string, user: User = null) {
+    console.log(`inserting media...`);
     return new Promise<number>(async (resolve, reject) => {
       const exist = await this.Exists(media.idMal);
       if (exist === false) {
+        console.log(`new media`);
         const data = { _id: media.idMal, title: title };
-        Mongo.Insert(DataHelper.media, data).then(async result => {
-          if (result.InsertId !== undefined && result.InsertId !== null) {
+        Mongo.Insert(DataHelper.media, data).then(result => {
+          console.log(`checking insertId...`);
+          if (result.insertedId !== undefined && result.insertedId !== null) {
+            console.log(`result was ok!.`);
             const m = new Media();
-            m.MalId = result.InsertId;
+            m.MalId = media.idMal;
             m.Title = title;
             this.LocalList.push(m);
             if (MediaStatus.Ongoing(media) || MediaStatus.NotYetAired(media)) {
               this.MediaList.push(media);
               QueueData.Insert(media.idMal, media.nextAiringEpisode.next)
                 .then(qId => {
+                  console.log(`resolving media....`);
                   resolve(media.idMal);
                 })
                 .catch((reason: Error) => {

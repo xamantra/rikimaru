@@ -82,9 +82,12 @@ export class SubscriptionData {
             } else {
               const data = { media_id: mediaId, user_id: userId };
               Mongo.Insert(DataHelper.subscription, data).then(async result => {
-                if (result.InsertId !== undefined && result.InsertId !== null) {
+                if (
+                  result.insertedId !== undefined &&
+                  result.insertedId !== null
+                ) {
                   const sub = new Subscription();
-                  sub.Id = result.InsertId;
+                  sub.Id = result.insertedId;
                   sub.MediaId = mediaId;
                   sub.UserId = userId;
                   this.SubscriptionList.push(sub);

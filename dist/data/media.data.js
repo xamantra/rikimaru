@@ -122,20 +122,25 @@ class MediaData {
         }
     }
     static async Insert(media, title, user = null) {
+        console.log(`inserting media...`);
         return new Promise(async (resolve, reject) => {
             const exist = await this.Exists(media.idMal);
             if (exist === false) {
+                console.log(`new media`);
                 const data = { _id: media.idMal, title: title };
-                mongo_1.Mongo.Insert(data_helper_1.DataHelper.media, data).then(async (result) => {
-                    if (result.InsertId !== undefined && result.InsertId !== null) {
+                mongo_1.Mongo.Insert(data_helper_1.DataHelper.media, data).then(result => {
+                    console.log(`checking insertId...`);
+                    if (result.insertedId !== undefined && result.insertedId !== null) {
+                        console.log(`result was ok!.`);
                         const m = new subscription_model_1.Media();
-                        m.MalId = result.InsertId;
+                        m.MalId = media.idMal;
                         m.Title = title;
                         this.LocalList.push(m);
                         if (media_status_1.MediaStatus.Ongoing(media) || media_status_1.MediaStatus.NotYetAired(media)) {
                             this.MediaList.push(media);
                             queue_data_1.QueueData.Insert(media.idMal, media.nextAiringEpisode.next)
                                 .then(qId => {
+                                console.log(`resolving media....`);
                                 resolve(media.idMal);
                             })
                                 .catch((reason) => {

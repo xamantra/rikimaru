@@ -1,6 +1,6 @@
 import { JsonObject, JsonProperty } from "json2typescript";
 
-@JsonObject("RowDataPacket")
+@JsonObject("")
 export class User {
   @JsonProperty("_id", String)
   public Id: string = undefined;
@@ -8,15 +8,15 @@ export class User {
   public DiscordId: string = undefined;
 }
 
-@JsonObject("RowDataPacket")
+@JsonObject("")
 export class Media {
-  @JsonProperty("mal_id", Number)
+  @JsonProperty("_id", Number)
   public MalId: number = undefined;
   @JsonProperty("title", String)
   public Title: string = undefined;
 }
 
-@JsonObject("RowDataPacket")
+@JsonObject("")
 export class Subscription {
   @JsonProperty("_id", String)
   public Id: string = undefined;
@@ -26,7 +26,7 @@ export class Subscription {
   public UserId: string = undefined;
 }
 
-@JsonObject("RowDataPacket")
+@JsonObject("")
 export class Queue {
   @JsonProperty("_id", String)
   public Id: string = undefined;

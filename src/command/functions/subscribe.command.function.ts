@@ -64,8 +64,10 @@ export class SubscribeFunction implements ICommandFunction {
           const title = TitleHelper.Get(results[0].title);
           MediaData.Insert(media, title)
             .then(insertId => {
+              console.log(insertId);
               UserData.GetUser(discordId)
                 .then(user => {
+                  console.log(user);
                   SubscriptionData.Insert(media.idMal, user.Id)
                     .then(() => {
                       QueueData.GetQueue(media.idMal).then(queue => {
