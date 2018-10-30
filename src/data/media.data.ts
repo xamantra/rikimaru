@@ -1,6 +1,5 @@
 import { MediaStatus } from "./../core/media.status";
 import { SubscriptionData } from "./subscription.data";
-import { Query } from "./../core/query";
 import { MediaSearch } from "./../core/media.search";
 import { JsonHelper } from "../helpers/json.helper";
 import { DataHelper } from "../helpers/data.helper";
