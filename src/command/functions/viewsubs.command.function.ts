@@ -59,7 +59,7 @@ export class ViewSubsFunction implements ICommandFunction {
                       name: `\n${title}\nhttps://myanimelist.net/anime/${
                         $m.idMal
                       }/`,
-                      value: `*Episode ${episode} :* ***${countdown}***\n-------------------------------------------------------------------`
+                      value: `*Episode ${episode} :* ***${countdown}***\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬  :small_orange_diamond: :small_orange_diamond: :small_orange_diamond:   ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`
                     });
                     if (iteration === subs.length) {
                       this.EmbedTemplate(user, subs.length, list).then(

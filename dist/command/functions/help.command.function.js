@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("../../core/client");
 const manager_command_1 = require("../manager.command");
-const colors_1 = require("../../core/colors");
 class HelpFunction {
     constructor() {
         console.log(`Constructed: "${HelpFunction.name}"`);
@@ -50,7 +49,7 @@ class HelpFunction {
                 });
                 const embed = {
                     embed: {
-                        color: colors_1.Color.Random,
+                        color: message.member.highestRole.color,
                         thumbnail: {
                             url: client.user.avatarURL
                         },

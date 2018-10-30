@@ -58,7 +58,7 @@ export class HelpFunction implements ICommandFunction {
         });
         const embed = {
           embed: {
-            color: Color.Random,
+            color: message.member.highestRole.color,
             thumbnail: {
               url: client.user.avatarURL
             },

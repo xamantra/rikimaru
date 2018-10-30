@@ -49,7 +49,7 @@ class ViewSubsFunction {
                                 const countdown = time_helper_1.TimeHelper.Countdown($m.nextAiringEpisode.timeUntilAiring);
                                 list.push({
                                     name: `\n${title}\nhttps://myanimelist.net/anime/${$m.idMal}/`,
-                                    value: `*Episode ${episode} :* ***${countdown}***\n-------------------------------------------------------------------`
+                                    value: `*Episode ${episode} :* ***${countdown}***\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬  :small_orange_diamond: :small_orange_diamond: :small_orange_diamond:   ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`
                                 });
                                 if (iteration === subs.length) {
                                     this.EmbedTemplate(user, subs.length, list).then(template => {
