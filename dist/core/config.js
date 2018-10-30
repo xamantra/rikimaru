@@ -34,6 +34,21 @@ class Config {
         return (Number(process.env.MYSQL_CONNECTION_LIMIT) ||
             require("../extras/env").env.MYSQL_CONNECTION_LIMIT);
     }
+    static get MONGO_URL() {
+        return process.env.MONGO_URL || require("../extras/env").env.MONGO_URL;
+    }
+    static get MONGO_BASE() {
+        return process.env.MONGO_BASE || require("../extras/env").env.MONGO_BASE;
+    }
+    static get MONGO_USERNAME() {
+        return (process.env.MONGO_USERNAME || require("../extras/env").env.MONGO_USERNAME);
+    }
+    static get MONGO_PASSWORD() {
+        return (process.env.MONGO_PASSWORD || require("../extras/env").env.MONGO_PASSWORD);
+    }
+    static get MONGO_DATABASE() {
+        return (process.env.MONGO_DATABASE || require("../extras/env").env.MONGO_DATABASE);
+    }
 }
 exports.Config = Config;
 //# sourceMappingURL=config.js.map

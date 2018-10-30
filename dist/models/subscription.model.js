@@ -17,8 +17,8 @@ let User = class User {
     }
 };
 __decorate([
-    json2typescript_1.JsonProperty("id", Number),
-    __metadata("design:type", Number)
+    json2typescript_1.JsonProperty("_id", String),
+    __metadata("design:type", String)
 ], User.prototype, "Id", void 0);
 __decorate([
     json2typescript_1.JsonProperty("discord_id", String),
@@ -54,16 +54,16 @@ let Subscription = class Subscription {
     }
 };
 __decorate([
-    json2typescript_1.JsonProperty("id", Number),
-    __metadata("design:type", Number)
+    json2typescript_1.JsonProperty("_id", String),
+    __metadata("design:type", String)
 ], Subscription.prototype, "Id", void 0);
 __decorate([
     json2typescript_1.JsonProperty("media_id", Number),
     __metadata("design:type", Number)
 ], Subscription.prototype, "MediaId", void 0);
 __decorate([
-    json2typescript_1.JsonProperty("user_id", Number),
-    __metadata("design:type", Number)
+    json2typescript_1.JsonProperty("user_id", String),
+    __metadata("design:type", String)
 ], Subscription.prototype, "UserId", void 0);
 Subscription = __decorate([
     json2typescript_1.JsonObject("RowDataPacket")
@@ -77,8 +77,8 @@ let Queue = class Queue {
     }
 };
 __decorate([
-    json2typescript_1.JsonProperty("id", Number),
-    __metadata("design:type", Number)
+    json2typescript_1.JsonProperty("_id", String),
+    __metadata("design:type", String)
 ], Queue.prototype, "Id", void 0);
 __decorate([
     json2typescript_1.JsonProperty("media_id", Number),

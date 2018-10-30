@@ -11,6 +11,7 @@ import { ArrayHelper } from "../helpers/array.helper";
 import { UserData } from "./user.data";
 import { QueueData } from "./queue.data";
 import { Randomizer } from "../helpers/random.helper";
+import { Mongo } from "../core/mongo";
 
 export class MediaData {
   public static get GetLocalList() {
@@ -23,12 +24,11 @@ export class MediaData {
   static _instance: MediaData;
   private static LocalList: Media[] = [];
   private static MediaList: IMedia[] = [];
-  private static DataHelper = DataHelper.Instance;
 
   public static async Init() {
     return new Promise(async (resolve, reject) => {
       this.Clear().then(() => {
-        Query.Execute(this.DataHelper.MediaSelectAll()).then(async result => {
+        Mongo.FindAll(DataHelper.media).then(async result => {
           const $result = await JsonHelper.ArrayConvert<Media>(result, Media);
           if ($result === undefined || $result === null) {
             reject(
@@ -105,7 +105,8 @@ export class MediaData {
                   });
               } else {
                 ArrayHelper.remove(this.LocalList, lm, () => {
-                  Query.Execute(this.DataHelper.MediaDelete($m.id), () => {
+                  const query = { _id: $m.idMal };
+                  Mongo.Delete(DataHelper.media, query).then(() => {
                     userDatas.forEach(x => {
                       SubscriptionData.Delete($m.idMal, x.DiscordId).then(
                         () => {
@@ -150,29 +151,25 @@ export class MediaData {
     return new Promise<number>(async (resolve, reject) => {
       const exist = await this.Exists(media.idMal);
       if (exist === false) {
-        const result = await Query.Execute(
-          this.DataHelper.MediaInsert(media.idMal, title)
-        );
-        const myRes = await JsonHelper.Convert<MySqlResult>(
-          result,
-          MySqlResult
-        );
-        if (myRes.InsertId !== undefined && myRes.InsertId !== null) {
-          const m = new Media();
-          m.MalId = myRes.InsertId;
-          m.Title = title;
-          this.LocalList.push(m);
-          if (MediaStatus.Ongoing(media) || MediaStatus.NotYetAired(media)) {
-            this.MediaList.push(media);
-            QueueData.Insert(media.idMal, media.nextAiringEpisode.next)
-              .then(qId => {
-                resolve(media.idMal);
-              })
-              .catch((reason: Error) => {
-                console.log(reason.message);
-              });
+        const data = { _id: media.idMal, title: title };
+        Mongo.Insert(DataHelper.media, data).then(async result => {
+          if (result.InsertId !== undefined && result.InsertId !== null) {
+            const m = new Media();
+            m.MalId = result.InsertId;
+            m.Title = title;
+            this.LocalList.push(m);
+            if (MediaStatus.Ongoing(media) || MediaStatus.NotYetAired(media)) {
+              this.MediaList.push(media);
+              QueueData.Insert(media.idMal, media.nextAiringEpisode.next)
+                .then(qId => {
+                  resolve(media.idMal);
+                })
+                .catch((reason: Error) => {
+                  console.log(reason.message);
+                });
+            }
           }
-        }
+        });
       } else {
         resolve(media.idMal);
       }

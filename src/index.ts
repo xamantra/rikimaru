@@ -3,7 +3,6 @@ import { Client } from "discord.js";
 import { SubscriptionData } from "./data/subscription.data";
 import { MediaData } from "./data/media.data";
 import { UserData } from "./data/user.data";
-import { DataHelper } from "./helpers/data.helper";
 import { ClientManager } from "./core/client";
 import { CommandManager } from "./command/manager.command";
 import { MessageHandler } from "./handlers/message.handler";
@@ -18,40 +17,38 @@ class App {
   }
 
   public Run() {
-    DataHelper.Instance.Init().then(() => {
-      UserData.Init()
-        .then(() => {
-          QueueData.Init()
-            .then(() => {
-              SubscriptionData.Init()
-                .then(() => {
-                  MediaData.Init()
-                    .then(() => {
-                      Scheduler.LoopJob(0, 1, 0, () => {
-                        console.log(`Refreshing Data....`);
-                        QueueData.Init().then(() => {
-                          MediaData.Init().then(() => {
-                            BotPresence.Set();
-                          });
+    UserData.Init()
+      .then(() => {
+        QueueData.Init()
+          .then(() => {
+            SubscriptionData.Init()
+              .then(() => {
+                MediaData.Init()
+                  .then(() => {
+                    Scheduler.LoopJob(0, 1, 0, () => {
+                      console.log(`Refreshing Data....`);
+                      QueueData.Init().then(() => {
+                        MediaData.Init().then(() => {
+                          BotPresence.Set();
                         });
                       });
-                    })
-                    .catch((err: Error) => {
-                      console.log(err.message);
                     });
-                })
-                .catch((err: Error) => {
-                  console.log(err.message);
-                });
-            })
-            .catch((err: Error) => {
-              console.log(err.message);
-            });
-        })
-        .catch((err: Error) => {
-          console.log(err.message);
-        });
-    });
+                  })
+                  .catch((err: Error) => {
+                    console.log(err.message);
+                  });
+              })
+              .catch((err: Error) => {
+                console.log(err.message);
+              });
+          })
+          .catch((err: Error) => {
+            console.log(err.message);
+          });
+      })
+      .catch((err: Error) => {
+        console.log(err.message);
+      });
   }
 }
 

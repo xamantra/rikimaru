@@ -1,13 +1,10 @@
 import { Queue, User } from "./../models/subscription.model";
 import { QueueJob } from "./../models/queue.job.model";
-import { MySqlResult } from "./../models/result.mysql.model";
 import { JsonHelper } from "./../helpers/json.helper";
-import { Query } from "./../core/query";
 import { DataHelper } from "../helpers/data.helper";
 import { ArrayHelper } from "../helpers/array.helper";
 import { IMedia } from "../interfaces/page.interface";
-import { SubscriptionData } from "./subscription.data";
-import { UserData } from "./user.data";
+import { Mongo } from "../core/mongo";
 
 export class QueueData {
   public static get All() {
@@ -17,13 +14,12 @@ export class QueueData {
   static _instance: QueueData;
   private static Queues: Queue[] = [];
   private static QueueJobs: QueueJob[] = [];
-  private static DataHelper = DataHelper.Instance;
 
   public static async Init() {
     return new Promise((resolve, reject) => {
       this.Clear()
         .then(() => {
-          Query.Execute(this.DataHelper.QueueSelectAll(), async result => {
+          Mongo.FindAll(DataHelper.queue).then(async result => {
             const queues = await JsonHelper.ArrayConvert<Queue>(result, Queue);
             if (queues === null || queues === undefined) {
               reject(
@@ -34,6 +30,7 @@ export class QueueData {
             } else {
               queues.forEach(q => {
                 this.Queues.push(q);
+                console.log(q);
               });
               resolve();
             }
@@ -78,14 +75,6 @@ export class QueueData {
     this.GetQueue($m.idMal).then(queue => {
       const queueJob = new QueueJob($m, queue);
       this.AddJob(queueJob);
-      // UserData.All.forEach(user => {
-      //   SubscriptionData.Exists($m.idMal, user.Id).then(exists => {
-      //     if (exists === true) {
-      //       const queueJob = new QueueJob($m, queue);
-      //       QueueData.AddJob(queueJob);
-      //     }
-      //   });
-      // });
     });
   }
 
@@ -109,34 +98,27 @@ export class QueueData {
   }
 
   public static async Insert(mediaId: number, next_episode: number) {
-    return new Promise<number>((resolve, reject) => {
+    return new Promise<string>((resolve, reject) => {
       this.Exists(mediaId).then(exists => {
         if (exists === false) {
-          Query.Execute(
-            this.DataHelper.QueueInsert(mediaId, next_episode),
-            async result => {
-              const res = await JsonHelper.Convert<MySqlResult>(
-                result,
-                MySqlResult
+          const data = { media_id: mediaId, next_episode: next_episode };
+          Mongo.Insert(DataHelper.queue, data).then(result => {
+            if (result.InsertId !== undefined && result.InsertId !== null) {
+              const q = new Queue();
+              q.Id = result.InsertId;
+              q.MediaId = mediaId;
+              q.NextEpisode = next_episode;
+              this.Queues.push(q);
+              console.log(`${q.MediaId} added to queue.`);
+              resolve(q.Id);
+            } else {
+              reject(
+                new Error(
+                  `JsonHelper.ArrayConvert<MySqlResult>(result, MySqlResult)[0] is 'null' or 'undefined'.`
+                )
               );
-              console.log(res);
-              if (res !== undefined && res !== null) {
-                const q = new Queue();
-                q.Id = res.InsertId;
-                q.MediaId = mediaId;
-                q.NextEpisode = next_episode;
-                this.Queues.push(q);
-                console.log(`${q.MediaId} added to queue.`);
-                resolve(q.Id);
-              } else {
-                reject(
-                  new Error(
-                    `JsonHelper.ArrayConvert<MySqlResult>(result, MySqlResult)[0] is 'null' or 'undefined'.`
-                  )
-                );
-              }
             }
-          );
+          });
         } else {
           const queue = this.Queues.find(x => x.MediaId === mediaId);
           resolve(queue.Id);
@@ -147,43 +129,26 @@ export class QueueData {
 
   public static async Update(media: IMedia, queueJob: QueueJob) {
     return new Promise(async (resolve, reject) => {
-      Query.Execute(
-        this.DataHelper.QueueUpdate(media.idMal, media.nextAiringEpisode.next)
-      )
-        .then(() => {
-          this.Init().then(() => {
-            this.GetQueue(media.idMal)
-              .then(q => {
-                const qj = new QueueJob(media, q);
-                this.AddJob(qj).then(() => {
-                  console.log(`New/Refreshed queue job: ${qj.queue.MediaId}`);
-                });
-              })
-              .catch(err => {
-                console.log(err);
+      const query = { media_id: media.idMal };
+      const newValues = {
+        $set: { next_episode: media.nextAiringEpisode.next }
+      };
+      Mongo.Update(DataHelper.queue, query, newValues).then(result => {
+        this.Init().then(() => {
+          this.GetQueue(media.idMal)
+            .then(q => {
+              const qj = new QueueJob(media, q);
+              this.AddJob(qj).then(() => {
+                this.RemoveJob(queueJob);
+                console.log(`New/Refreshed queue job: ${qj.queue.MediaId}`);
+                resolve();
               });
-            // SubscriptionData.Exists(media.idMal, user.Id).then(exists => {
-            //   if (exists === true) {
-            //     this.GetQueue(media.idMal).then(q => {
-            //       const qj = new QueueJob(media, q);
-            //       this.AddJob(qj).then(() => {
-            //         this.RemoveJob(queueJob);
-            //         resolve();
-            //       });
-            //     });
-            //   } else {
-            //     reject(
-            //       `User ${user.DiscordId} is not subscribe to Media ${
-            //         media.idMal
-            //       }`
-            //     );
-            //   }
-            // });
-          });
-        })
-        .catch(err => {
-          console.log(err);
+            })
+            .catch(err => {
+              console.log(err);
+            });
         });
+      });
     });
   }
 

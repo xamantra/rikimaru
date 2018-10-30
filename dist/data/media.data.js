@@ -2,16 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const media_status_1 = require("./../core/media.status");
 const subscription_data_1 = require("./subscription.data");
-const query_1 = require("./../core/query");
 const media_search_1 = require("./../core/media.search");
 const json_helper_1 = require("../helpers/json.helper");
 const data_helper_1 = require("../helpers/data.helper");
 const subscription_model_1 = require("../models/subscription.model");
-const result_mysql_model_1 = require("../models/result.mysql.model");
 const array_helper_1 = require("../helpers/array.helper");
 const user_data_1 = require("./user.data");
 const queue_data_1 = require("./queue.data");
 const random_helper_1 = require("../helpers/random.helper");
+const mongo_1 = require("../core/mongo");
 class MediaData {
     static get GetLocalList() {
         return this.LocalList;
@@ -22,7 +21,7 @@ class MediaData {
     static async Init() {
         return new Promise(async (resolve, reject) => {
             this.Clear().then(() => {
-                query_1.Query.Execute(this.DataHelper.MediaSelectAll()).then(async (result) => {
+                mongo_1.Mongo.FindAll(data_helper_1.DataHelper.media).then(async (result) => {
                     const $result = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Media);
                     if ($result === undefined || $result === null) {
                         reject(new Error(`"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`));
@@ -94,7 +93,8 @@ class MediaData {
                         }
                         else {
                             array_helper_1.ArrayHelper.remove(this.LocalList, lm, () => {
-                                query_1.Query.Execute(this.DataHelper.MediaDelete($m.id), () => {
+                                const query = { _id: $m.idMal };
+                                mongo_1.Mongo.Delete(data_helper_1.DataHelper.media, query).then(() => {
                                     userDatas.forEach(x => {
                                         subscription_data_1.SubscriptionData.Delete($m.idMal, x.DiscordId).then(() => {
                                             const qj = queue_data_1.QueueData.GetJobs.find(j => j.media.idMal === $m.idMal);
@@ -125,24 +125,25 @@ class MediaData {
         return new Promise(async (resolve, reject) => {
             const exist = await this.Exists(media.idMal);
             if (exist === false) {
-                const result = await query_1.Query.Execute(this.DataHelper.MediaInsert(media.idMal, title));
-                const myRes = await json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
-                if (myRes.InsertId !== undefined && myRes.InsertId !== null) {
-                    const m = new subscription_model_1.Media();
-                    m.MalId = myRes.InsertId;
-                    m.Title = title;
-                    this.LocalList.push(m);
-                    if (media_status_1.MediaStatus.Ongoing(media) || media_status_1.MediaStatus.NotYetAired(media)) {
-                        this.MediaList.push(media);
-                        queue_data_1.QueueData.Insert(media.idMal, media.nextAiringEpisode.next)
-                            .then(qId => {
-                            resolve(media.idMal);
-                        })
-                            .catch((reason) => {
-                            console.log(reason.message);
-                        });
+                const data = { _id: media.idMal, title: title };
+                mongo_1.Mongo.Insert(data_helper_1.DataHelper.media, data).then(async (result) => {
+                    if (result.InsertId !== undefined && result.InsertId !== null) {
+                        const m = new subscription_model_1.Media();
+                        m.MalId = result.InsertId;
+                        m.Title = title;
+                        this.LocalList.push(m);
+                        if (media_status_1.MediaStatus.Ongoing(media) || media_status_1.MediaStatus.NotYetAired(media)) {
+                            this.MediaList.push(media);
+                            queue_data_1.QueueData.Insert(media.idMal, media.nextAiringEpisode.next)
+                                .then(qId => {
+                                resolve(media.idMal);
+                            })
+                                .catch((reason) => {
+                                console.log(reason.message);
+                            });
+                        }
                     }
-                }
+                });
             }
             else {
                 resolve(media.idMal);
@@ -201,6 +202,5 @@ class MediaData {
 }
 MediaData.LocalList = [];
 MediaData.MediaList = [];
-MediaData.DataHelper = data_helper_1.DataHelper.Instance;
 exports.MediaData = MediaData;
 //# sourceMappingURL=media.data.js.map

@@ -57,4 +57,30 @@ export class Config {
       require("../extras/env").env.MYSQL_CONNECTION_LIMIT
     );
   }
+
+  public static get MONGO_URL(): string {
+    return process.env.MONGO_URL || require("../extras/env").env.MONGO_URL;
+  }
+
+  public static get MONGO_BASE(): string {
+    return process.env.MONGO_BASE || require("../extras/env").env.MONGO_BASE;
+  }
+
+  public static get MONGO_USERNAME(): string {
+    return (
+      process.env.MONGO_USERNAME || require("../extras/env").env.MONGO_USERNAME
+    );
+  }
+
+  public static get MONGO_PASSWORD(): string {
+    return (
+      process.env.MONGO_PASSWORD || require("../extras/env").env.MONGO_PASSWORD
+    );
+  }
+
+  public static get MONGO_DATABASE(): string {
+    return (
+      process.env.MONGO_DATABASE || require("../extras/env").env.MONGO_DATABASE
+    );
+  }
 }

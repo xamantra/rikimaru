@@ -1,20 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const query_1 = require("./../core/query");
 const queue_data_1 = require("./queue.data");
 const user_data_1 = require("./user.data");
 const subscription_model_1 = require("./../models/subscription.model");
 const json_helper_1 = require("../helpers/json.helper");
 const data_helper_1 = require("../helpers/data.helper");
-const result_mysql_model_1 = require("../models/result.mysql.model");
 const array_helper_1 = require("../helpers/array.helper");
+const mongo_1 = require("../core/mongo");
 class SubscriptionData {
     static get All() {
         return this.SubscriptionList;
     }
     static async Init() {
         return new Promise((resolve, reject) => {
-            query_1.Query.Execute(this.DataHelper.SubsSelectAll(), async (result) => {
+            mongo_1.Mongo.FindAll(data_helper_1.DataHelper.subscription).then(async (result) => {
                 const subs = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Subscription);
                 console.log(subs);
                 if (subs === null || subs === undefined) {
@@ -68,16 +67,16 @@ class SubscriptionData {
                             reject(`"this.QueueData.All.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`);
                         }
                         else {
-                            query_1.Query.Execute(this.DataHelper.SubsInsert(mediaId, userId), async (result) => {
-                                const res = await json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
-                                if (res.InsertId !== undefined && res.InsertId !== null) {
+                            const data = { media_id: mediaId, user_id: userId };
+                            mongo_1.Mongo.Insert(data_helper_1.DataHelper.subscription, data).then(async (result) => {
+                                if (result.InsertId !== undefined && result.InsertId !== null) {
                                     const sub = new subscription_model_1.Subscription();
-                                    sub.Id = res.InsertId;
+                                    sub.Id = result.InsertId;
                                     sub.MediaId = mediaId;
                                     sub.UserId = userId;
                                     this.SubscriptionList.push(sub);
+                                    resolve();
                                 }
-                                resolve();
                             });
                         }
                     }
@@ -92,7 +91,8 @@ class SubscriptionData {
         return new Promise((res, rej) => {
             user_data_1.UserData.GetUser(discordId)
                 .then(user => {
-                query_1.Query.Execute(this.DataHelper.SubsDelete(mediaId, user.Id), result => {
+                const query = { media_id: mediaId, user_id: user.Id };
+                mongo_1.Mongo.Delete(data_helper_1.DataHelper.subscription, query).then(() => {
                     const sub = this.SubscriptionList.find(x => x.MediaId === mediaId && x.UserId === user.Id);
                     if (sub !== null && sub !== undefined) {
                         array_helper_1.ArrayHelper.remove(this.SubscriptionList, sub, () => {
@@ -137,7 +137,6 @@ class SubscriptionData {
         });
     }
 }
-SubscriptionData.DataHelper = data_helper_1.DataHelper.Instance;
 SubscriptionData.SubscriptionList = [];
 exports.SubscriptionData = SubscriptionData;
 //# sourceMappingURL=subscription.data.js.map

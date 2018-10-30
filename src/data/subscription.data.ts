@@ -1,24 +1,21 @@
-import { Query } from "./../core/query";
 import { QueueData } from "./queue.data";
 import { UserData } from "./user.data";
 import { Subscription } from "./../models/subscription.model";
 import { JsonHelper } from "../helpers/json.helper";
 import { DataHelper } from "../helpers/data.helper";
-import { MySqlResult } from "../models/result.mysql.model";
 import { ArrayHelper } from "../helpers/array.helper";
 import { User } from "../models/subscription.model";
-import { MediaData } from "./media.data";
+import { Mongo } from "../core/mongo";
 
 export class SubscriptionData {
   public static get All() {
     return this.SubscriptionList;
   }
-  private static DataHelper = DataHelper.Instance;
   private static SubscriptionList: Subscription[] = [];
 
   public static async Init() {
     return new Promise((resolve, reject) => {
-      Query.Execute(this.DataHelper.SubsSelectAll(), async result => {
+      Mongo.FindAll(DataHelper.subscription).then(async result => {
         const subs = await JsonHelper.ArrayConvert<Subscription>(
           result,
           Subscription
@@ -40,7 +37,7 @@ export class SubscriptionData {
     });
   }
 
-  public static async GetUserSubs(userId: number) {
+  public static async GetUserSubs(userId: string) {
     return new Promise<Subscription[]>((resolve, reject) => {
       const subs: Subscription[] = [];
       this.SubscriptionList.forEach(sub => {
@@ -67,7 +64,7 @@ export class SubscriptionData {
     });
   }
 
-  public static async Insert(mediaId: number, userId: number) {
+  public static async Insert(mediaId: number, userId: string) {
     return new Promise((resolve, reject) => {
       this.Exists(mediaId, userId).then(async exists => {
         if (exists === false) {
@@ -83,23 +80,17 @@ export class SubscriptionData {
                 `"this.QueueData.All.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`
               );
             } else {
-              Query.Execute(
-                this.DataHelper.SubsInsert(mediaId, userId),
-                async result => {
-                  const res = await JsonHelper.Convert<MySqlResult>(
-                    result,
-                    MySqlResult
-                  );
-                  if (res.InsertId !== undefined && res.InsertId !== null) {
-                    const sub = new Subscription();
-                    sub.Id = res.InsertId;
-                    sub.MediaId = mediaId;
-                    sub.UserId = userId;
-                    this.SubscriptionList.push(sub);
-                  }
+              const data = { media_id: mediaId, user_id: userId };
+              Mongo.Insert(DataHelper.subscription, data).then(async result => {
+                if (result.InsertId !== undefined && result.InsertId !== null) {
+                  const sub = new Subscription();
+                  sub.Id = result.InsertId;
+                  sub.MediaId = mediaId;
+                  sub.UserId = userId;
+                  this.SubscriptionList.push(sub);
                   resolve();
                 }
-              );
+              });
             }
           }
         } else {
@@ -113,30 +104,28 @@ export class SubscriptionData {
     return new Promise((res, rej) => {
       UserData.GetUser(discordId)
         .then(user => {
-          Query.Execute(
-            this.DataHelper.SubsDelete(mediaId, user.Id),
-            result => {
-              const sub = this.SubscriptionList.find(
-                x => x.MediaId === mediaId && x.UserId === user.Id
-              );
-              if (sub !== null && sub !== undefined) {
-                ArrayHelper.remove(this.SubscriptionList, sub, () => {
-                  console.log(
-                    `User <${
-                      user.DiscordId
-                    }> unsubscribed to Media: "${mediaId}".`
-                  );
-                });
-                res();
-              } else {
-                rej(
-                  new Error(
-                    `"this.SubscriptionList.find(   x => x.MediaId === mediaId && x.UserId === user.Id )" is 'null' or 'undefined'.`
-                  )
+          const query = { media_id: mediaId, user_id: user.Id };
+          Mongo.Delete(DataHelper.subscription, query).then(() => {
+            const sub = this.SubscriptionList.find(
+              x => x.MediaId === mediaId && x.UserId === user.Id
+            );
+            if (sub !== null && sub !== undefined) {
+              ArrayHelper.remove(this.SubscriptionList, sub, () => {
+                console.log(
+                  `User <${
+                    user.DiscordId
+                  }> unsubscribed to Media: "${mediaId}".`
                 );
-              }
+              });
+              res();
+            } else {
+              rej(
+                new Error(
+                  `"this.SubscriptionList.find(   x => x.MediaId === mediaId && x.UserId === user.Id )" is 'null' or 'undefined'.`
+                )
+              );
             }
-          );
+          });
         })
         .catch((reason: Error) => {
           rej(reason);
@@ -144,7 +133,7 @@ export class SubscriptionData {
     });
   }
 
-  public static async Exists(mediaId: number, userId: number) {
+  public static async Exists(mediaId: number, userId: string) {
     return new Promise<boolean>((resolve, reject) => {
       const sub = this.All.find(
         x => x.MediaId === mediaId && x.UserId === userId

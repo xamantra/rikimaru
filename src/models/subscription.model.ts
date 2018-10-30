@@ -2,8 +2,8 @@ import { JsonObject, JsonProperty } from "json2typescript";
 
 @JsonObject("RowDataPacket")
 export class User {
-  @JsonProperty("id", Number)
-  public Id: number = undefined;
+  @JsonProperty("_id", String)
+  public Id: string = undefined;
   @JsonProperty("discord_id", String)
   public DiscordId: string = undefined;
 }
@@ -18,18 +18,18 @@ export class Media {
 
 @JsonObject("RowDataPacket")
 export class Subscription {
-  @JsonProperty("id", Number)
-  public Id: number = undefined;
+  @JsonProperty("_id", String)
+  public Id: string = undefined;
   @JsonProperty("media_id", Number)
   public MediaId: number = undefined;
-  @JsonProperty("user_id", Number)
-  public UserId: number = undefined;
+  @JsonProperty("user_id", String)
+  public UserId: string = undefined;
 }
 
 @JsonObject("RowDataPacket")
 export class Queue {
-  @JsonProperty("id", Number)
-  public Id: number = undefined;
+  @JsonProperty("_id", String)
+  public Id: string = undefined;
   @JsonProperty("media_id", Number)
   public MediaId: number = undefined;
   @JsonProperty("next_episode", Number)

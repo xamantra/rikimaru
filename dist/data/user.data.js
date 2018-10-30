@@ -3,20 +3,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const subscription_model_1 = require("../models/subscription.model");
 const json_helper_1 = require("../helpers/json.helper");
 const data_helper_1 = require("../helpers/data.helper");
-const query_1 = require("../core/query");
-const result_mysql_model_1 = require("../models/result.mysql.model");
+const mongo_1 = require("../core/mongo");
 class UserData {
     static get All() {
         return this.UserList;
     }
     static async Init() {
         return new Promise(async (res, rej) => {
-            query_1.Query.Execute(this.DataHelper.UserSelectAll()).then(async (result) => {
+            mongo_1.Mongo.FindAll(data_helper_1.DataHelper.user).then(async (result) => {
                 const users = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.User);
                 let iteration = 1;
                 if (users !== undefined && users !== null) {
                     users.forEach(user => {
                         this.UserList.push(user);
+                        console.log(user);
                         if (iteration === users.length) {
                             res();
                         }
@@ -58,23 +58,17 @@ class UserData {
             this.Exists(discordId)
                 .then(exists => {
                 if (exists === false) {
-                    query_1.Query.Execute(this.DataHelper.UserInsert(discordId), async (result) => {
-                        try {
-                            const myRes = await json_helper_1.JsonHelper.Convert(result, result_mysql_model_1.MySqlResult);
-                            if (myRes !== null &&
-                                myRes !== undefined &&
-                                myRes.InsertId !== null &&
-                                myRes.InsertId !== undefined) {
-                                const user = new subscription_model_1.User();
-                                user.Id = myRes.InsertId;
-                                user.DiscordId = discordId;
-                                this.UserList.push(user);
-                            }
-                            res(myRes.InsertId);
+                    const data = { discord_id: discordId };
+                    mongo_1.Mongo.Insert(data_helper_1.DataHelper.user, data).then(result => {
+                        console.log(result.insertedId);
+                        if (result.insertedId !== null &&
+                            result.insertedId !== undefined) {
+                            const user = new subscription_model_1.User();
+                            user.Id = result.InsertId;
+                            user.DiscordId = discordId;
+                            this.UserList.push(user);
                         }
-                        catch (error) {
-                            rej(new Error(`Unknown error occured.`));
-                        }
+                        res(result.InsertId);
                     });
                 }
                 else {
@@ -112,6 +106,5 @@ class UserData {
     }
 }
 UserData.UserList = [];
-UserData.DataHelper = data_helper_1.DataHelper.Instance;
 exports.UserData = UserData;
 //# sourceMappingURL=user.data.js.map
