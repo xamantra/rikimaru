@@ -11,24 +11,35 @@ import { ClientManager } from "../../core/client";
 export class ViewSubsFunction implements ICommandFunction {
   constructor() {}
 
-  public Execute(message?: Message, command?: ICommand, dm?: boolean) {
-    this.Embed(message, dm).then(async embed => {
-      if (dm === true) {
-        message.author
-          .send(embed)
-          .then(($m: Message) => {
-            console.log(
-              `Message <${$m.id}> was sent to <${message.author.username}>.`
-            );
-          })
-          .catch((err: DiscordAPIError) => {
-            message.reply(`Oh! it seems that I can't DM you.`);
-            console.log(err.name);
-          });
-      } else {
-        message.reply(embed);
-      }
-    });
+  public async Execute(message?: Message, command?: ICommand, dm?: boolean) {
+    message.channel
+      .send(
+        `**${
+          message.author.username
+        }**, please wait a moment. I'm gathering some sweets.`
+      )
+      .then((mes: Message) => {
+        this.Embed(message, dm).then(async embed => {
+          if (mes.deletable) {
+            mes.delete();
+          }
+          if (dm === true) {
+            message.author
+              .send(embed)
+              .then(($m: Message) => {
+                console.log(
+                  `Message <${$m.id}> was sent to <${message.author.username}>.`
+                );
+              })
+              .catch((err: DiscordAPIError) => {
+                message.reply(`Oh! it seems that I can't DM you.`);
+                console.log(err.name);
+              });
+          } else {
+            message.reply(embed);
+          }
+        });
+      });
   }
 
   private async Embed(message: Message, dm: boolean) {

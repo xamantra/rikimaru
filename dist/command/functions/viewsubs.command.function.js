@@ -8,22 +8,29 @@ const time_helper_1 = require("../../helpers/time.helper");
 const client_1 = require("../../core/client");
 class ViewSubsFunction {
     constructor() { }
-    Execute(message, command, dm) {
-        this.Embed(message, dm).then(async (embed) => {
-            if (dm === true) {
-                message.author
-                    .send(embed)
-                    .then(($m) => {
-                    console.log(`Message <${$m.id}> was sent to <${message.author.username}>.`);
-                })
-                    .catch((err) => {
-                    message.reply(`Oh! it seems that I can't DM you.`);
-                    console.log(err.name);
-                });
-            }
-            else {
-                message.reply(embed);
-            }
+    async Execute(message, command, dm) {
+        message.channel
+            .send(`**${message.author.username}**, please wait a moment. I'm gathering some sweets.`)
+            .then((mes) => {
+            this.Embed(message, dm).then(async (embed) => {
+                if (mes.deletable) {
+                    mes.delete();
+                }
+                if (dm === true) {
+                    message.author
+                        .send(embed)
+                        .then(($m) => {
+                        console.log(`Message <${$m.id}> was sent to <${message.author.username}>.`);
+                    })
+                        .catch((err) => {
+                        message.reply(`Oh! it seems that I can't DM you.`);
+                        console.log(err.name);
+                    });
+                }
+                else {
+                    message.reply(embed);
+                }
+            });
         });
     }
     async Embed(message, dm) {
