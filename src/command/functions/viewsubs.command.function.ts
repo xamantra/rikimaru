@@ -6,7 +6,6 @@ import { Message, User, DiscordAPIError } from "discord.js";
 import { ICommand } from "../../interfaces/command.interface";
 import { TitleHelper } from "../../helpers/title.helper";
 import { TimeHelper } from "../../helpers/time.helper";
-import { Color } from "../../core/colors";
 import { ClientManager } from "../../core/client";
 
 export class ViewSubsFunction implements ICommandFunction {

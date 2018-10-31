@@ -20,38 +20,33 @@ class MediaData {
     }
     static async Init() {
         return new Promise(async (resolve, reject) => {
-            this.OnReady().then(() => {
-                this.Clear().then(() => {
-                    this.Initializing = true;
-                    mongo_1.Mongo.FindAll(data_helper_1.DataHelper.media).then(async (result) => {
-                        const $result = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Media);
-                        if ($result === undefined || $result === null) {
-                            this.Initializing = false;
-                            reject(new Error(`"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`));
+            this.Clear().then(() => {
+                this.Initializing = true;
+                mongo_1.Mongo.FindAll(data_helper_1.DataHelper.media).then(async (result) => {
+                    const $result = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Media);
+                    if ($result === undefined || $result === null) {
+                        reject(new Error(`"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`));
+                    }
+                    else {
+                        if ($result.length === 0) {
+                            resolve();
                         }
-                        else {
-                            if ($result.length === 0) {
-                                this.Initializing = false;
-                                resolve();
+                        let iteration = 0;
+                        $result.forEach(m => {
+                            iteration++;
+                            this.LocalList.push(m);
+                            if (iteration === $result.length) {
+                                this.LoadFromApi()
+                                    .then(() => {
+                                    console.log(`Media List Length: ${this.MediaList.length}`);
+                                    resolve();
+                                })
+                                    .catch((reason) => {
+                                    console.log(reason.message);
+                                });
                             }
-                            let iteration = 0;
-                            $result.forEach(m => {
-                                iteration++;
-                                this.LocalList.push(m);
-                                if (iteration === $result.length) {
-                                    this.LoadFromApi()
-                                        .then(() => {
-                                        console.log(`Media List Length: ${this.MediaList.length}`);
-                                        this.Initializing = false;
-                                        resolve();
-                                    })
-                                        .catch((reason) => {
-                                        console.log(reason.message);
-                                    });
-                                }
-                            });
-                        }
-                    });
+                        });
+                    }
                 });
             });
         });
@@ -73,15 +68,15 @@ class MediaData {
         });
     }
     static async LoadFromApi() {
-        return new Promise(async (res, rej) => {
+        return new Promise(async (resolve, reject) => {
             const userDatas = user_data_1.UserData.All;
             const locals = this.LocalList;
             console.log(this.LocalList);
             if (userDatas === undefined || userDatas === null) {
-                rej(new Error(`"userDatas = this.UserData.All" is 'null' or 'undefined'`));
+                reject(new Error(`"userDatas = this.UserData.All" is 'null' or 'undefined'`));
             }
             else if (locals === undefined || locals === null) {
-                rej(new Error(`"locals = this.LocalList" is 'null' or 'undefined'`));
+                reject(new Error(`"locals = this.LocalList" is 'null' or 'undefined'`));
             }
             else {
                 let iteration = 0;
@@ -96,10 +91,10 @@ class MediaData {
                                     .then(insertId => {
                                     this.MediaList.push($m);
                                     console.log(`Pushed: ${lm.Title}`);
-                                    this.Check(iteration, $m, res);
+                                    this.Check(iteration, $m, resolve);
                                 })
                                     .catch(() => {
-                                    this.Check(iteration, $m, res);
+                                    this.Check(iteration, $m, resolve);
                                     console.log(`No need to add. Already exists.`);
                                 });
                             }
@@ -118,7 +113,7 @@ class MediaData {
                                             });
                                         });
                                     });
-                                    this.Check(iteration, $m, res);
+                                    this.Check(iteration, $m, resolve);
                                 });
                             }
                         })
@@ -134,6 +129,7 @@ class MediaData {
         queue_data_1.QueueData.SetQueue($m);
         if (iteration === this.LocalList.length) {
             console.log(`Iteration: ${iteration}`);
+            this.Initializing = false;
             res();
         }
     }
