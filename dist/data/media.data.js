@@ -87,43 +87,45 @@ class MediaData {
                 let iteration = 0;
                 console.log(`Iterating through "locals (${this.LocalList.length} items)"`);
                 locals.forEach(lm => {
-                    media_search_1.MediaSearch.Find(lm.MalId)
-                        .then($m => {
-                        iteration++;
-                        if (media_status_1.MediaStatus.Ongoing($m) || media_status_1.MediaStatus.NotYetAired($m)) {
-                            queue_data_1.QueueData.Insert($m.idMal, $m.nextAiringEpisode.next)
-                                .then(insertId => {
-                                this.MediaList.push($m);
-                                console.log(`Pushed: ${lm.Title}`);
-                                this.Check(iteration, $m, res);
-                            })
-                                .catch(() => {
-                                this.Check(iteration, $m, res);
-                                console.log(`No need to add. Already exists.`);
-                            });
-                        }
-                        else {
-                            array_helper_1.ArrayHelper.remove(this.LocalList, lm, () => {
-                                const query = { _id: $m.idMal };
-                                mongo_1.Mongo.Delete(data_helper_1.DataHelper.media, query).then(() => {
-                                    userDatas.forEach(x => {
-                                        subscription_data_1.SubscriptionData.Delete($m.idMal, x.DiscordId).then(() => {
-                                            queue_data_1.QueueData.GetJobs().then(jobs => {
-                                                jobs.forEach(qj => {
-                                                    queue_data_1.QueueData.RemoveJob(qj);
-                                                    console.log(`All subscription of "${$m.title}" has been remove`);
+                    setTimeout(() => {
+                        media_search_1.MediaSearch.Find(lm.MalId)
+                            .then($m => {
+                            iteration++;
+                            if (media_status_1.MediaStatus.Ongoing($m) || media_status_1.MediaStatus.NotYetAired($m)) {
+                                queue_data_1.QueueData.Insert($m.idMal, $m.nextAiringEpisode.next)
+                                    .then(insertId => {
+                                    this.MediaList.push($m);
+                                    console.log(`Pushed: ${lm.Title}`);
+                                    this.Check(iteration, $m, res);
+                                })
+                                    .catch(() => {
+                                    this.Check(iteration, $m, res);
+                                    console.log(`No need to add. Already exists.`);
+                                });
+                            }
+                            else {
+                                array_helper_1.ArrayHelper.remove(this.LocalList, lm, () => {
+                                    const query = { _id: $m.idMal };
+                                    mongo_1.Mongo.Delete(data_helper_1.DataHelper.media, query).then(() => {
+                                        userDatas.forEach(x => {
+                                            subscription_data_1.SubscriptionData.Delete($m.idMal, x.DiscordId).then(() => {
+                                                queue_data_1.QueueData.GetJobs().then(jobs => {
+                                                    jobs.forEach(qj => {
+                                                        queue_data_1.QueueData.RemoveJob(qj);
+                                                        console.log(`All subscription of "${$m.title}" has been remove`);
+                                                    });
                                                 });
                                             });
                                         });
                                     });
+                                    this.Check(iteration, $m, res);
                                 });
-                                this.Check(iteration, $m, res);
-                            });
-                        }
-                    })
-                        .catch(error => {
-                        console.warn(`Error while searching : [MediaSearch.Find(${lm.MalId})]`);
-                    });
+                            }
+                        })
+                            .catch(error => {
+                            console.warn(`Error while searching : [MediaSearch.Find(${lm.MalId})]`);
+                        });
+                    }, 100);
                 });
             }
         });

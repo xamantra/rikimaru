@@ -10,6 +10,7 @@ import { UserData } from "./user.data";
 import { QueueData } from "./queue.data";
 import { Randomizer } from "../helpers/random.helper";
 import { Mongo } from "../core/mongo";
+import { Sender } from "../core/sender";
 
 export class MediaData {
   public static get GetLocalList() {
@@ -101,50 +102,52 @@ export class MediaData {
           `Iterating through "locals (${this.LocalList.length} items)"`
         );
         locals.forEach(lm => {
-          MediaSearch.Find(lm.MalId)
-            .then($m => {
-              iteration++;
-              if (MediaStatus.Ongoing($m) || MediaStatus.NotYetAired($m)) {
-                QueueData.Insert($m.idMal, $m.nextAiringEpisode.next)
-                  .then(insertId => {
-                    this.MediaList.push($m);
-                    console.log(`Pushed: ${lm.Title}`);
-                    this.Check(iteration, $m, res);
-                  })
-                  .catch(() => {
-                    this.Check(iteration, $m, res);
-                    console.log(`No need to add. Already exists.`);
-                  });
-              } else {
-                ArrayHelper.remove(this.LocalList, lm, () => {
-                  const query = { _id: $m.idMal };
-                  Mongo.Delete(DataHelper.media, query).then(() => {
-                    userDatas.forEach(x => {
-                      SubscriptionData.Delete($m.idMal, x.DiscordId).then(
-                        () => {
-                          QueueData.GetJobs().then(jobs => {
-                            jobs.forEach(qj => {
-                              QueueData.RemoveJob(qj);
-                              console.log(
-                                `All subscription of "${
-                                  $m.title
-                                }" has been remove`
-                              );
-                            });
-                          });
-                        }
-                      );
+          setTimeout(() => {
+            MediaSearch.Find(lm.MalId)
+              .then($m => {
+                iteration++;
+                if (MediaStatus.Ongoing($m) || MediaStatus.NotYetAired($m)) {
+                  QueueData.Insert($m.idMal, $m.nextAiringEpisode.next)
+                    .then(insertId => {
+                      this.MediaList.push($m);
+                      console.log(`Pushed: ${lm.Title}`);
+                      this.Check(iteration, $m, res);
+                    })
+                    .catch(() => {
+                      this.Check(iteration, $m, res);
+                      console.log(`No need to add. Already exists.`);
                     });
+                } else {
+                  ArrayHelper.remove(this.LocalList, lm, () => {
+                    const query = { _id: $m.idMal };
+                    Mongo.Delete(DataHelper.media, query).then(() => {
+                      userDatas.forEach(x => {
+                        SubscriptionData.Delete($m.idMal, x.DiscordId).then(
+                          () => {
+                            QueueData.GetJobs().then(jobs => {
+                              jobs.forEach(qj => {
+                                QueueData.RemoveJob(qj);
+                                console.log(
+                                  `All subscription of "${
+                                    $m.title
+                                  }" has been remove`
+                                );
+                              });
+                            });
+                          }
+                        );
+                      });
+                    });
+                    this.Check(iteration, $m, res);
                   });
-                  this.Check(iteration, $m, res);
-                });
-              }
-            })
-            .catch(error => {
-              console.warn(
-                `Error while searching : [MediaSearch.Find(${lm.MalId})]`
-              );
-            });
+                }
+              })
+              .catch(error => {
+                console.warn(
+                  `Error while searching : [MediaSearch.Find(${lm.MalId})]`
+                );
+              });
+          }, 100);
         });
       }
     });

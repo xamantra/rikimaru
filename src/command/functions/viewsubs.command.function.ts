@@ -46,6 +46,12 @@ export class ViewSubsFunction implements ICommandFunction {
           .then(u => {
             SubscriptionData.GetUserSubs(u.Id).then(subs => {
               let iteration = 0;
+              if (subs.length === 0) {
+                this.EmbedTemplate(message, user, 0, list).then(template => {
+                  resolve(template);
+                });
+                return;
+              }
               subs.forEach(async sub => {
                 iteration++;
                 MediaData.GetMedia(sub.MediaId)

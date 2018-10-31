@@ -39,6 +39,12 @@ class ViewSubsFunction {
                     .then(u => {
                     subscription_data_1.SubscriptionData.GetUserSubs(u.Id).then(subs => {
                         let iteration = 0;
+                        if (subs.length === 0) {
+                            this.EmbedTemplate(message, user, 0, list).then(template => {
+                                resolve(template);
+                            });
+                            return;
+                        }
                         subs.forEach(async (sub) => {
                             iteration++;
                             media_data_1.MediaData.GetMedia(sub.MediaId)
