@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const commands_1 = require("./commands");
+const commands_2 = require("./commands");
 class CommandManager {
     static Init() {
         const cmds = [];
@@ -14,6 +15,8 @@ class CommandManager {
         cmds.push(commands_1.dmviewsubs);
         cmds.push(commands_1.unsub);
         cmds.push(commands_1.dmunsub);
+        cmds.push(commands_2.malbind);
+        cmds.push(commands_2.autosub);
         cmds.push(commands_1.ping);
         cmds.push(commands_1.dmping);
         cmds.push(commands_1.logall);

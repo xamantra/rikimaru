@@ -49,6 +49,16 @@ class Config {
     static get MONGO_DATABASE() {
         return (process.env.MONGO_DATABASE || require("../extras/env").env.MONGO_DATABASE);
     }
+    static get JIKAN_BASE_URL() {
+        return (process.env.JIKAN_BASE_URL || require("../extras/env").env.JIKAN_BASE_URL);
+    }
+    static get MAL_BASE_URL() {
+        return (process.env.MAL_BASE_URL || require("../extras/env").env.MAL_BASE_URL);
+    }
+    static get MAL_PROFILE_BASE() {
+        return (process.env.MAL_PROFILE_BASE ||
+            require("../extras/env").env.MAL_PROFILE_BASE);
+    }
 }
 exports.Config = Config;
 //# sourceMappingURL=config.js.map

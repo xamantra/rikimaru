@@ -83,4 +83,23 @@ export class Config {
       process.env.MONGO_DATABASE || require("../extras/env").env.MONGO_DATABASE
     );
   }
+
+  public static get JIKAN_BASE_URL(): string {
+    return (
+      process.env.JIKAN_BASE_URL || require("../extras/env").env.JIKAN_BASE_URL
+    );
+  }
+
+  public static get MAL_BASE_URL(): string {
+    return (
+      process.env.MAL_BASE_URL || require("../extras/env").env.MAL_BASE_URL
+    );
+  }
+
+  public static get MAL_PROFILE_BASE(): string {
+    return (
+      process.env.MAL_PROFILE_BASE ||
+      require("../extras/env").env.MAL_PROFILE_BASE
+    );
+  }
 }

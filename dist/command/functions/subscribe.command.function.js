@@ -55,7 +55,7 @@ class SubscribeFunction {
                             queue_data_1.QueueData.GetQueue(media.idMal).then(queue => {
                                 const queueJob = new queue_job_model_1.QueueJob(media, queue);
                                 queue_data_1.QueueData.AddJob(queueJob).then(() => {
-                                    this.Embed(message, media, true).then(embed => {
+                                    SubscribeFunction.Embed(message, media, true).then(embed => {
                                         sender_1.Sender.SendInfo(message, embed, dm);
                                         console.log(`Added to queue: ${insertId}`);
                                         return;
@@ -65,7 +65,7 @@ class SubscribeFunction {
                         })
                             .catch((reason) => {
                             if (reason === "EXISTS") {
-                                this.Embed(message, media, false).then(embed => {
+                                SubscribeFunction.Embed(message, media, false).then(embed => {
                                     sender_1.Sender.SendInfo(message, embed, dm);
                                     return;
                                 });
@@ -99,7 +99,7 @@ class SubscribeFunction {
         });
     }
     // tslint:disable-next-line:member-ordering
-    async Embed(message, media, newSub) {
+    static async Embed(message, media, newSub) {
         return new Promise((resolve, reject) => {
             client_1.ClientManager.GetClient().then(client => {
                 const t = title_helper_1.TitleHelper.Get(media.title);

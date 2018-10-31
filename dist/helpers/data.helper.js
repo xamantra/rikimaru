@@ -6,5 +6,6 @@ DataHelper.user = "users";
 DataHelper.media = "media";
 DataHelper.subscription = "subscriptions";
 DataHelper.queue = "queues";
+DataHelper.malsync = "malbind";
 exports.DataHelper = DataHelper;
 //# sourceMappingURL=data.helper.js.map

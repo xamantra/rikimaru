@@ -45,9 +45,14 @@ class Mongo {
                     if (err)
                         console.log(err);
                     else {
-                        if (callback !== null && callback !== undefined)
-                            callback(res);
-                        resolve(res);
+                        if (res.length > 0) {
+                            if (callback !== null && callback !== undefined)
+                                callback(res);
+                            resolve(res);
+                        }
+                        else {
+                            reject(new Error(`Nothing found from the database.`));
+                        }
                     }
                 });
             });

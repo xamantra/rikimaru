@@ -73,20 +73,24 @@ export class SubscribeFunction implements ICommandFunction {
                       QueueData.GetQueue(media.idMal).then(queue => {
                         const queueJob = new QueueJob(media, queue);
                         QueueData.AddJob(queueJob).then(() => {
-                          this.Embed(message, media, true).then(embed => {
-                            Sender.SendInfo(message, embed, dm);
-                            console.log(`Added to queue: ${insertId}`);
-                            return;
-                          });
+                          SubscribeFunction.Embed(message, media, true).then(
+                            embed => {
+                              Sender.SendInfo(message, embed, dm);
+                              console.log(`Added to queue: ${insertId}`);
+                              return;
+                            }
+                          );
                         });
                       });
                     })
                     .catch((reason: string) => {
                       if (reason === "EXISTS") {
-                        this.Embed(message, media, false).then(embed => {
-                          Sender.SendInfo(message, embed, dm);
-                          return;
-                        });
+                        SubscribeFunction.Embed(message, media, false).then(
+                          embed => {
+                            Sender.SendInfo(message, embed, dm);
+                            return;
+                          }
+                        );
                       } else {
                         console.log(reason);
                         return;
@@ -120,7 +124,7 @@ export class SubscribeFunction implements ICommandFunction {
   }
 
   // tslint:disable-next-line:member-ordering
-  private async Embed(message: Message, media: IMedia, newSub: boolean) {
+  public static async Embed(message: Message, media: IMedia, newSub: boolean) {
     return new Promise<any>((resolve, reject) => {
       ClientManager.GetClient().then(client => {
         const t = TitleHelper.Get(media.title);

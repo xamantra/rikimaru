@@ -10,13 +10,13 @@ export class BotCommand {
     public Description: string,
     public ParameterRequired: boolean,
     public CanHaveMention: boolean,
-    private responseType: Response,
+    private ResponseType: Response,
     public Cooldown: number,
     public Function: ICommandFunction,
     public Example?: ICommandExample,
     public DevOnly: boolean = false
   ) {
-    switch (this.responseType) {
+    switch (this.ResponseType) {
       case Response.ChannelReply:
         this.DirectMessage = false;
         break;

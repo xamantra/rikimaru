@@ -9,7 +9,8 @@ import {
   viewSubsFunction,
   unsubFunction
 } from "./functions";
-import { mediaExample } from "./examples";
+import { mediaExample, malBindExample } from "./examples";
+import { malBindFunction, autoSubFunction } from "./functions";
 
 export const help = new BotCommand(
   "help",
@@ -106,6 +107,28 @@ export const dmunsub = new BotCommand(
   5,
   unsubFunction,
   mediaExample
+);
+export const malbind = new BotCommand(
+  "malbind",
+  `Synchronize your mal account with your Rikimaru Discord.`,
+  true,
+  false,
+  Response.ChannelReply,
+  10,
+  malBindFunction,
+  malBindExample,
+  false
+);
+export const autosub = new BotCommand(
+  "autosub",
+  `Automatically subscribe to all ongoing anime in you currently watching list.`,
+  false,
+  false,
+  Response.ChannelReply,
+  60,
+  autoSubFunction,
+  null,
+  false
 );
 export const ping = new BotCommand(
   "ping",

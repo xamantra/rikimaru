@@ -9,6 +9,7 @@ import { MessageHandler } from "./handlers/message.handler";
 import { OpenShiftUptimer } from "./others/openshift";
 import { Scheduler } from "./core/scheduler";
 import { BotPresence } from "./core/presence";
+import { MalBindData } from "./data/mal.sync.data";
 
 class App {
   static _instance: App;
@@ -23,20 +24,22 @@ class App {
           .then(() => {
             SubscriptionData.Init()
               .then(() => {
-                MediaData.Init()
-                  .then(() => {
-                    Scheduler.LoopJob(0, 1, 0, () => {
-                      console.log(`Refreshing Data....`);
-                      QueueData.Init().then(() => {
-                        MediaData.Init().then(() => {
-                          BotPresence.Set();
+                MalBindData.Init().then(() => {
+                  MediaData.Init()
+                    .then(() => {
+                      Scheduler.LoopJob(0, 1, 0, () => {
+                        console.log(`Refreshing Data....`);
+                        QueueData.Init().then(() => {
+                          MediaData.Init().then(() => {
+                            BotPresence.Set();
+                          });
                         });
                       });
+                    })
+                    .catch((err: Error) => {
+                      console.log(err.message);
                     });
-                  })
-                  .catch((err: Error) => {
-                    console.log(err.message);
-                  });
+                });
               })
               .catch((err: Error) => {
                 console.log(err.message);

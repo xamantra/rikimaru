@@ -38,7 +38,7 @@ export class Mongo {
     query: object,
     callback?: (result: any) => void
   ) {
-    return new Promise((resolve, reject) => {
+    return new Promise<any>((resolve, reject) => {
       this.Connect().then(client => {
         const db = client.db(Config.MONGO_DATABASE);
         db.collection(table)
@@ -46,8 +46,12 @@ export class Mongo {
           .toArray(function(err, res) {
             if (err) console.log(err);
             else {
-              if (callback !== null && callback !== undefined) callback(res);
-              resolve(res);
+              if (res.length > 0) {
+                if (callback !== null && callback !== undefined) callback(res);
+                resolve(res);
+              } else {
+                reject(new Error(`Nothing found from the database.`));
+              }
             }
           });
       });

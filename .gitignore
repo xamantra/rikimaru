@@ -90,3 +90,5 @@ TODO.*
 *.old.ts
 api/
 temp.json
+animes.json
+*.json
