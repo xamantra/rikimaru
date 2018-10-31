@@ -9,15 +9,6 @@ export class MessageHandler {
     const client = await ClientManager.GetClient();
     client.on("message", message => {
       if (message.author.id !== client.user.id) {
-        console.log({
-          Message: {
-            Server:
-              message.guild !== null ? message.guild.name : "Direct Message",
-            Channel: message.channel.id,
-            Message: message.content
-          }
-        });
-
         const isCommand = MessageHelper.IsCommand(Config, message);
         const cmdName = isCommand
           ? MessageHelper.GetCommand(Config, message).trim()
