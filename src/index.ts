@@ -27,7 +27,7 @@ class App {
                 MalBindData.Init().then(() => {
                   MediaData.Init()
                     .then(() => {
-                      Scheduler.LoopJob(0, 1, 0, () => {
+                      Scheduler.LoopJob(0, 10, 0, () => {
                         console.log(`Refreshing Data....`);
                         QueueData.Init().then(() => {
                           MediaData.Init().then(() => {

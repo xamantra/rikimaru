@@ -70,6 +70,11 @@ export class ViewSubsFunction implements ICommandFunction {
                     }
                   })
                   .catch((err: Error) => {
+                    this.EmbedTemplate(message, user, 0, list).then(
+                      template => {
+                        resolve(template);
+                      }
+                    );
                     console.log(err.message);
                   });
               });

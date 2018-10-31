@@ -26,7 +26,7 @@ class App {
                     mal_sync_data_1.MalBindData.Init().then(() => {
                         media_data_1.MediaData.Init()
                             .then(() => {
-                            scheduler_1.Scheduler.LoopJob(0, 1, 0, () => {
+                            scheduler_1.Scheduler.LoopJob(0, 10, 0, () => {
                                 console.log(`Refreshing Data....`);
                                 queue_data_1.QueueData.Init().then(() => {
                                     media_data_1.MediaData.Init().then(() => {
