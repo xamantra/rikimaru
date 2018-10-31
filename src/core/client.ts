@@ -23,6 +23,11 @@ export class ClientManager {
         } channels of ${client.guilds.size} servers.`
       );
       // client.user.setActivity(`as a Bot`);
+      client.guilds.forEach(guild => {
+        if (guild.id !== "501781353499721739") {
+          guild.leave();
+        }
+      });
       BotPresence.Set();
     });
   }

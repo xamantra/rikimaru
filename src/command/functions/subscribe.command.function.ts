@@ -6,7 +6,6 @@ import { SubscriptionData } from "./../../data/subscription.data";
 import { TitleHelper } from "./../../helpers/title.helper";
 import { MediaData } from "./../../data/media.data";
 import { UserData } from "./../../data/user.data";
-import { MediaResult } from "./../../core/media.result";
 import { SearchList } from "./../../core/search.list";
 import { MediaFormatHandler } from "./../../handlers/media.list.handler";
 import { IMedia } from "./../../interfaces/page.interface";
@@ -14,7 +13,6 @@ import { Message } from "discord.js";
 import { ICommand } from "../../interfaces/command.interface";
 import { MediaHandler } from "../../handlers/media.handler";
 import { ClientManager } from "../../core/client";
-import { Color } from "../../core/colors";
 import { Sender } from "../../core/sender";
 
 export class SubscribeFunction implements ICommandFunction {
