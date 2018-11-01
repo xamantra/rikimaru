@@ -66,7 +66,7 @@ class ViewSubsFunction {
                                     episodes = `${$m.episodes}`;
                                 }
                                 else {
-                                    episodes = `?`;
+                                    episodes = $m.episodes === 0 ? `?` : `?`;
                                 }
                                 const countdown = time_helper_1.TimeHelper.Countdown($m.nextAiringEpisode.timeUntilAiring);
                                 const pre = new sub_model_1.SubMedia({
