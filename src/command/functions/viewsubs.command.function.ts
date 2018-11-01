@@ -9,6 +9,8 @@ import { TimeHelper } from "../../helpers/time.helper";
 import { ClientManager } from "../../core/client";
 import { Awaiter } from "../awaiter";
 import { MessageHelper } from "../../helpers/message.helper";
+import arraySort from "array-sort";
+import { SubMedia } from "../../models/sub.model";
 
 export class ViewSubsFunction implements ICommandFunction {
   constructor() {}
@@ -44,54 +46,71 @@ export class ViewSubsFunction implements ICommandFunction {
       }
       const discordId: string =
         mentionId === null ? message.author.id : mentionId;
-      const list: any[] = [];
+      const sorted: any[] = [];
+      let unsorted: any[] = [];
       ClientManager.GetUser(discordId).then(user => {
         UserData.GetUser(discordId)
           .then(u => {
             SubscriptionData.GetUserSubs(u.Id).then(subs => {
-              let iteration = 0;
               if (subs.length === 0) {
-                this.EmbedTemplate(message, user, 0, list).then(template => {
+                this.EmbedTemplate(message, user, 0, sorted).then(template => {
                   resolve(template);
                 });
                 return;
               }
-              subs.forEach(async sub => {
-                iteration++;
+              for (let v = 0; v < subs.length; v++) {
+                const sub = subs[v];
                 MediaData.GetMedia(sub.MediaId)
                   .then($m => {
                     const title = TitleHelper.Get($m.title);
                     const episode = $m.nextAiringEpisode.next;
+                    let episodes = "";
+                    if ($m.episodes !== null && $m.episodes !== undefined) {
+                      episodes = `/${$m.episodes}`;
+                    }
                     const countdown = TimeHelper.Countdown(
                       $m.nextAiringEpisode.timeUntilAiring
                     );
-                    list.push({
-                      name: `\n${title}`,
-                      value: `[MyAnimeList](https://myanimelist.net/anime/${
-                        $m.idMal
-                      }/)\n*Episode ${episode} :* ***${countdown}***\n▬▬▬▬▬▬▬▬▬▬  :small_orange_diamond: :small_orange_diamond: :small_orange_diamond: ▬▬▬▬▬▬▬▬▬▬`
+                    const pre = new SubMedia({
+                      timeUntilAiring: $m.nextAiringEpisode.timeUntilAiring,
+                      field: {
+                        name: `\n${title}`,
+                        value: `[MyAnimeList](https://myanimelist.net/anime/${
+                          $m.idMal
+                        }/)\nEpisode **${episode}**${episodes} in ***${countdown}***\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`
+                      }
                     });
-                    if (iteration === subs.length) {
-                      this.EmbedTemplate(message, user, subs.length, list).then(
-                        template => {
-                          resolve(template);
-                        }
-                      );
+                    unsorted.push(pre.data);
+                    if (v === subs.length - 1) {
+                      unsorted = arraySort(unsorted, ["timeUntilAiring"]);
+                      for (let b = 0; b < unsorted.length; b++) {
+                        const element = unsorted[b];
+                        sorted.push(element.field);
+                      }
+                      console.log(`iteration: ${v}`);
+                      this.EmbedTemplate(
+                        message,
+                        user,
+                        subs.length,
+                        sorted
+                      ).then(template => {
+                        resolve(template);
+                      });
                     }
                   })
                   .catch((err: Error) => {
-                    this.EmbedTemplate(message, user, 0, list).then(
+                    this.EmbedTemplate(message, user, 0, sorted).then(
                       template => {
                         resolve(template);
                       }
                     );
                     console.log(err.message);
                   });
-              });
+              }
             });
           })
           .catch((reason: Error) => {
-            this.EmbedTemplate(message, user, 0, list).then(template => {
+            this.EmbedTemplate(message, user, 0, sorted).then(template => {
               resolve(template);
             });
             console.log(reason.message);

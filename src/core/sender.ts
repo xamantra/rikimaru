@@ -11,7 +11,7 @@ export class Sender {
       message.author
         .send(content)
         .then(($m: Message) => {
-          if (callback !== null || callback !== undefined) {
+          if (callback !== null && callback !== undefined) {
             callback();
           }
           console.log(
@@ -20,7 +20,7 @@ export class Sender {
         })
         .catch((err: DiscordAPIError) => {
           message.reply(`Oh!, it seems that I can't dm you.`);
-          if (callback !== null || callback !== undefined) {
+          if (callback !== null && callback !== undefined) {
             callback();
           }
           console.log(`Sender.ts: "${err.message}"`);
@@ -29,7 +29,7 @@ export class Sender {
       message
         .reply(content)
         .then(($m: Message) => {
-          if (callback !== null || callback !== undefined) {
+          if (callback !== null && callback !== undefined) {
             callback();
           }
           console.log(
@@ -37,7 +37,7 @@ export class Sender {
           );
         })
         .catch((err: DiscordAPIError) => {
-          if (callback !== null || callback !== undefined) {
+          if (callback !== null && callback !== undefined) {
             callback();
           }
           console.log(`Sender.ts: "${err.message}"`);
