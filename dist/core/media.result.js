@@ -12,8 +12,9 @@ class MediaResult {
             let name = "";
             let value = "";
             let episodes = "";
+            console.log(`Total Eps for ${rsMessage.Title}: "${rsMessage.TotalEps}"`);
             if (rsMessage.TotalEps !== null && rsMessage.TotalEps !== undefined) {
-                episodes = `${rsMessage.TotalEps}`;
+                episodes = rsMessage.TotalEps === 0 ? `?` : `${rsMessage.TotalEps}`;
             }
             else {
                 episodes = `?`;

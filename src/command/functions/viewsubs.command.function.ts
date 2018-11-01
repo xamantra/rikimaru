@@ -66,9 +66,9 @@ export class ViewSubsFunction implements ICommandFunction {
                     const episode = $m.nextAiringEpisode.next;
                     let episodes = "";
                     if ($m.episodes !== null && $m.episodes !== undefined) {
-                      episodes = `${$m.episodes}`;
+                      episodes = $m.episodes === 0 ? `?` : `${$m.episodes}`;
                     } else {
-                      episodes = $m.episodes === 0 ? `?` : `?`;
+                      episodes = `?`;
                     }
                     const countdown = TimeHelper.Countdown(
                       $m.nextAiringEpisode.timeUntilAiring
