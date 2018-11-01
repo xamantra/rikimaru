@@ -10,6 +10,7 @@ class ResponseMessage {
         this.Title = $Title;
         this.Type = $Type;
         this.Status = $Status;
+        this.TotalEps = $TotalEps;
         this.Current = $Current;
         this.Countdown = $Countdown;
         this.UpdatedAt = $UpdatedAt;
