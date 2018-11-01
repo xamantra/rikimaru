@@ -8,7 +8,7 @@ import { IMedia } from "../interfaces/page.interface";
 import { ArrayHelper } from "../helpers/array.helper";
 import { UserData } from "./user.data";
 import { QueueData } from "./queue.data";
-import { Randomizer } from "../helpers/random.helper";
+import { Random } from "../helpers/random.helper";
 import { Mongo } from "../core/mongo";
 import { Sender } from "../core/sender";
 
@@ -82,7 +82,7 @@ export class MediaData {
     return new Promise<void>(async (resolve, reject) => {
       const userDatas = UserData.All;
       const locals = this.LocalList;
-      console.log(this.LocalList);
+      // console.log(this.LocalList);
       if (userDatas === undefined || userDatas === null) {
         reject(
           new Error(`"userDatas = this.UserData.All" is 'null' or 'undefined'`)
@@ -224,7 +224,7 @@ export class MediaData {
       this.OnReady().then(() => {
         setInterval(() => {
           const media = this.MediaList[
-            Randomizer.randomInt(0, this.MediaList.length - 1)
+            Random.Range(0, this.MediaList.length - 1)
           ];
           if (media !== null && media !== undefined) {
             resolve(media);

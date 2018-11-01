@@ -1,4 +1,4 @@
-import { Randomizer } from "../../helpers/random.helper";
+import { Random } from "../../helpers/random.helper";
 import { ICommandExample } from "../../interfaces/command.example.interface";
 import { ICommand } from "../../interfaces/command.interface";
 
@@ -78,9 +78,7 @@ export class MediaExample implements ICommandExample {
     let result = ``;
     const picked: string[] = [];
     for (let i = 0; i < this.media.length; i++) {
-      const item: string = this.media[
-        Randomizer.randomInt(0, this.media.length - 1)
-      ];
+      const item: string = this.media[Random.Range(0, this.media.length - 1)];
       if (!picked.includes(item) && picked.length < count) {
         result += `\n-*${command.Name}* ${item}`;
         picked.push(item);

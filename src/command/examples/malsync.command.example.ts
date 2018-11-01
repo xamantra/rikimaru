@@ -1,6 +1,6 @@
 import { ICommandExample } from "../../interfaces/command.example.interface";
 import { ICommand } from "../../interfaces/command.interface";
-import { Randomizer } from "../../helpers/random.helper";
+import { Random } from "../../helpers/random.helper";
 
 export class MalSyncExample implements ICommandExample {
   Count: number;
@@ -16,7 +16,7 @@ export class MalSyncExample implements ICommandExample {
     const picked: string[] = [];
     for (let i = 0; i < this.Usernames.length; i++) {
       const item: string = this.Usernames[
-        Randomizer.randomInt(0, this.Usernames.length - 1)
+        Random.Range(0, this.Usernames.length - 1)
       ];
       if (!picked.includes(item) && picked.length < count) {
         result += `\n-*${command.Name}* ${item}`;

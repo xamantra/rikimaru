@@ -1,4 +1,4 @@
-import { Queue, Media } from "./subscription.model";
+import { Queue } from "./subscription.model";
 import { QueueData } from "./../data/queue.data";
 import moment, { unix } from "moment";
 import { ClientManager } from "../core/client";
@@ -15,32 +15,38 @@ export class QueueJob {
   constructor(public media: IMedia, public queue: Queue) {}
 
   public Check() {
-    const nextEpisode = this.queue.NextEpisode;
+    const queueEpisode = this.queue.NextEpisode;
     const media = this.media;
     const title = TitleHelper.Get(media.title);
     this.JobDate = unix(media.nextAiringEpisode.airingAt).toDate();
     if (MediaStatus.Completed(media) && media.episodes === 1) {
-      this.FindUser(title, nextEpisode, media);
-    } else if (nextEpisode < media.nextAiringEpisode.next) {
-      this.FindUser(title, nextEpisode, media);
+      this.FindUser(title, queueEpisode, media);
+    } else if (queueEpisode < media.nextAiringEpisode.next) {
+      console.log(`queueEpisode < media.nextAiringEpisode.next`);
+      this.FindUser(title, queueEpisode, media);
     }
   }
 
   private FindUser(title: string, nextEpisode: number, media: IMedia) {
-    SubscriptionData.GetSubscribers(this.media.idMal).then(subscribers => {
-      subscribers.forEach(subscriber => {
-        console.log(subscriber);
-        ClientManager.GetUser(subscriber.DiscordId)
-          .then(user => {
-            if (user.id === subscriber.DiscordId) {
-              this.SendMessage(title, nextEpisode, media, user);
-            }
-          })
-          .catch((err: Error) => {
-            console.log(err.message);
-          });
+    console.log(`Getting subscribers of "${title}"`);
+    SubscriptionData.GetSubscribers(this.media.idMal)
+      .then(subscribers => {
+        subscribers.forEach(subscriber => {
+          console.log(subscriber);
+          ClientManager.GetUser(subscriber.DiscordId)
+            .then(user => {
+              if (user.id === subscriber.DiscordId) {
+                this.SendMessage(title, nextEpisode, media, user);
+              }
+            })
+            .catch((err: Error) => {
+              console.log(err.message);
+            });
+        });
+      })
+      .catch(err => {
+        console.log(err);
       });
-    });
   }
 
   private SendMessage(

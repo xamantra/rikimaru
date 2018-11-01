@@ -31,7 +31,7 @@ class QueueData {
                             }
                             queues.forEach(q => {
                                 this.Queues.push(q);
-                                console.log(q);
+                                // console.log(q);
                             });
                             this.Initializing = false;
                             resolve();

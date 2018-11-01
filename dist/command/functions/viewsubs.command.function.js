@@ -6,16 +6,14 @@ const media_data_1 = require("./../../data/media.data");
 const title_helper_1 = require("../../helpers/title.helper");
 const time_helper_1 = require("../../helpers/time.helper");
 const client_1 = require("../../core/client");
+const awaiter_1 = require("../awaiter");
+const message_helper_1 = require("../../helpers/message.helper");
 class ViewSubsFunction {
     constructor() { }
     async Execute(message, command, dm) {
-        message.channel
-            .send(`**${message.author.username}**, please wait a moment. I'm gathering some sweets.`)
-            .then((mes) => {
+        awaiter_1.Awaiter.Send(message, 2000, (m) => {
             this.Embed(message, dm).then(async (embed) => {
-                if (mes.deletable) {
-                    mes.delete();
-                }
+                message_helper_1.MessageHelper.Delete(m);
                 if (dm === true) {
                     message.author
                         .send(embed)

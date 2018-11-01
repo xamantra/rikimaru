@@ -28,7 +28,7 @@ class UserData {
                         users.forEach(user => {
                             this.UserList.push(user);
                             console.log(`user....`);
-                            console.log(user);
+                            // console.log(user);
                             if (iteration === users.length) {
                                 this.Initializing = false;
                                 resolve();
@@ -61,14 +61,14 @@ class UserData {
         });
     }
     static async GetUserById(id) {
-        return new Promise((res, rej) => {
+        return new Promise((resolve, reject) => {
             this.OnReady().then(() => {
                 const user = this.All.find(x => x.Id === id);
                 if (user !== null && user !== undefined) {
-                    res(user);
+                    resolve(user);
                 }
                 else {
-                    rej(new Error(`"this.All.find(x => x.Id === id)" is 'null' or 'undefined'.`));
+                    reject(new Error(`"this.All.find(x => x.Id === id)" is 'null' or 'undefined'.`));
                 }
             });
         });

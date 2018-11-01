@@ -23,7 +23,7 @@ export class SubscriptionData {
             result,
             Subscription
           );
-          console.log(subs);
+          // console.log(subs);
           if (subs === null || subs === undefined) {
             this.Initializing = false;
             reject(
@@ -66,14 +66,31 @@ export class SubscriptionData {
     return new Promise<User[]>((resolve, reject) => {
       this.OnReady().then(() => {
         const subscribers: User[] = [];
+        let iteration = 0;
+        if (this.SubscriptionList.length === 0) {
+          reject(new Error(`SubscriptionList is empty`));
+        }
         this.SubscriptionList.forEach(sub => {
+          iteration++;
           if (sub.MediaId === malId) {
-            UserData.GetUserById(sub.UserId).then(user => {
-              subscribers.push(user);
-            });
+            UserData.GetUserById(sub.UserId)
+              .then(user => {
+                console.log(`Subscriber found: "${user.DiscordId}"`);
+                subscribers.push(user);
+                if (iteration === this.SubscriptionList.length) {
+                  console.log(`Resolving subscribers...`);
+                  resolve(subscribers);
+                }
+              })
+              .catch(err => {
+                console.log(err);
+                if (iteration === this.SubscriptionList.length) {
+                  console.log(`Resolving subscribers...`);
+                  resolve(subscribers);
+                }
+              });
           }
         });
-        resolve(subscribers);
       });
     });
   }

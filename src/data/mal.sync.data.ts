@@ -29,7 +29,7 @@ export class MalBindData {
             list.forEach(malsync => {
               this.List.push(malsync);
             });
-            console.log(this.List);
+            // console.log(this.List);
             this.Initializing = false;
             resolve();
           }

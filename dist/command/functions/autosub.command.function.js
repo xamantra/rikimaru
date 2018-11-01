@@ -11,36 +11,45 @@ const subscription_data_1 = require("../../data/subscription.data");
 const queue_data_1 = require("../../data/queue.data");
 const queue_job_model_1 = require("../../models/queue.job.model");
 const client_1 = require("../../core/client");
+const awaiter_1 = require("../awaiter");
+const message_helper_1 = require("../../helpers/message.helper");
 class AutoSubFunction {
     Execute(message, command, dm) {
-        this.GetAll(message, dm)
-            .then(count => {
-            client_1.ClientManager.GetClient().then(client => {
-                sender_1.Sender.Send(message, {
-                    embed: {
-                        color: message.member.highestRole.color,
-                        thumbnail: { url: message.author.avatarURL },
-                        title: `**Rikimaru MAL Auto Subscribe**`,
-                        description: `That was sweet! You are now subcribe to **${count} ongoing anime** from your MAL List.`,
-                        fields: [
-                            {
-                                name: `To unsubscribe, type:`,
-                                value: `\`-unsub anime title or keyword here\``
-                            },
-                            {
-                                name: `To view all subscription, type:`,
-                                value: `\`-viewsubs\``
+        awaiter_1.Awaiter.Send(message, 2000, (m) => {
+            this.GetAll(message, dm)
+                .then(count => {
+                client_1.ClientManager.GetClient().then(client => {
+                    message_helper_1.MessageHelper.Delete(m);
+                    sender_1.Sender.Send(message, {
+                        embed: {
+                            color: message.member.highestRole.color,
+                            thumbnail: { url: message.author.avatarURL },
+                            title: `**Rikimaru MAL Auto Subscribe**`,
+                            description: `That was sweet! You are now subcribe to **${count} ongoing anime** from your MAL List.`,
+                            fields: [
+                                {
+                                    name: `To unsubscribe, type:`,
+                                    value: `\`-unsub anime title or keyword here\``
+                                },
+                                {
+                                    name: `To view all subscription, type:`,
+                                    value: `\`-viewsubs\``
+                                }
+                            ],
+                            timestamp: new Date(),
+                            footer: {
+                                icon_url: client.user.avatarURL,
+                                text: "© Rikimaru"
                             }
-                        ],
-                        timestamp: new Date(),
-                        footer: { icon_url: client.user.avatarURL, text: "© Rikimaru" }
-                    }
-                }, dm);
+                        }
+                    }, dm);
+                });
+            })
+                .catch(err => {
+                message_helper_1.MessageHelper.Delete(m);
+                console.log(err);
+                sender_1.Sender.Send(message, `Oops! It looks like you haven't binded you account with rikimaru discord yet.\nEnter the command **-malbind malusername** to bind your account.`, dm);
             });
-        })
-            .catch(err => {
-            console.log(err);
-            sender_1.Sender.Send(message, `Oops! It looks like you haven't binded you account with rikimaru discord yet.\nEnter the command **-malbind malusername** to bind your account.`, dm);
         });
     }
     GetAll(message, dm) {

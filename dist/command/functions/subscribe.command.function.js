@@ -12,6 +12,8 @@ const media_list_handler_1 = require("./../../handlers/media.list.handler");
 const media_handler_1 = require("../../handlers/media.handler");
 const client_1 = require("../../core/client");
 const sender_1 = require("../../core/sender");
+const awaiter_1 = require("../awaiter");
+const message_helper_1 = require("../../helpers/message.helper");
 class SubscribeFunction {
     async Execute(message, command, dm) {
         await this.Search(message, command, dm);
@@ -20,82 +22,80 @@ class SubscribeFunction {
         user_data_1.UserData.Insert(message.author.id).catch((reason) => {
             console.log(reason.message);
         });
-        media_search_1.MediaSearch.All(command.Parameter)
-            .then(res => {
-            console.log(`There are "${res.length} results" for the search "${command.Parameter}".`);
-            const ongoing = media_handler_1.MediaHandler.OngoingMedia(res);
-            const unreleased = media_handler_1.MediaHandler.UnreleasedMedia(res);
-            if (ongoing.length === 0 && unreleased.length === 0) {
-                sender_1.Sender.SendInfo(message, "There is nothing to subscribe. The anime you search might be **already completed** or it is **not yet aired and the release date is currently unknown**, or try **another keyword**.", dm);
-                return;
-            }
-            const results = [];
-            const formattedResults = [];
-            ongoing.forEach(async (m) => {
-                results.push(m);
-                formattedResults.push(media_list_handler_1.MediaFormatHandler.Get(m));
-            });
-            unreleased.forEach(async (m) => {
-                results.push(m);
-                formattedResults.push(media_list_handler_1.MediaFormatHandler.Get(m));
-            });
-            if (results.length === 1) {
-                const discordId = message.author.id;
-                const media = results[0];
-                console.log(media);
-                const title = title_helper_1.TitleHelper.Get(results[0].title);
-                media_data_1.MediaData.Insert(media, title)
-                    .then(insertId => {
-                    console.log(insertId);
-                    user_data_1.UserData.GetUser(discordId)
-                        .then(user => {
-                        console.log(user);
-                        subscription_data_1.SubscriptionData.Insert(media.idMal, user.Id)
-                            .then(() => {
-                            queue_data_1.QueueData.GetQueue(media.idMal).then(queue => {
-                                const queueJob = new queue_job_model_1.QueueJob(media, queue);
-                                queue_data_1.QueueData.AddJob(queueJob).then(() => {
-                                    SubscribeFunction.Embed(message, media, true).then(embed => {
-                                        sender_1.Sender.SendInfo(message, embed, dm);
-                                        console.log(`Added to queue: ${insertId}`);
-                                        return;
+        awaiter_1.Awaiter.Send(message, 2000, ($m) => {
+            media_search_1.MediaSearch.All(command.Parameter)
+                .then(res => {
+                console.log(`There are "${res.length} results" for the search "${command.Parameter}".`);
+                const ongoing = media_handler_1.MediaHandler.OngoingMedia(res);
+                const unreleased = media_handler_1.MediaHandler.UnreleasedMedia(res);
+                if (ongoing.length === 0 && unreleased.length === 0) {
+                    sender_1.Sender.SendInfo(message, "There is nothing to subscribe. The anime you search might be **already completed** or it is **not yet aired and the release date is currently unknown**, or try **another keyword**.", dm);
+                    return;
+                }
+                const results = [];
+                const formattedResults = [];
+                ongoing.forEach(async (m) => {
+                    results.push(m);
+                    formattedResults.push(media_list_handler_1.MediaFormatHandler.Get(m));
+                });
+                unreleased.forEach(async (m) => {
+                    results.push(m);
+                    formattedResults.push(media_list_handler_1.MediaFormatHandler.Get(m));
+                });
+                if (results.length === 1) {
+                    const discordId = message.author.id;
+                    const media = results[0];
+                    console.log(media);
+                    const title = title_helper_1.TitleHelper.Get(results[0].title);
+                    media_data_1.MediaData.Insert(media, title)
+                        .then(insertId => {
+                        console.log(insertId);
+                        user_data_1.UserData.GetUser(discordId)
+                            .then(user => {
+                            console.log(user);
+                            subscription_data_1.SubscriptionData.Insert(media.idMal, user.Id)
+                                .then(() => {
+                                queue_data_1.QueueData.GetQueue(media.idMal).then(queue => {
+                                    const queueJob = new queue_job_model_1.QueueJob(media, queue);
+                                    queue_data_1.QueueData.AddJob(queueJob).then(() => {
+                                        SubscribeFunction.Embed(message, media, true).then(embed => {
+                                            sender_1.Sender.SendInfo(message, embed, dm);
+                                            console.log(`Added to queue: ${insertId}`);
+                                        });
                                     });
                                 });
+                            })
+                                .catch((reason) => {
+                                if (reason === "EXISTS") {
+                                    SubscribeFunction.Embed(message, media, false).then(embed => {
+                                        sender_1.Sender.SendInfo(message, embed, dm);
+                                    });
+                                }
+                                else {
+                                    console.log(reason);
+                                }
                             });
                         })
                             .catch((reason) => {
-                            if (reason === "EXISTS") {
-                                SubscribeFunction.Embed(message, media, false).then(embed => {
-                                    sender_1.Sender.SendInfo(message, embed, dm);
-                                    return;
-                                });
-                            }
-                            else {
-                                console.log(reason);
-                                return;
-                            }
+                            console.log(reason.message);
                         });
                     })
                         .catch((reason) => {
                         console.log(reason.message);
-                        return;
                     });
-                })
-                    .catch((reason) => {
-                    console.log(reason.message);
-                    return;
-                });
-                return;
-            }
-            else if (results.length > 1) {
-                search_list_1.SearchList.Embed(message, command, formattedResults).then(embed => {
-                    sender_1.Sender.SendInfo(message, embed, dm);
-                });
-            }
-        })
-            .catch((reason) => {
-            sender_1.Sender.SendInfo(message, "SYSTEM ERROR!!!. I couldn't apprehend. Please try again.", dm);
-            console.log(reason.message);
+                }
+                else if (results.length > 1) {
+                    search_list_1.SearchList.Embed(message, command, formattedResults).then(embed => {
+                        sender_1.Sender.SendInfo(message, embed, dm);
+                    });
+                }
+                message_helper_1.MessageHelper.Delete($m);
+            })
+                .catch((reason) => {
+                sender_1.Sender.SendInfo(message, "SYSTEM ERROR!!!. I couldn't apprehend. Please try again.", dm);
+                console.log(reason.message);
+                message_helper_1.MessageHelper.Delete($m);
+            });
         });
     }
     // tslint:disable-next-line:member-ordering

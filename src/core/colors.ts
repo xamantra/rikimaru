@@ -1,4 +1,4 @@
-import { Randomizer } from "../helpers/random.helper";
+import { Random } from "../helpers/random.helper";
 
 export class Color {
   private static List: number[] = [
@@ -22,6 +22,6 @@ export class Color {
 
   public static get Random() {
     const list = this.List;
-    return list[Randomizer.randomInt(0, list.length - 1)];
+    return list[Random.Range(0, list.length - 1)];
   }
 }

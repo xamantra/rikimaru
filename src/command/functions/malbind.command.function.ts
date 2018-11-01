@@ -2,7 +2,7 @@ import { ICommandFunction } from "../../interfaces/command.function.interface";
 import { Message } from "discord.js";
 import { ICommand } from "../../interfaces/command.interface";
 import { Sender } from "../../core/sender";
-import { Randomizer } from "../../helpers/random.helper";
+import { Random } from "../../helpers/random.helper";
 import { MalBindData } from "../../data/mal.sync.data";
 import cheerio from "cheerio";
 import rp from "request-promise";
@@ -10,6 +10,8 @@ import { Config } from "../../core/config";
 import { MalSync } from "../../models/mal.model";
 import { ClientManager } from "../../core/client";
 import { UserData } from "../../data/user.data";
+import { Awaiter } from "../awaiter";
+import { MessageHelper } from "../../helpers/message.helper";
 
 export class MalBindFunction implements ICommandFunction {
   Execute(message?: Message, command?: ICommand, dm?: boolean): void {
@@ -34,29 +36,29 @@ export class MalBindFunction implements ICommandFunction {
     dm: boolean,
     c: string
   ) {
-    const code = MalSync.CodeFormat(c);
-    MalBindData.Get(message.author.id)
-      .then(mal => {
-        console.log(`checking verification...`);
-        if (mal.Verified === true) {
-          console.log(`verified!!`);
-          Sender.Send(
-            message,
-            `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`,
-            dm
-          );
-        } else {
+    Awaiter.Send(message, 2000, (m: Message) => {
+      const code = MalSync.CodeFormat(c);
+      MalBindData.Get(message.author.id)
+        .then(mal => {
+          MessageHelper.Delete(m);
+          console.log(`checking verification...`);
+          if (mal.Verified === true) {
+            console.log(`verified!!`);
+            Sender.Send(
+              message,
+              `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`,
+              dm
+            );
+          } else {
+            this.CheckProfile(message, command, dm, code);
+          }
+        })
+        .catch(e => {
+          console.log(`checking profile...`);
           this.CheckProfile(message, command, dm, code);
-        }
-      })
-      .catch(e => {
-        console.log(`checking profile...`);
-        this.CheckProfile(message, command, dm, code);
-      })
-      .catch((err: Error) => {
-        console.log(`2 replying to user...`);
-        Sender.Send(message, err.message, dm);
-      });
+          MessageHelper.Delete(m);
+        });
+    });
   }
 
   private CheckProfile(
@@ -147,7 +149,7 @@ export class MalBindFunction implements ICommandFunction {
 
   private SetCode(message: Message, command: ICommand) {
     return new Promise<string>((resolve, reject) => {
-      const code = Randomizer.randomInt(10000000, 99999999).toString();
+      const code = Random.Range(10000000, 99999999).toString();
       MalBindData.Insert(message.author.id, command.Parameter, code)
         .then(() => {
           console.log(`resolved code`);

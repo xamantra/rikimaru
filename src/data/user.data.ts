@@ -30,7 +30,7 @@ export class UserData {
             users.forEach(user => {
               this.UserList.push(user);
               console.log(`user....`);
-              console.log(user);
+              // console.log(user);
               if (iteration === users.length) {
                 this.Initializing = false;
                 resolve();
@@ -70,13 +70,13 @@ export class UserData {
   }
 
   public static async GetUserById(id: string) {
-    return new Promise<User>((res, rej) => {
+    return new Promise<User>((resolve, reject) => {
       this.OnReady().then(() => {
         const user = this.All.find(x => x.Id === id);
         if (user !== null && user !== undefined) {
-          res(user);
+          resolve(user);
         } else {
-          rej(
+          reject(
             new Error(
               `"this.All.find(x => x.Id === id)" is 'null' or 'undefined'.`
             )

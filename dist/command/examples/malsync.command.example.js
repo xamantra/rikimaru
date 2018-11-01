@@ -10,7 +10,7 @@ class MalSyncExample {
         let result = ``;
         const picked = [];
         for (let i = 0; i < this.Usernames.length; i++) {
-            const item = this.Usernames[random_helper_1.Randomizer.randomInt(0, this.Usernames.length - 1)];
+            const item = this.Usernames[random_helper_1.Random.Range(0, this.Usernames.length - 1)];
             if (!picked.includes(item) && picked.length < count) {
                 result += `\n-*${command.Name}* ${item}`;
                 picked.push(item);

@@ -40,4 +40,10 @@ export class MessageHelper {
     const args = this.GetArgs(config, message);
     return args.slice(1, args.length).join(" ");
   }
+
+  public static Delete(message: Message) {
+    if (message.deletable) {
+      message.delete();
+    }
+  }
 }

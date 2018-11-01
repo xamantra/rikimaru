@@ -17,7 +17,7 @@ class SubscriptionData {
                 this.Initializing = true;
                 mongo_1.Mongo.FindAll(data_helper_1.DataHelper.subscription).then(async (result) => {
                     const subs = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Subscription);
-                    console.log(subs);
+                    // console.log(subs);
                     if (subs === null || subs === undefined) {
                         this.Initializing = false;
                         reject(new Error(`JsonHelper.ArrayConvert<Subscription>(result,Subscription);`));
@@ -55,14 +55,31 @@ class SubscriptionData {
         return new Promise((resolve, reject) => {
             this.OnReady().then(() => {
                 const subscribers = [];
+                let iteration = 0;
+                if (this.SubscriptionList.length === 0) {
+                    reject(new Error(`SubscriptionList is empty`));
+                }
                 this.SubscriptionList.forEach(sub => {
+                    iteration++;
                     if (sub.MediaId === malId) {
-                        user_data_1.UserData.GetUserById(sub.UserId).then(user => {
+                        user_data_1.UserData.GetUserById(sub.UserId)
+                            .then(user => {
+                            console.log(`Subscriber found: "${user.DiscordId}"`);
                             subscribers.push(user);
+                            if (iteration === this.SubscriptionList.length) {
+                                console.log(`Resolving subscribers...`);
+                                resolve(subscribers);
+                            }
+                        })
+                            .catch(err => {
+                            console.log(err);
+                            if (iteration === this.SubscriptionList.length) {
+                                console.log(`Resolving subscribers...`);
+                                resolve(subscribers);
+                            }
                         });
                     }
                 });
-                resolve(subscribers);
             });
         });
     }

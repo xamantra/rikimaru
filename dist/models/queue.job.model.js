@@ -21,19 +21,22 @@ class QueueJob {
         this.queue = queue;
     }
     Check() {
-        const nextEpisode = this.queue.NextEpisode;
+        const queueEpisode = this.queue.NextEpisode;
         const media = this.media;
         const title = title_helper_1.TitleHelper.Get(media.title);
         this.JobDate = moment_1.unix(media.nextAiringEpisode.airingAt).toDate();
         if (media_status_1.MediaStatus.Completed(media) && media.episodes === 1) {
-            this.FindUser(title, nextEpisode, media);
+            this.FindUser(title, queueEpisode, media);
         }
-        else if (nextEpisode < media.nextAiringEpisode.next) {
-            this.FindUser(title, nextEpisode, media);
+        else if (queueEpisode < media.nextAiringEpisode.next) {
+            console.log(`queueEpisode < media.nextAiringEpisode.next`);
+            this.FindUser(title, queueEpisode, media);
         }
     }
     FindUser(title, nextEpisode, media) {
-        subscription_data_1.SubscriptionData.GetSubscribers(this.media.idMal).then(subscribers => {
+        console.log(`Getting subscribers of "${title}"`);
+        subscription_data_1.SubscriptionData.GetSubscribers(this.media.idMal)
+            .then(subscribers => {
             subscribers.forEach(subscriber => {
                 console.log(subscriber);
                 client_1.ClientManager.GetUser(subscriber.DiscordId)
@@ -46,6 +49,9 @@ class QueueJob {
                     console.log(err.message);
                 });
             });
+        })
+            .catch(err => {
+            console.log(err);
         });
     }
     SendMessage(title, nextEpisode, media, user) {

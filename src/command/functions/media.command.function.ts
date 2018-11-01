@@ -11,6 +11,8 @@ import { Message } from "discord.js";
 import { IMedia } from "../../interfaces/page.interface";
 import { Color } from "../../core/colors";
 import { Sender } from "../../core/sender";
+import { Awaiter } from "../awaiter";
+import { MessageHelper } from "../../helpers/message.helper";
 
 export class MediaFunction implements ICommandFunction {
   constructor() {
@@ -23,65 +25,77 @@ export class MediaFunction implements ICommandFunction {
 
   public async Handle(message: Message, command: ICommand, isDM: boolean) {
     const color = message.member.highestRole.color;
-    MediaSearch.All(command.Parameter)
-      .then(res => {
-        const ongoing = MediaHandler.OngoingMedia(res);
-        const unreleased = MediaHandler.UnreleasedMedia(res);
-        const unreleasedNoDate = MediaHandler.UnreleasedNoDateMedia(res);
-        const completed = MediaHandler.CompletedMedia(res);
-        const exactMedia = MediaHandler.ExactMedia(res, command.Parameter);
+    Awaiter.Send(message, 2000, ($m: Message) => {
+      MediaSearch.All(command.Parameter)
+        .then(res => {
+          const ongoing = MediaHandler.OngoingMedia(res);
+          const unreleased = MediaHandler.UnreleasedMedia(res);
+          const unreleasedNoDate = MediaHandler.UnreleasedNoDateMedia(res);
+          const completed = MediaHandler.CompletedMedia(res);
+          const exactMedia = MediaHandler.ExactMedia(res, command.Parameter);
 
-        if (exactMedia.length > 0) {
-          exactMedia.forEach(async m => {
-            ResponseMessageHelper.CreateMessage(m, m.status, color).then(
-              response => {
-                MediaResult.SendMessage(message, isDM, response);
-              }
-            );
-          });
-        } else if (ongoing.length > 0) {
-          ongoing.forEach(async m => {
-            ResponseMessageHelper.CreateMessage(m, m.status, color).then(
-              response => {
-                MediaResult.SendMessage(message, isDM, response);
-              }
-            );
-          });
-        } else if (unreleased.length > 0) {
-          unreleased.forEach(async m => {
-            ResponseMessageHelper.CreateMessage(m, m.status, color).then(
-              response => {
-                MediaResult.SendMessage(message, isDM, response);
-              }
-            );
-          });
-        } else if (unreleasedNoDate.length > 0) {
-          unreleasedNoDate.forEach(async m => {
-            ResponseMessageHelper.CreateMessage(m, m.status, color).then(
-              response => {
-                MediaResult.SendMessage(message, isDM, response);
-              }
-            );
-          });
-        } else if (completed.length > 0) {
-          if (completed.length === 1) {
-            completed.forEach(async m => {
+          if (exactMedia.length > 0) {
+            exactMedia.forEach(async m => {
               ResponseMessageHelper.CreateMessage(m, m.status, color).then(
                 response => {
                   MediaResult.SendMessage(message, isDM, response);
                 }
               );
             });
+          } else if (ongoing.length > 0) {
+            ongoing.forEach(async m => {
+              ResponseMessageHelper.CreateMessage(m, m.status, color).then(
+                response => {
+                  MediaResult.SendMessage(message, isDM, response);
+                }
+              );
+            });
+          } else if (unreleased.length > 0) {
+            unreleased.forEach(async m => {
+              ResponseMessageHelper.CreateMessage(m, m.status, color).then(
+                response => {
+                  MediaResult.SendMessage(message, isDM, response);
+                }
+              );
+            });
+          } else if (unreleasedNoDate.length > 0) {
+            unreleasedNoDate.forEach(async m => {
+              ResponseMessageHelper.CreateMessage(m, m.status, color).then(
+                response => {
+                  MediaResult.SendMessage(message, isDM, response);
+                }
+              );
+            });
+          } else if (completed.length > 0) {
+            if (completed.length === 1) {
+              completed.forEach(async m => {
+                ResponseMessageHelper.CreateMessage(m, m.status, color).then(
+                  response => {
+                    MediaResult.SendMessage(message, isDM, response);
+                  }
+                );
+              });
+            } else {
+              Sender.SendInfo(
+                message,
+                `I found ***${completed.length}*** anime with your keyword ***${
+                  command.Parameter
+                }*** and all of them is already completed.`,
+                isDM
+              );
+            }
           } else {
             Sender.SendInfo(
               message,
-              `I found ***${completed.length}*** anime with your keyword ***${
+              `Go me nasai!, I didn't find anime that matches your keyword ***"${
                 command.Parameter
-              }*** and all of them is already completed.`,
+              }"***, try checking your spelling or another keyword.`,
               isDM
             );
           }
-        } else {
+          MessageHelper.Delete($m);
+        })
+        .catch(error => {
           Sender.SendInfo(
             message,
             `Go me nasai!, I didn't find anime that matches your keyword ***"${
@@ -89,19 +103,11 @@ export class MediaFunction implements ICommandFunction {
             }"***, try checking your spelling or another keyword.`,
             isDM
           );
-        }
-      })
-      .catch(error => {
-        Sender.SendInfo(
-          message,
-          `Go me nasai!, I didn't find anime that matches your keyword ***"${
-            command.Parameter
-          }"***, try checking your spelling or another keyword.`,
-          isDM
-        );
-        console.warn(
-          `Error while searching : [MediaSearch.All(${command.Parameter})]`
-        );
-      });
+          console.warn(
+            `Error while searching : [MediaSearch.All(${command.Parameter})]`
+          );
+          MessageHelper.Delete($m);
+        });
+    });
   }
 }

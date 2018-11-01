@@ -7,39 +7,33 @@ import { ICommand } from "../../interfaces/command.interface";
 import { TitleHelper } from "../../helpers/title.helper";
 import { TimeHelper } from "../../helpers/time.helper";
 import { ClientManager } from "../../core/client";
+import { Awaiter } from "../awaiter";
+import { MessageHelper } from "../../helpers/message.helper";
 
 export class ViewSubsFunction implements ICommandFunction {
   constructor() {}
 
   public async Execute(message?: Message, command?: ICommand, dm?: boolean) {
-    message.channel
-      .send(
-        `**${
-          message.author.username
-        }**, please wait a moment. I'm gathering some sweets.`
-      )
-      .then((mes: Message) => {
-        this.Embed(message, dm).then(async embed => {
-          if (mes.deletable) {
-            mes.delete();
-          }
-          if (dm === true) {
-            message.author
-              .send(embed)
-              .then(($m: Message) => {
-                console.log(
-                  `Message <${$m.id}> was sent to <${message.author.username}>.`
-                );
-              })
-              .catch((err: DiscordAPIError) => {
-                message.reply(`Oh! it seems that I can't DM you.`);
-                console.log(err.name);
-              });
-          } else {
-            message.reply(embed);
-          }
-        });
+    Awaiter.Send(message, 2000, (m: Message) => {
+      this.Embed(message, dm).then(async embed => {
+        MessageHelper.Delete(m);
+        if (dm === true) {
+          message.author
+            .send(embed)
+            .then(($m: Message) => {
+              console.log(
+                `Message <${$m.id}> was sent to <${message.author.username}>.`
+              );
+            })
+            .catch((err: DiscordAPIError) => {
+              message.reply(`Oh! it seems that I can't DM you.`);
+              console.log(err.name);
+            });
+        } else {
+          message.reply(embed);
+        }
       });
+    });
   }
 
   private async Embed(message: Message, dm: boolean) {

@@ -12,6 +12,8 @@ const config_1 = require("../../core/config");
 const mal_model_1 = require("../../models/mal.model");
 const client_1 = require("../../core/client");
 const user_data_1 = require("../../data/user.data");
+const awaiter_1 = require("../awaiter");
+const message_helper_1 = require("../../helpers/message.helper");
 class MalBindFunction {
     Execute(message, command, dm) {
         user_data_1.UserData.Insert(message.author.id)
@@ -28,25 +30,25 @@ class MalBindFunction {
         });
     }
     ProcessCode(message, command, dm, c) {
-        const code = mal_model_1.MalSync.CodeFormat(c);
-        mal_sync_data_1.MalBindData.Get(message.author.id)
-            .then(mal => {
-            console.log(`checking verification...`);
-            if (mal.Verified === true) {
-                console.log(`verified!!`);
-                sender_1.Sender.Send(message, `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`, dm);
-            }
-            else {
+        awaiter_1.Awaiter.Send(message, 2000, (m) => {
+            const code = mal_model_1.MalSync.CodeFormat(c);
+            mal_sync_data_1.MalBindData.Get(message.author.id)
+                .then(mal => {
+                message_helper_1.MessageHelper.Delete(m);
+                console.log(`checking verification...`);
+                if (mal.Verified === true) {
+                    console.log(`verified!!`);
+                    sender_1.Sender.Send(message, `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`, dm);
+                }
+                else {
+                    this.CheckProfile(message, command, dm, code);
+                }
+            })
+                .catch(e => {
+                console.log(`checking profile...`);
                 this.CheckProfile(message, command, dm, code);
-            }
-        })
-            .catch(e => {
-            console.log(`checking profile...`);
-            this.CheckProfile(message, command, dm, code);
-        })
-            .catch((err) => {
-            console.log(`2 replying to user...`);
-            sender_1.Sender.Send(message, err.message, dm);
+                message_helper_1.MessageHelper.Delete(m);
+            });
         });
     }
     CheckProfile(message, command, dm, code) {
@@ -117,7 +119,7 @@ class MalBindFunction {
     }
     SetCode(message, command) {
         return new Promise((resolve, reject) => {
-            const code = random_helper_1.Randomizer.randomInt(10000000, 99999999).toString();
+            const code = random_helper_1.Random.Range(10000000, 99999999).toString();
             mal_sync_data_1.MalBindData.Insert(message.author.id, command.Parameter, code)
                 .then(() => {
                 console.log(`resolved code`);

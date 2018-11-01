@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("../../core/client");
 const manager_command_1 = require("../manager.command");
+const awaiter_1 = require("../awaiter");
+const message_helper_1 = require("../../helpers/message.helper");
 class HelpFunction {
     constructor() {
         console.log(`Constructed: "${HelpFunction.name}"`);
@@ -10,28 +12,31 @@ class HelpFunction {
         await this.ShowHelp(message, dm);
     }
     ShowHelp(message, dm) {
-        this.Embed(message).then(embed => {
-            process.on("unhandledRejection", console.log);
-            if (dm) {
-                message.member
-                    .send(embed)
-                    .then(($m) => {
-                    console.log(`Message <${$m.id}> was sent to "${message.author.username}".`);
-                })
-                    .catch((err) => {
-                    console.log(err.name);
-                });
-            }
-            else {
-                message
-                    .reply(embed)
-                    .then(($m) => {
-                    console.log(`Message <${$m.id}> was sent in "<${message.channel.id}>".`);
-                })
-                    .catch((err) => {
-                    console.log(err.name);
-                });
-            }
+        awaiter_1.Awaiter.Send(message, 1000, (m) => {
+            this.Embed(message).then(embed => {
+                message_helper_1.MessageHelper.Delete(m);
+                process.on("unhandledRejection", console.log);
+                if (dm) {
+                    message.member
+                        .send(embed)
+                        .then(($m) => {
+                        console.log(`Message <${$m.id}> was sent to "${message.author.username}".`);
+                    })
+                        .catch((err) => {
+                        console.log(err.name);
+                    });
+                }
+                else {
+                    message
+                        .reply(embed)
+                        .then(($m) => {
+                        console.log(`Message <${$m.id}> was sent in "<${message.channel.id}>".`);
+                    })
+                        .catch((err) => {
+                        console.log(err.name);
+                    });
+                }
+            });
         });
     }
     Embed(message) {

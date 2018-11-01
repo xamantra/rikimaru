@@ -35,6 +35,11 @@ class MessageHelper {
         const args = this.GetArgs(config, message);
         return args.slice(1, args.length).join(" ");
     }
+    static Delete(message) {
+        if (message.deletable) {
+            message.delete();
+        }
+    }
 }
 exports.MessageHelper = MessageHelper;
 //# sourceMappingURL=message.helper.js.map

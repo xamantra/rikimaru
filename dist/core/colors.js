@@ -4,7 +4,7 @@ const random_helper_1 = require("../helpers/random.helper");
 class Color {
     static get Random() {
         const list = this.List;
-        return list[random_helper_1.Randomizer.randomInt(0, list.length - 1)];
+        return list[random_helper_1.Random.Range(0, list.length - 1)];
     }
 }
 Color.List = [

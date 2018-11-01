@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class Randomizer {
-    static randomInt(min, max) {
+class Random {
+    static Range(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 }
-exports.Randomizer = Randomizer;
+exports.Random = Random;
 //# sourceMappingURL=random.helper.js.map

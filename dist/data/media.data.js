@@ -71,7 +71,7 @@ class MediaData {
         return new Promise(async (resolve, reject) => {
             const userDatas = user_data_1.UserData.All;
             const locals = this.LocalList;
-            console.log(this.LocalList);
+            // console.log(this.LocalList);
             if (userDatas === undefined || userDatas === null) {
                 reject(new Error(`"userDatas = this.UserData.All" is 'null' or 'undefined'`));
             }
@@ -192,7 +192,7 @@ class MediaData {
         return new Promise((resolve, reject) => {
             this.OnReady().then(() => {
                 setInterval(() => {
-                    const media = this.MediaList[random_helper_1.Randomizer.randomInt(0, this.MediaList.length - 1)];
+                    const media = this.MediaList[random_helper_1.Random.Range(0, this.MediaList.length - 1)];
                     if (media !== null && media !== undefined) {
                         resolve(media);
                     }

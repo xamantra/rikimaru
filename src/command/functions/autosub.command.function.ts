@@ -13,46 +13,55 @@ import { QueueData } from "../../data/queue.data";
 import { QueueJob } from "../../models/queue.job.model";
 import { ClientManager } from "../../core/client";
 import { AnimeList } from "../../models/jikan.anime.list";
+import { Awaiter } from "../awaiter";
+import { MessageHelper } from "../../helpers/message.helper";
 
 export class AutoSubFunction implements ICommandFunction {
   Execute(message?: Message, command?: ICommand, dm?: boolean): void {
-    this.GetAll(message, dm)
-      .then(count => {
-        ClientManager.GetClient().then(client => {
+    Awaiter.Send(message, 2000, (m: Message) => {
+      this.GetAll(message, dm)
+        .then(count => {
+          ClientManager.GetClient().then(client => {
+            MessageHelper.Delete(m);
+            Sender.Send(
+              message,
+              {
+                embed: {
+                  color: message.member.highestRole.color,
+                  thumbnail: { url: message.author.avatarURL },
+                  title: `**Rikimaru MAL Auto Subscribe**`,
+                  description: `That was sweet! You are now subcribe to **${count} ongoing anime** from your MAL List.`,
+                  fields: [
+                    {
+                      name: `To unsubscribe, type:`,
+                      value: `\`-unsub anime title or keyword here\``
+                    },
+                    {
+                      name: `To view all subscription, type:`,
+                      value: `\`-viewsubs\``
+                    }
+                  ],
+                  timestamp: new Date(),
+                  footer: {
+                    icon_url: client.user.avatarURL,
+                    text: "© Rikimaru"
+                  }
+                }
+              },
+              dm
+            );
+          });
+        })
+        .catch(err => {
+          MessageHelper.Delete(m);
+          console.log(err);
           Sender.Send(
             message,
-            {
-              embed: {
-                color: message.member.highestRole.color,
-                thumbnail: { url: message.author.avatarURL },
-                title: `**Rikimaru MAL Auto Subscribe**`,
-                description: `That was sweet! You are now subcribe to **${count} ongoing anime** from your MAL List.`,
-                fields: [
-                  {
-                    name: `To unsubscribe, type:`,
-                    value: `\`-unsub anime title or keyword here\``
-                  },
-                  {
-                    name: `To view all subscription, type:`,
-                    value: `\`-viewsubs\``
-                  }
-                ],
-                timestamp: new Date(),
-                footer: { icon_url: client.user.avatarURL, text: "© Rikimaru" }
-              }
-            },
+            `Oops! It looks like you haven't binded you account with rikimaru discord yet.\nEnter the command **-malbind malusername** to bind your account.`,
             dm
           );
         });
-      })
-      .catch(err => {
-        console.log(err);
-        Sender.Send(
-          message,
-          `Oops! It looks like you haven't binded you account with rikimaru discord yet.\nEnter the command **-malbind malusername** to bind your account.`,
-          dm
-        );
-      });
+    });
   }
 
   private GetAll(message: Message, dm: boolean) {

@@ -14,6 +14,8 @@ import { ICommand } from "../../interfaces/command.interface";
 import { MediaHandler } from "../../handlers/media.handler";
 import { ClientManager } from "../../core/client";
 import { Sender } from "../../core/sender";
+import { Awaiter } from "../awaiter";
+import { MessageHelper } from "../../helpers/message.helper";
 
 export class SubscribeFunction implements ICommandFunction {
   public async Execute(
@@ -28,97 +30,95 @@ export class SubscribeFunction implements ICommandFunction {
     UserData.Insert(message.author.id).catch((reason: Error) => {
       console.log(reason.message);
     });
-    MediaSearch.All(command.Parameter)
-      .then(res => {
-        console.log(
-          `There are "${res.length} results" for the search "${
-            command.Parameter
-          }".`
-        );
-        const ongoing = MediaHandler.OngoingMedia(res);
-        const unreleased = MediaHandler.UnreleasedMedia(res);
-        if (ongoing.length === 0 && unreleased.length === 0) {
-          Sender.SendInfo(
-            message,
-            "There is nothing to subscribe. The anime you search might be **already completed** or it is **not yet aired and the release date is currently unknown**, or try **another keyword**.",
-            dm
+    Awaiter.Send(message, 2000, ($m: Message) => {
+      MediaSearch.All(command.Parameter)
+        .then(res => {
+          console.log(
+            `There are "${res.length} results" for the search "${
+              command.Parameter
+            }".`
           );
-          return;
-        }
-        const results: IMedia[] = [];
-        const formattedResults: any[] = [];
-        ongoing.forEach(async m => {
-          results.push(m);
-          formattedResults.push(MediaFormatHandler.Get(m));
-        });
-        unreleased.forEach(async m => {
-          results.push(m);
-          formattedResults.push(MediaFormatHandler.Get(m));
-        });
-        if (results.length === 1) {
-          const discordId = message.author.id;
-          const media = results[0];
-          console.log(media);
-          const title = TitleHelper.Get(results[0].title);
-          MediaData.Insert(media, title)
-            .then(insertId => {
-              console.log(insertId);
-              UserData.GetUser(discordId)
-                .then(user => {
-                  console.log(user);
-                  SubscriptionData.Insert(media.idMal, user.Id)
-                    .then(() => {
-                      QueueData.GetQueue(media.idMal).then(queue => {
-                        const queueJob = new QueueJob(media, queue);
-                        QueueData.AddJob(queueJob).then(() => {
-                          SubscribeFunction.Embed(message, media, true).then(
+          const ongoing = MediaHandler.OngoingMedia(res);
+          const unreleased = MediaHandler.UnreleasedMedia(res);
+          if (ongoing.length === 0 && unreleased.length === 0) {
+            Sender.SendInfo(
+              message,
+              "There is nothing to subscribe. The anime you search might be **already completed** or it is **not yet aired and the release date is currently unknown**, or try **another keyword**.",
+              dm
+            );
+            return;
+          }
+          const results: IMedia[] = [];
+          const formattedResults: any[] = [];
+          ongoing.forEach(async m => {
+            results.push(m);
+            formattedResults.push(MediaFormatHandler.Get(m));
+          });
+          unreleased.forEach(async m => {
+            results.push(m);
+            formattedResults.push(MediaFormatHandler.Get(m));
+          });
+          if (results.length === 1) {
+            const discordId = message.author.id;
+            const media = results[0];
+            console.log(media);
+            const title = TitleHelper.Get(results[0].title);
+            MediaData.Insert(media, title)
+              .then(insertId => {
+                console.log(insertId);
+                UserData.GetUser(discordId)
+                  .then(user => {
+                    console.log(user);
+                    SubscriptionData.Insert(media.idMal, user.Id)
+                      .then(() => {
+                        QueueData.GetQueue(media.idMal).then(queue => {
+                          const queueJob = new QueueJob(media, queue);
+                          QueueData.AddJob(queueJob).then(() => {
+                            SubscribeFunction.Embed(message, media, true).then(
+                              embed => {
+                                Sender.SendInfo(message, embed, dm);
+                                console.log(`Added to queue: ${insertId}`);
+                              }
+                            );
+                          });
+                        });
+                      })
+                      .catch((reason: string) => {
+                        if (reason === "EXISTS") {
+                          SubscribeFunction.Embed(message, media, false).then(
                             embed => {
                               Sender.SendInfo(message, embed, dm);
-                              console.log(`Added to queue: ${insertId}`);
-                              return;
                             }
                           );
-                        });
+                        } else {
+                          console.log(reason);
+                        }
                       });
-                    })
-                    .catch((reason: string) => {
-                      if (reason === "EXISTS") {
-                        SubscribeFunction.Embed(message, media, false).then(
-                          embed => {
-                            Sender.SendInfo(message, embed, dm);
-                            return;
-                          }
-                        );
-                      } else {
-                        console.log(reason);
-                        return;
-                      }
-                    });
-                })
-                .catch((reason: Error) => {
-                  console.log(reason.message);
-                  return;
-                });
-            })
-            .catch((reason: Error) => {
-              console.log(reason.message);
-              return;
+                  })
+                  .catch((reason: Error) => {
+                    console.log(reason.message);
+                  });
+              })
+              .catch((reason: Error) => {
+                console.log(reason.message);
+              });
+          } else if (results.length > 1) {
+            SearchList.Embed(message, command, formattedResults).then(embed => {
+              Sender.SendInfo(message, embed, dm);
             });
-          return;
-        } else if (results.length > 1) {
-          SearchList.Embed(message, command, formattedResults).then(embed => {
-            Sender.SendInfo(message, embed, dm);
-          });
-        }
-      })
-      .catch((reason: Error) => {
-        Sender.SendInfo(
-          message,
-          "SYSTEM ERROR!!!. I couldn't apprehend. Please try again.",
-          dm
-        );
-        console.log(reason.message);
-      });
+          }
+          MessageHelper.Delete($m);
+        })
+        .catch((reason: Error) => {
+          Sender.SendInfo(
+            message,
+            "SYSTEM ERROR!!!. I couldn't apprehend. Please try again.",
+            dm
+          );
+          console.log(reason.message);
+          MessageHelper.Delete($m);
+        });
+    });
   }
 
   // tslint:disable-next-line:member-ordering
