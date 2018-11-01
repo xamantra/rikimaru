@@ -66,7 +66,9 @@ export class ViewSubsFunction implements ICommandFunction {
                     const episode = $m.nextAiringEpisode.next;
                     let episodes = "";
                     if ($m.episodes !== null && $m.episodes !== undefined) {
-                      episodes = `/${$m.episodes}`;
+                      episodes = `${$m.episodes}`;
+                    } else {
+                      episodes = `?`;
                     }
                     const countdown = TimeHelper.Countdown(
                       $m.nextAiringEpisode.timeUntilAiring
@@ -77,7 +79,7 @@ export class ViewSubsFunction implements ICommandFunction {
                         name: `\n${title}`,
                         value: `[MyAnimeList](https://myanimelist.net/anime/${
                           $m.idMal
-                        }/)\nEpisode **${episode}**${episodes} in ***${countdown}***\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`
+                        }/)\nEpisode **${episode}**/${episodes} in ***${countdown}***\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`
                       }
                     });
                     unsorted.push(pre.data);

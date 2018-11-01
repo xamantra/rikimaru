@@ -63,14 +63,17 @@ class ViewSubsFunction {
                                 const episode = $m.nextAiringEpisode.next;
                                 let episodes = "";
                                 if ($m.episodes !== null && $m.episodes !== undefined) {
-                                    episodes = `/${$m.episodes}`;
+                                    episodes = `${$m.episodes}`;
+                                }
+                                else {
+                                    episodes = `?`;
                                 }
                                 const countdown = time_helper_1.TimeHelper.Countdown($m.nextAiringEpisode.timeUntilAiring);
                                 const pre = new sub_model_1.SubMedia({
                                     timeUntilAiring: $m.nextAiringEpisode.timeUntilAiring,
                                     field: {
                                         name: `\n${title}`,
-                                        value: `[MyAnimeList](https://myanimelist.net/anime/${$m.idMal}/)\nEpisode **${episode}**${episodes} in ***${countdown}***\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`
+                                        value: `[MyAnimeList](https://myanimelist.net/anime/${$m.idMal}/)\nEpisode **${episode}**/${episodes} in ***${countdown}***\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`
                                     }
                                 });
                                 unsorted.push(pre.data);
