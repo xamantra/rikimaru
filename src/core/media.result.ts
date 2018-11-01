@@ -23,7 +23,7 @@ export class MediaResult {
       }
       switch (rsMessage.Status) {
         case "RELEASING":
-          name = `*Episode* ***${rsMessage.Current}***${episodes}`;
+          name = `*Episode* ***${rsMessage.Current}*** ${episodes}`;
           value = `Will air in approximately **${
             rsMessage.Countdown
           }**\nLast update: *${rsMessage.UpdatedAt}*`;
