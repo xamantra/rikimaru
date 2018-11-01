@@ -11,9 +11,13 @@ class MediaResult {
         return new Promise((resolve, reject) => {
             let name = "";
             let value = "";
+            let episodes = "";
+            if (rsMessage.TotalEps !== null && rsMessage.TotalEps !== undefined) {
+                episodes = `/${rsMessage.TotalEps}`;
+            }
             switch (rsMessage.Status) {
                 case "RELEASING":
-                    name = `*Episode ${rsMessage.Current}*`;
+                    name = `*Episode* ***${rsMessage.Current}*** *${episodes}*`;
                     value = `Will air in approximately **${rsMessage.Countdown}**\nLast update: *${rsMessage.UpdatedAt}*`;
                     break;
                 case "NOT_YET_RELEASED":

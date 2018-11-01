@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class ResponseMessage {
-    constructor($Id, $Color, $Thumbnail, $Title, $Type, $Status, $Current, $Countdown = null, $UpdatedAt, $StartDate, $EndDate) {
+    constructor($Id, $Color, $Thumbnail, $Title, $Type, $Status, $TotalEps = null, $Current, $Countdown = null, $UpdatedAt, $StartDate, $EndDate) {
+        this.TotalEps = null;
         this.Countdown = null;
         this.Id = $Id;
         this.Color = $Color;

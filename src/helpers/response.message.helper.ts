@@ -39,6 +39,7 @@ export class ResponseMessageHelper {
         TitleHelper.Get(media.title),
         media.type,
         status,
+        media.episodes,
         next,
         countdown,
         lastUpdate,

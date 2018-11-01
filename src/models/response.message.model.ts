@@ -16,6 +16,7 @@ export class ResponseMessage
   Title: string;
   Type: string;
   Status: string;
+  TotalEps: number = null;
   Current: number;
   Countdown: string = null;
   UpdatedAt: string;
@@ -29,6 +30,7 @@ export class ResponseMessage
     $Title: string,
     $Type: string,
     $Status: string,
+    $TotalEps: number = null,
     $Current: number,
     $Countdown: string = null,
     $UpdatedAt: string,
