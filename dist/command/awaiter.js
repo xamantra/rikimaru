@@ -14,6 +14,9 @@ class Awaiter {
             console.log(err);
         });
     }
+    static get Random() {
+        return this.FunActions[random_helper_1.Random.Range(0, this.FunActions.length - 1)];
+    }
 }
 Awaiter.FunActions = [
     "SUMMONING UNNECESSARILY DRAMATIC ENCOUNTERS",

@@ -1,7 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const queue_data_1 = require("./../../data/queue.data");
-const queue_job_model_1 = require("./../../models/queue.job.model");
 const media_search_1 = require("./../../core/media.search");
 const subscription_data_1 = require("./../../data/subscription.data");
 const title_helper_1 = require("./../../helpers/title.helper");
@@ -55,14 +53,8 @@ class SubscribeFunction {
                             console.log(user);
                             subscription_data_1.SubscriptionData.Insert(media.idMal, user.Id)
                                 .then(() => {
-                                queue_data_1.QueueData.GetQueue(media.idMal).then(queue => {
-                                    const queueJob = new queue_job_model_1.QueueJob(media, queue);
-                                    queue_data_1.QueueData.AddJob(queueJob).then(() => {
-                                        SubscribeFunction.Embed(message, media, true).then(embed => {
-                                            sender_1.Sender.SendInfo(message, embed, dm);
-                                            console.log(`Added to queue: ${insertId}`);
-                                        });
-                                    });
+                                SubscribeFunction.Embed(message, media, true).then(embed => {
+                                    sender_1.Sender.SendInfo(message, embed, dm);
                                 });
                             })
                                 .catch((reason) => {

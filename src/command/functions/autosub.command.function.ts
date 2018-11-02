@@ -9,8 +9,6 @@ import { TitleHelper } from "../../helpers/title.helper";
 import { MediaData } from "../../data/media.data";
 import { UserData } from "../../data/user.data";
 import { SubscriptionData } from "../../data/subscription.data";
-import { QueueData } from "../../data/queue.data";
-import { QueueJob } from "../../models/queue.job.model";
 import { ClientManager } from "../../core/client";
 import { AnimeList } from "../../models/jikan.anime.list";
 import { Awaiter } from "../awaiter";
@@ -18,11 +16,20 @@ import { MessageHelper } from "../../helpers/message.helper";
 
 export class AutoSubFunction implements ICommandFunction {
   Execute(message?: Message, command?: ICommand, dm?: boolean): void {
-    Awaiter.Send(message, 2000, (m: Message) => {
+    Awaiter.Send(message, 2000, async (m: Message) => {
       this.GetAll(message, dm)
         .then(count => {
           ClientManager.GetClient().then(client => {
             MessageHelper.Delete(m);
+            console.log(`New Sub Count: "${count}"`);
+            const res$m =
+              count > 0
+                ? `**${
+                    Awaiter.Random
+                  }**, You are now subcribe to **${count} ongoing anime** from your MAL List.`
+                : `**${
+                    Awaiter.Random
+                  }**, Cool! You are already subscribe to **all ongoing anime** in your list.`;
             Sender.Send(
               message,
               {
@@ -30,7 +37,7 @@ export class AutoSubFunction implements ICommandFunction {
                   color: message.member.highestRole.color,
                   thumbnail: { url: message.author.avatarURL },
                   title: `**Rikimaru MAL Auto Subscribe**`,
-                  description: `That was sweet! You are now subcribe to **${count} ongoing anime** from your MAL List.`,
+                  description: res$m,
                   fields: [
                     {
                       name: `To unsubscribe, type:`,
@@ -85,6 +92,8 @@ export class AutoSubFunction implements ICommandFunction {
     MalBindData.Get(message.author.id)
       .then(mal => {
         if (mal.Verified === true) {
+          let newCount = 0;
+          let oldCount = 0;
           JikanRequest.AnimeList(mal.MalUsername, "watching")
             .then(animeList => {
               let iteration = 0;
@@ -103,43 +112,54 @@ export class AutoSubFunction implements ICommandFunction {
                             console.log(user);
                             SubscriptionData.Insert(media.idMal, user.Id)
                               .then(() => {
-                                QueueData.GetQueue(media.idMal).then(queue => {
-                                  const queueJob = new QueueJob(media, queue);
-                                  QueueData.AddJob(queueJob).then(() => {
-                                    console.log(`Added to queue: ${insertId}`);
-                                    this.Check(iteration, animeList, resolve);
-                                  });
-                                });
+                                newCount++;
+                                this.Check(
+                                  iteration,
+                                  animeList,
+                                  newCount,
+                                  resolve
+                                );
                               })
                               .catch((reason: string) => {
                                 if (reason === "EXISTS") {
                                   console.log(`Already subscribed.`);
-                                  this.Check(iteration, animeList, resolve);
+                                  oldCount++;
+                                  this.Check(
+                                    iteration,
+                                    animeList,
+                                    newCount,
+                                    resolve
+                                  );
                                 } else {
                                   console.log(reason);
-                                  this.Check(iteration, animeList, resolve);
+                                  this.Check(
+                                    iteration,
+                                    animeList,
+                                    newCount,
+                                    resolve
+                                  );
                                   return;
                                 }
                               });
                           })
                           .catch((reason: Error) => {
                             console.log(reason.message);
-                            this.Check(iteration, animeList, resolve);
+                            this.Check(iteration, animeList, newCount, resolve);
                             return;
                           });
                       })
                       .catch((reason: Error) => {
                         console.log(reason.message);
-                        this.Check(iteration, animeList, resolve);
+                        this.Check(iteration, animeList, newCount, resolve);
                         return;
                       });
                     return;
                   })
                   .catch((reason: Error) => {
                     console.log(reason.message);
-                    this.Check(iteration, animeList, resolve);
+                    this.Check(iteration, animeList, newCount, resolve);
                   });
-                this.Check(iteration, animeList, resolve);
+                this.Check(iteration, animeList, newCount, resolve);
               });
             })
             .catch(err => {
@@ -161,10 +181,11 @@ export class AutoSubFunction implements ICommandFunction {
   private Check(
     iteration: number,
     animeList: AnimeList,
+    count: number,
     resolve: (count: number) => void
   ) {
     if (iteration === animeList.anime.length) {
-      resolve(animeList.anime.length);
+      resolve(count);
     }
   }
 }

@@ -1,6 +1,4 @@
 import { ICommandFunction } from "./../../interfaces/command.function.interface";
-import { QueueData } from "./../../data/queue.data";
-import { QueueJob } from "./../../models/queue.job.model";
 import { MediaSearch } from "./../../core/media.search";
 import { SubscriptionData } from "./../../data/subscription.data";
 import { TitleHelper } from "./../../helpers/title.helper";
@@ -71,17 +69,11 @@ export class SubscribeFunction implements ICommandFunction {
                     console.log(user);
                     SubscriptionData.Insert(media.idMal, user.Id)
                       .then(() => {
-                        QueueData.GetQueue(media.idMal).then(queue => {
-                          const queueJob = new QueueJob(media, queue);
-                          QueueData.AddJob(queueJob).then(() => {
-                            SubscribeFunction.Embed(message, media, true).then(
-                              embed => {
-                                Sender.SendInfo(message, embed, dm);
-                                console.log(`Added to queue: ${insertId}`);
-                              }
-                            );
-                          });
-                        });
+                        SubscribeFunction.Embed(message, media, true).then(
+                          embed => {
+                            Sender.SendInfo(message, embed, dm);
+                          }
+                        );
                       })
                       .catch((reason: string) => {
                         if (reason === "EXISTS") {

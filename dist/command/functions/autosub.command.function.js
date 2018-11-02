@@ -8,24 +8,26 @@ const title_helper_1 = require("../../helpers/title.helper");
 const media_data_1 = require("../../data/media.data");
 const user_data_1 = require("../../data/user.data");
 const subscription_data_1 = require("../../data/subscription.data");
-const queue_data_1 = require("../../data/queue.data");
-const queue_job_model_1 = require("../../models/queue.job.model");
 const client_1 = require("../../core/client");
 const awaiter_1 = require("../awaiter");
 const message_helper_1 = require("../../helpers/message.helper");
 class AutoSubFunction {
     Execute(message, command, dm) {
-        awaiter_1.Awaiter.Send(message, 2000, (m) => {
+        awaiter_1.Awaiter.Send(message, 2000, async (m) => {
             this.GetAll(message, dm)
                 .then(count => {
                 client_1.ClientManager.GetClient().then(client => {
                     message_helper_1.MessageHelper.Delete(m);
+                    console.log(`New Sub Count: "${count}"`);
+                    const res$m = count > 0
+                        ? `**${awaiter_1.Awaiter.Random}**, You are now subcribe to **${count} ongoing anime** from your MAL List.`
+                        : `**${awaiter_1.Awaiter.Random}**, Cool! You are already subscribe to **all ongoing anime** in your list.`;
                     sender_1.Sender.Send(message, {
                         embed: {
                             color: message.member.highestRole.color,
                             thumbnail: { url: message.author.avatarURL },
                             title: `**Rikimaru MAL Auto Subscribe**`,
-                            description: `That was sweet! You are now subcribe to **${count} ongoing anime** from your MAL List.`,
+                            description: res$m,
                             fields: [
                                 {
                                     name: `To unsubscribe, type:`,
@@ -67,6 +69,8 @@ class AutoSubFunction {
         mal_sync_data_1.MalBindData.Get(message.author.id)
             .then(mal => {
             if (mal.Verified === true) {
+                let newCount = 0;
+                let oldCount = 0;
                 jikan_1.JikanRequest.AnimeList(mal.MalUsername, "watching")
                     .then(animeList => {
                     let iteration = 0;
@@ -85,44 +89,40 @@ class AutoSubFunction {
                                     console.log(user);
                                     subscription_data_1.SubscriptionData.Insert(media.idMal, user.Id)
                                         .then(() => {
-                                        queue_data_1.QueueData.GetQueue(media.idMal).then(queue => {
-                                            const queueJob = new queue_job_model_1.QueueJob(media, queue);
-                                            queue_data_1.QueueData.AddJob(queueJob).then(() => {
-                                                console.log(`Added to queue: ${insertId}`);
-                                                this.Check(iteration, animeList, resolve);
-                                            });
-                                        });
+                                        newCount++;
+                                        this.Check(iteration, animeList, newCount, resolve);
                                     })
                                         .catch((reason) => {
                                         if (reason === "EXISTS") {
                                             console.log(`Already subscribed.`);
-                                            this.Check(iteration, animeList, resolve);
+                                            oldCount++;
+                                            this.Check(iteration, animeList, newCount, resolve);
                                         }
                                         else {
                                             console.log(reason);
-                                            this.Check(iteration, animeList, resolve);
+                                            this.Check(iteration, animeList, newCount, resolve);
                                             return;
                                         }
                                     });
                                 })
                                     .catch((reason) => {
                                     console.log(reason.message);
-                                    this.Check(iteration, animeList, resolve);
+                                    this.Check(iteration, animeList, newCount, resolve);
                                     return;
                                 });
                             })
                                 .catch((reason) => {
                                 console.log(reason.message);
-                                this.Check(iteration, animeList, resolve);
+                                this.Check(iteration, animeList, newCount, resolve);
                                 return;
                             });
                             return;
                         })
                             .catch((reason) => {
                             console.log(reason.message);
-                            this.Check(iteration, animeList, resolve);
+                            this.Check(iteration, animeList, newCount, resolve);
                         });
-                        this.Check(iteration, animeList, resolve);
+                        this.Check(iteration, animeList, newCount, resolve);
                     });
                 })
                     .catch(err => {
@@ -137,9 +137,9 @@ class AutoSubFunction {
             reject(err);
         });
     }
-    Check(iteration, animeList, resolve) {
+    Check(iteration, animeList, count, resolve) {
         if (iteration === animeList.anime.length) {
-            resolve(animeList.anime.length);
+            resolve(count);
         }
     }
 }

@@ -60,4 +60,8 @@ export class Awaiter {
         console.log(err);
       });
   }
+
+  public static get Random() {
+    return this.FunActions[Random.Range(0, this.FunActions.length - 1)];
+  }
 }

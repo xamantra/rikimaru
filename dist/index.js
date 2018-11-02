@@ -55,7 +55,9 @@ class App {
 }
 openshift_1.OpenShiftUptimer.Log(true);
 openshift_1.OpenShiftUptimer.AutoConfigure();
-client_1.ClientManager.Init(new discord_js_1.Client());
+client_1.ClientManager.Init(new discord_js_1.Client()).catch(err => {
+    console.log(err);
+});
 message_handler_1.MessageHandler.Init();
 manager_command_1.CommandManager.Init();
 App.Instance.Run();
