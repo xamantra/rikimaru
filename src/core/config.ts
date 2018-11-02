@@ -102,4 +102,10 @@ export class Config {
       require("../extras/env").env.MAL_PROFILE_BASE
     );
   }
+
+  public static MAL_CW_BASE(username: string) {
+    const base =
+      process.env.MAL_CW_BASE || require("../extras/env").env.MAL_CW_BASE;
+    return `${base}/${username}/load.json?status=1`;
+  }
 }

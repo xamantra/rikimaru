@@ -13,24 +13,17 @@ export class UserData {
   public static async Init() {
     return new Promise<void>(async (resolve, reject) => {
       this.OnReady().then(() => {
-        console.log(`user data init...`);
         this.Initializing = true;
         Mongo.FindAll(DataHelper.user).then(async result => {
-          console.log(`awaiting for array convert...`);
           const users = await JsonHelper.ArrayConvert<User>(result, User);
-          console.log(`awaiting for iteration...`);
           let iteration = 1;
           if (users !== undefined && users !== null) {
             if (users.length === 0) {
-              console.log(`user data finishing init`);
               this.Initializing = false;
               resolve();
             }
-            console.log(`awaiting for user.forEach...`);
             users.forEach(user => {
               this.UserList.push(user);
-              console.log(`user....`);
-              // console.log(user);
               if (iteration === users.length) {
                 this.Initializing = false;
                 resolve();
@@ -39,7 +32,6 @@ export class UserData {
               }
             });
           } else {
-            console.log(`user data finishing init`);
             this.Initializing = false;
             reject(
               new Error(
@@ -94,7 +86,6 @@ export class UserData {
             if (exists === false) {
               const data = { discord_id: discordId };
               Mongo.Insert(DataHelper.user, data).then(result => {
-                console.log(result.insertedId);
                 if (
                   result.insertedId !== null &&
                   result.insertedId !== undefined

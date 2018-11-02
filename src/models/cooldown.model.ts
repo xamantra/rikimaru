@@ -26,7 +26,6 @@ export class Cooldown {
   }
 
   public Register(newMessage: Message) {
-    console.log(Cooldown.List.length);
     return new Promise((resolve, reject) => {
       if (this.lastMessage === null) {
         this.lastMessage = newMessage;

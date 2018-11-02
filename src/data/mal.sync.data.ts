@@ -123,7 +123,6 @@ export class MalBindData {
   public static Get(discordId: string) {
     return new Promise<MalSync>((resolve, reject) => {
       this.OnReady().then(() => {
-        console.log(this.List);
         let iteration = 0;
         if (this.List.length === 0) {
           reject(new Error(`List is empty.`));
@@ -131,7 +130,6 @@ export class MalBindData {
         this.List.forEach(m => {
           iteration++;
           if (m.DiscordId === discordId) {
-            console.log(discordId);
             resolve(m);
           } else {
             if (iteration === this.List.length) {

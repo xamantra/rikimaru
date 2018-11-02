@@ -89,7 +89,6 @@ export class ViewSubsFunction implements ICommandFunction {
                         const element = unsorted[b];
                         sorted.push(element.field);
                       }
-                      console.log(`iteration: ${v}`);
                       this.EmbedTemplate(
                         message,
                         user,

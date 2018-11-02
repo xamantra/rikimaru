@@ -11,24 +11,17 @@ class UserData {
     static async Init() {
         return new Promise(async (resolve, reject) => {
             this.OnReady().then(() => {
-                console.log(`user data init...`);
                 this.Initializing = true;
                 mongo_1.Mongo.FindAll(data_helper_1.DataHelper.user).then(async (result) => {
-                    console.log(`awaiting for array convert...`);
                     const users = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.User);
-                    console.log(`awaiting for iteration...`);
                     let iteration = 1;
                     if (users !== undefined && users !== null) {
                         if (users.length === 0) {
-                            console.log(`user data finishing init`);
                             this.Initializing = false;
                             resolve();
                         }
-                        console.log(`awaiting for user.forEach...`);
                         users.forEach(user => {
                             this.UserList.push(user);
-                            console.log(`user....`);
-                            // console.log(user);
                             if (iteration === users.length) {
                                 this.Initializing = false;
                                 resolve();
@@ -39,7 +32,6 @@ class UserData {
                         });
                     }
                     else {
-                        console.log(`user data finishing init`);
                         this.Initializing = false;
                         reject(new Error(`"JsonHelper.ArrayConvert<User>(result, User)" is 'null' or 'undefined'.`));
                     }
@@ -81,7 +73,6 @@ class UserData {
                     if (exists === false) {
                         const data = { discord_id: discordId };
                         mongo_1.Mongo.Insert(data_helper_1.DataHelper.user, data).then(result => {
-                            console.log(result.insertedId);
                             if (result.insertedId !== null &&
                                 result.insertedId !== undefined) {
                                 const user = new subscription_model_1.User();

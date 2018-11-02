@@ -71,7 +71,6 @@ class MediaData {
         return new Promise(async (resolve, reject) => {
             const userDatas = user_data_1.UserData.All;
             const locals = this.LocalList;
-            // console.log(this.LocalList);
             if (userDatas === undefined || userDatas === null) {
                 reject(new Error(`"userDatas = this.UserData.All" is 'null' or 'undefined'`));
             }
@@ -80,7 +79,6 @@ class MediaData {
             }
             else {
                 let iteration = 0;
-                console.log(`Iterating through "locals (${this.LocalList.length} items)"`);
                 locals.forEach(lm => {
                     setTimeout(() => {
                         media_search_1.MediaSearch.Find(lm.MalId)
@@ -90,12 +88,10 @@ class MediaData {
                                 queue_data_1.QueueData.Insert($m.idMal, $m.nextAiringEpisode.next)
                                     .then(insertId => {
                                     this.MediaList.push($m);
-                                    console.log(`Pushed: ${lm.Title}`);
                                     this.Check(iteration, $m, resolve);
                                 })
                                     .catch(() => {
                                     this.Check(iteration, $m, resolve);
-                                    console.log(`No need to add. Already exists.`);
                                 });
                             }
                             else {
@@ -107,7 +103,6 @@ class MediaData {
                                                 queue_data_1.QueueData.GetJobs().then(jobs => {
                                                     jobs.forEach(qj => {
                                                         queue_data_1.QueueData.RemoveJob(qj);
-                                                        console.log(`All subscription of "${$m.title}" has been remove`);
                                                     });
                                                 });
                                             });
@@ -128,24 +123,19 @@ class MediaData {
     static Check(iteration, $m, res) {
         queue_data_1.QueueData.SetQueue($m);
         if (iteration === this.LocalList.length) {
-            console.log(`Iteration: ${iteration}`);
             this.Initializing = false;
             res();
         }
     }
     static async Insert(media, title, user = null) {
-        console.log(`inserting media...`);
         return new Promise(async (resolve, reject) => {
             this.OnReady().then(() => {
                 this.Exists(media.idMal).then(exists => {
                     if (exists === false) {
-                        console.log(`new media`);
                         const data = { _id: media.idMal, title: title };
                         mongo_1.Mongo.Insert(data_helper_1.DataHelper.media, data).then(result => {
-                            console.log(`checking insertId...`);
                             if (result.insertedId !== undefined &&
                                 result.insertedId !== null) {
-                                console.log(`result was ok!.`);
                                 const m = new subscription_model_1.Media();
                                 m.MalId = media.idMal;
                                 m.Title = title;
@@ -155,7 +145,6 @@ class MediaData {
                                     this.MediaList.push(media);
                                     queue_data_1.QueueData.Insert(media.idMal, media.nextAiringEpisode.next)
                                         .then(qId => {
-                                        console.log(`resolving media....`);
                                         resolve(media.idMal);
                                     })
                                         .catch((reason) => {

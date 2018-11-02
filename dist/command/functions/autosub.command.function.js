@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const mal_sync_data_1 = require("../../data/mal.sync.data");
-const jikan_1 = require("../../core/jikan");
 const media_search_1 = require("../../core/media.search");
 const sender_1 = require("../../core/sender");
 const title_helper_1 = require("../../helpers/title.helper");
@@ -11,6 +10,7 @@ const subscription_data_1 = require("../../data/subscription.data");
 const client_1 = require("../../core/client");
 const awaiter_1 = require("../awaiter");
 const message_helper_1 = require("../../helpers/message.helper");
+const mal_1 = require("../../core/mal");
 class AutoSubFunction {
     Execute(message, command, dm) {
         awaiter_1.Awaiter.Send(message, 2000, async (m) => {
@@ -33,6 +33,10 @@ class AutoSubFunction {
                                 {
                                     name: `To view all subscription, type:`,
                                     value: `\`-viewsubs\``
+                                },
+                                {
+                                    name: `Please Note: `,
+                                    value: `If you've just modified your list, please wait at least 1 minute to **-autosub**.`
                                 }
                             ],
                             timestamp: new Date(),
@@ -66,21 +70,19 @@ class AutoSubFunction {
         mal_sync_data_1.MalBindData.Get(message.author.id)
             .then(mal => {
             if (mal.Verified === true) {
-                jikan_1.JikanRequest.AnimeList(mal.MalUsername, "watching")
+                mal_1.MAL.AnimeList(mal.MalUsername)
                     .then(animeList => {
                     let iteration = 0;
-                    animeList.anime.forEach(anime => {
+                    animeList.forEach(anime => {
                         iteration++;
-                        media_search_1.MediaSearch.Find(anime.mal_id)
+                        media_search_1.MediaSearch.Find(anime.anime_id)
                             .then(media => {
                             const discordId = message.author.id;
-                            console.log(media);
                             const title = title_helper_1.TitleHelper.Get(media.title);
                             media_data_1.MediaData.Insert(media, title).then(insertId => {
                                 console.log(insertId);
                                 user_data_1.UserData.GetUser(discordId)
                                     .then(user => {
-                                    console.log(user);
                                     subscription_data_1.SubscriptionData.Insert(media.idMal, user.Id)
                                         .then(() => {
                                         this.Check(iteration, animeList, resolve);
@@ -113,7 +115,7 @@ class AutoSubFunction {
                     });
                 })
                     .catch(err => {
-                    console.log(err);
+                    reject(err);
                 });
             }
             else {
@@ -125,7 +127,7 @@ class AutoSubFunction {
         });
     }
     Check(iteration, animeList, resolve) {
-        if (iteration === animeList.anime.length) {
+        if (iteration === animeList.length) {
             resolve();
         }
     }

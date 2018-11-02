@@ -36,6 +36,5 @@ export class BotCommand {
       this.Description += "\nParameter is required.";
     }
     this.Description += "\n.";
-    console.log(`Constructed: "${this.Name}"`);
   }
 }

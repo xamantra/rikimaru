@@ -59,6 +59,10 @@ class Config {
         return (process.env.MAL_PROFILE_BASE ||
             require("../extras/env").env.MAL_PROFILE_BASE);
     }
+    static MAL_CW_BASE(username) {
+        const base = process.env.MAL_CW_BASE || require("../extras/env").env.MAL_CW_BASE;
+        return `${base}/${username}/load.json?status=1`;
+    }
 }
 exports.Config = Config;
 //# sourceMappingURL=config.js.map

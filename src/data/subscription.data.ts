@@ -137,7 +137,6 @@ export class SubscriptionData {
                 };
                 Mongo.Insert(DataHelper.subscription, data).then(
                   async result => {
-                    console.log(`new sub added: ${result.insertedId}`);
                     if (
                       result.insertedId !== undefined &&
                       result.insertedId !== null
@@ -173,11 +172,6 @@ export class SubscriptionData {
               );
               if (sub !== null && sub !== undefined) {
                 ArrayHelper.remove(this.SubscriptionList, sub, () => {
-                  console.log(
-                    `User <${
-                      user.DiscordId
-                    }> unsubscribed to Media: "${mediaId}".`
-                  );
                   res();
                 });
               } else {

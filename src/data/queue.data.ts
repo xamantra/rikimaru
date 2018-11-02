@@ -22,7 +22,6 @@ export class QueueData {
         this.Clear()
           .then(() => {
             this.Initializing = true;
-            console.log(`queue data...`);
             Mongo.FindAll(DataHelper.queue).then(async result => {
               const queues = await JsonHelper.ArrayConvert<Queue>(
                 result,
@@ -37,13 +36,11 @@ export class QueueData {
                 );
               } else {
                 if (queues.length === 0) {
-                  console.log(`resolvingqueue`);
                   this.Initializing = false;
                   resolve();
                 }
                 queues.forEach(q => {
                   this.Queues.push(q);
-                  // console.log(q);
                 });
                 this.Initializing = false;
                 resolve();
@@ -64,9 +61,7 @@ export class QueueData {
         this.QueueJobs.length = 0;
         this.Queues.splice(0, this.Queues.length);
         this.QueueJobs.splice(0, this.QueueJobs.length);
-        console.log(`checking lengths`);
         if (this.Queues.length === 0 && this.QueueJobs.length === 0) {
-          console.log(`checked lengths.`);
           resolve();
         } else {
           reject(new Error(`The arrays were not cleared.`));
@@ -122,19 +117,16 @@ export class QueueData {
   public static RemoveJob(queueJob: QueueJob) {
     ArrayHelper.remove(this.QueueJobs, queueJob, () => {
       this.OnReady().then(() => {
-        console.log(`Queue Job: "${queueJob.queue.MediaId}"`);
         queueJob = null;
       });
     });
   }
 
   public static async Insert(mediaId: number, next_episode: number) {
-    console.log(`inserting queue...`);
     return new Promise<string>((resolve, reject) => {
       this.OnReady().then(() => {
         this.Exists(mediaId).then(exists => {
           if (exists === false) {
-            console.log(`new queue....`);
             const data = { media_id: mediaId, next_episode: next_episode };
             Mongo.Insert(DataHelper.queue, data).then(result => {
               if (
@@ -146,7 +138,6 @@ export class QueueData {
                 q.MediaId = mediaId;
                 q.NextEpisode = next_episode;
                 this.Queues.push(q);
-                console.log(`${q.MediaId} added to queue.`);
                 resolve(q.Id);
               } else {
                 reject(new Error(`ERROR: 654567898765`));
@@ -175,7 +166,6 @@ export class QueueData {
                 const qj = new QueueJob(media, q);
                 this.AddJob(qj).then(() => {
                   this.RemoveJob(queueJob);
-                  console.log(`New/Refreshed queue job: ${qj.queue.MediaId}`);
                   resolve();
                 });
               })

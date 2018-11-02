@@ -122,7 +122,6 @@ class SubscriptionData {
                                     user_id: new mongodb_1.ObjectId(userId)
                                 };
                                 mongo_1.Mongo.Insert(data_helper_1.DataHelper.subscription, data).then(async (result) => {
-                                    console.log(`new sub added: ${result.insertedId}`);
                                     if (result.insertedId !== undefined &&
                                         result.insertedId !== null) {
                                         const sub = new subscription_model_1.Subscription();
@@ -153,7 +152,6 @@ class SubscriptionData {
                         const sub = this.SubscriptionList.find(x => x.MediaId === mediaId && x.UserId === user.Id);
                         if (sub !== null && sub !== undefined) {
                             array_helper_1.ArrayHelper.remove(this.SubscriptionList, sub, () => {
-                                console.log(`User <${user.DiscordId}> unsubscribed to Media: "${mediaId}".`);
                                 res();
                             });
                         }

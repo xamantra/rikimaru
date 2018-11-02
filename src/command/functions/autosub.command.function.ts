@@ -2,7 +2,6 @@ import { ICommandFunction } from "../../interfaces/command.function.interface";
 import { Message } from "discord.js";
 import { ICommand } from "../../interfaces/command.interface";
 import { MalBindData } from "../../data/mal.sync.data";
-import { JikanRequest } from "../../core/jikan";
 import { MediaSearch } from "../../core/media.search";
 import { Sender } from "../../core/sender";
 import { TitleHelper } from "../../helpers/title.helper";
@@ -10,9 +9,10 @@ import { MediaData } from "../../data/media.data";
 import { UserData } from "../../data/user.data";
 import { SubscriptionData } from "../../data/subscription.data";
 import { ClientManager } from "../../core/client";
-import { AnimeList } from "../../models/jikan.anime.list";
 import { Awaiter } from "../awaiter";
 import { MessageHelper } from "../../helpers/message.helper";
+import { MAL } from "../../core/mal";
+import { MalAnime } from "../../models/mal.anime.model";
 
 export class AutoSubFunction implements ICommandFunction {
   Execute(message?: Message, command?: ICommand, dm?: boolean): void {
@@ -40,6 +40,10 @@ export class AutoSubFunction implements ICommandFunction {
                     {
                       name: `To view all subscription, type:`,
                       value: `\`-viewsubs\``
+                    },
+                    {
+                      name: `Please Note: `,
+                      value: `If you've just modified your list, please wait at least 1 minute to **-autosub**.`
                     }
                   ],
                   timestamp: new Date(),
@@ -86,21 +90,19 @@ export class AutoSubFunction implements ICommandFunction {
     MalBindData.Get(message.author.id)
       .then(mal => {
         if (mal.Verified === true) {
-          JikanRequest.AnimeList(mal.MalUsername, "watching")
+          MAL.AnimeList(mal.MalUsername)
             .then(animeList => {
               let iteration = 0;
-              animeList.anime.forEach(anime => {
+              animeList.forEach(anime => {
                 iteration++;
-                MediaSearch.Find(anime.mal_id)
+                MediaSearch.Find(anime.anime_id)
                   .then(media => {
                     const discordId = message.author.id;
-                    console.log(media);
                     const title = TitleHelper.Get(media.title);
                     MediaData.Insert(media, title).then(insertId => {
                       console.log(insertId);
                       UserData.GetUser(discordId)
                         .then(user => {
-                          console.log(user);
                           SubscriptionData.Insert(media.idMal, user.Id)
                             .then(() => {
                               this.Check(iteration, animeList, resolve);
@@ -132,7 +134,7 @@ export class AutoSubFunction implements ICommandFunction {
               });
             })
             .catch(err => {
-              console.log(err);
+              reject(err);
             });
         } else {
           Sender.Send(
@@ -147,8 +149,8 @@ export class AutoSubFunction implements ICommandFunction {
       });
   }
 
-  private Check(iteration: number, animeList: AnimeList, resolve: () => void) {
-    if (iteration === animeList.anime.length) {
+  private Check(iteration: number, animeList: MalAnime[], resolve: () => void) {
+    if (iteration === animeList.length) {
       resolve();
     }
   }

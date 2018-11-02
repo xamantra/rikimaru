@@ -16,7 +16,6 @@ class QueueData {
                 this.Clear()
                     .then(() => {
                     this.Initializing = true;
-                    console.log(`queue data...`);
                     mongo_1.Mongo.FindAll(data_helper_1.DataHelper.queue).then(async (result) => {
                         const queues = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Queue);
                         if (queues === null || queues === undefined) {
@@ -25,13 +24,11 @@ class QueueData {
                         }
                         else {
                             if (queues.length === 0) {
-                                console.log(`resolvingqueue`);
                                 this.Initializing = false;
                                 resolve();
                             }
                             queues.forEach(q => {
                                 this.Queues.push(q);
-                                // console.log(q);
                             });
                             this.Initializing = false;
                             resolve();
@@ -51,9 +48,7 @@ class QueueData {
                 this.QueueJobs.length = 0;
                 this.Queues.splice(0, this.Queues.length);
                 this.QueueJobs.splice(0, this.QueueJobs.length);
-                console.log(`checking lengths`);
                 if (this.Queues.length === 0 && this.QueueJobs.length === 0) {
-                    console.log(`checked lengths.`);
                     resolve();
                 }
                 else {
@@ -102,18 +97,15 @@ class QueueData {
     static RemoveJob(queueJob) {
         array_helper_1.ArrayHelper.remove(this.QueueJobs, queueJob, () => {
             this.OnReady().then(() => {
-                console.log(`Queue Job: "${queueJob.queue.MediaId}"`);
                 queueJob = null;
             });
         });
     }
     static async Insert(mediaId, next_episode) {
-        console.log(`inserting queue...`);
         return new Promise((resolve, reject) => {
             this.OnReady().then(() => {
                 this.Exists(mediaId).then(exists => {
                     if (exists === false) {
-                        console.log(`new queue....`);
                         const data = { media_id: mediaId, next_episode: next_episode };
                         mongo_1.Mongo.Insert(data_helper_1.DataHelper.queue, data).then(result => {
                             if (result.insertedId !== undefined &&
@@ -123,7 +115,6 @@ class QueueData {
                                 q.MediaId = mediaId;
                                 q.NextEpisode = next_episode;
                                 this.Queues.push(q);
-                                console.log(`${q.MediaId} added to queue.`);
                                 resolve(q.Id);
                             }
                             else {
@@ -153,7 +144,6 @@ class QueueData {
                             const qj = new queue_job_model_1.QueueJob(media, q);
                             this.AddJob(qj).then(() => {
                                 this.RemoveJob(queueJob);
-                                console.log(`New/Refreshed queue job: ${qj.queue.MediaId}`);
                                 resolve();
                             });
                         })
