@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const mal_sync_data_1 = require("../../data/mal.sync.data");
+const mal_bind_data_1 = require("../../data/mal.bind.data");
 const media_search_1 = require("../../core/media.search");
 const sender_1 = require("../../core/sender");
 const title_helper_1 = require("../../helpers/title.helper");
@@ -11,7 +11,7 @@ const client_1 = require("../../core/client");
 const awaiter_1 = require("../awaiter");
 const message_helper_1 = require("../../helpers/message.helper");
 const mal_1 = require("../../core/mal");
-class AutoSubFunction {
+class MalSyncFunction {
     Execute(message, command, dm) {
         awaiter_1.Awaiter.Send(message, 2000, async (m) => {
             this.GetAll(message, dm)
@@ -67,55 +67,67 @@ class AutoSubFunction {
         });
     }
     Run(resolve, reject, message, dm) {
-        mal_sync_data_1.MalBindData.Get(message.author.id)
-            .then(mal => {
+        mal_bind_data_1.MalBindData.Get(message.author.id)
+            .then(async (mal) => {
             if (mal.Verified === true) {
-                mal_1.MAL.AnimeList(mal.MalUsername)
-                    .then(animeList => {
-                    let iteration = 0;
-                    animeList.forEach(anime => {
-                        iteration++;
-                        media_search_1.MediaSearch.Find(anime.anime_id)
-                            .then(media => {
-                            const discordId = message.author.id;
-                            const title = title_helper_1.TitleHelper.Get(media.title);
-                            media_data_1.MediaData.Insert(media, title).then(insertId => {
-                                console.log(insertId);
-                                user_data_1.UserData.GetUser(discordId)
-                                    .then(user => {
-                                    subscription_data_1.SubscriptionData.Insert(media.idMal, user.Id)
+                await user_data_1.UserData.GetUser(message.author.id)
+                    .then(async (user) => {
+                    await mal_1.MAL.AnimeList(mal.MalUsername)
+                        .then(list => {
+                        subscription_data_1.SubscriptionData.GetUserSubs(user.Id).then(subs => {
+                            subs.forEach($s => {
+                                const malAnime = list.find($ma => $ma.anime_id === $s.MediaId);
+                                if (malAnime !== null && malAnime !== undefined) {
+                                }
+                                else {
+                                    subscription_data_1.SubscriptionData.Delete($s.MediaId, user.DiscordId);
+                                }
+                            });
+                        });
+                    })
+                        .catch(err => {
+                        console.log(err);
+                    });
+                    await mal_1.MAL.AnimeList(mal.MalUsername)
+                        .then(list => {
+                        let iteration = 0;
+                        list.forEach(anime => {
+                            iteration++;
+                            media_search_1.MediaSearch.Find(anime.anime_id)
+                                .then(media => {
+                                const title = title_helper_1.TitleHelper.Get(media.title);
+                                media_data_1.MediaData.Insert(media, title).then(async (insertId) => {
+                                    await subscription_data_1.SubscriptionData.Insert(media.idMal, user.Id)
                                         .then(() => {
-                                        this.Check(iteration, animeList, resolve);
+                                        this.Check(iteration, list, resolve);
                                     })
                                         .catch((reason) => {
                                         if (reason === "EXISTS") {
                                             console.log(`Already subscribed.`);
-                                            this.Check(iteration, animeList, resolve);
+                                            this.Check(iteration, list, resolve);
                                         }
                                         else {
                                             console.log(reason);
-                                            this.Check(iteration, animeList, resolve);
+                                            this.Check(iteration, list, resolve);
                                             return;
                                         }
                                     });
-                                })
-                                    .catch((reason) => {
-                                    console.log(reason.message);
-                                    this.Check(iteration, animeList, resolve);
-                                    return;
                                 });
+                                return;
+                            })
+                                .catch((reason) => {
+                                console.log(reason.message);
+                                this.Check(iteration, list, resolve);
                             });
-                            return;
-                        })
-                            .catch((reason) => {
-                            console.log(reason.message);
-                            this.Check(iteration, animeList, resolve);
+                            this.Check(iteration, list, resolve);
                         });
-                        this.Check(iteration, animeList, resolve);
+                    })
+                        .catch(err => {
+                        reject(err);
                     });
                 })
                     .catch(err => {
-                    reject(err);
+                    console.log(err);
                 });
             }
             else {
@@ -132,5 +144,5 @@ class AutoSubFunction {
         }
     }
 }
-exports.AutoSubFunction = AutoSubFunction;
+exports.MalSyncFunction = MalSyncFunction;
 //# sourceMappingURL=autosub.command.function.js.map

@@ -6,9 +6,7 @@ import { Awaiter } from "../awaiter";
 import { MessageHelper } from "../../helpers/message.helper";
 
 export class PingFunction implements ICommandFunction {
-  constructor() {
-    console.log(`Constructed: "${PingFunction.name}"`);
-  }
+  constructor() {}
 
   public async Execute(message?: Message, command?: ICommand, dm?: boolean) {
     await this.Get(message, dm);

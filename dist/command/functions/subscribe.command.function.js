@@ -17,13 +17,10 @@ class SubscribeFunction {
         await this.Search(message, command, dm);
     }
     async Search(message, command, dm) {
-        user_data_1.UserData.Insert(message.author.id).catch((reason) => {
-            console.log(reason.message);
-        });
+        user_data_1.UserData.Insert(message.author.id).catch((reason) => { });
         awaiter_1.Awaiter.Send(message, 2000, ($m) => {
             media_search_1.MediaSearch.All(command.Parameter)
                 .then(res => {
-                console.log(`There are "${res.length} results" for the search "${command.Parameter}".`);
                 const ongoing = media_handler_1.MediaHandler.OngoingMedia(res);
                 const unreleased = media_handler_1.MediaHandler.UnreleasedMedia(res);
                 if (ongoing.length === 0 && unreleased.length === 0) {

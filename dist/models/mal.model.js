@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const json2typescript_1 = require("json2typescript");
-let MalSync = class MalSync {
+let MalBind = class MalBind {
     constructor() {
         this.Id = undefined;
         this.DiscordId = undefined;
@@ -25,27 +25,27 @@ let MalSync = class MalSync {
 __decorate([
     json2typescript_1.JsonProperty("_id", String),
     __metadata("design:type", String)
-], MalSync.prototype, "Id", void 0);
+], MalBind.prototype, "Id", void 0);
 __decorate([
     json2typescript_1.JsonProperty("discord_id", String),
     __metadata("design:type", String)
-], MalSync.prototype, "DiscordId", void 0);
+], MalBind.prototype, "DiscordId", void 0);
 __decorate([
     json2typescript_1.JsonProperty("mal_username", String),
     __metadata("design:type", String)
-], MalSync.prototype, "MalUsername", void 0);
+], MalBind.prototype, "MalUsername", void 0);
 __decorate([
     json2typescript_1.JsonProperty("code", String),
     __metadata("design:type", String)
-], MalSync.prototype, "Code", void 0);
+], MalBind.prototype, "Code", void 0);
 __decorate([
     json2typescript_1.JsonProperty("verified", Boolean),
     __metadata("design:type", Boolean)
-], MalSync.prototype, "Verified", void 0);
-MalSync = __decorate([
+], MalBind.prototype, "Verified", void 0);
+MalBind = __decorate([
     json2typescript_1.JsonObject("")
-], MalSync);
-exports.MalSync = MalSync;
+], MalBind);
+exports.MalBind = MalBind;
 class MalProfile {
     constructor(Image, Status, AnimeStatus) {
         this.Image = Image;

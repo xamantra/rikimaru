@@ -1,11 +1,11 @@
 import { Mongo } from "../core/mongo";
 import { DataHelper } from "../helpers/data.helper";
-import { MalSync } from "../models/mal.model";
+import { MalBind } from "../models/mal.bind.model";
 import { JsonHelper } from "../helpers/json.helper";
 import { ArrayHelper } from "../helpers/array.helper";
 
 export class MalBindData {
-  public static List: MalSync[] = [];
+  public static List: MalBind[] = [];
   public static Initializing = false;
 
   public static Init() {
@@ -13,7 +13,7 @@ export class MalBindData {
       this.OnReady().then(() => {
         this.Initializing = true;
         Mongo.FindAll(DataHelper.malsync).then(async results => {
-          const list = await JsonHelper.ArrayConvert<MalSync>(results, MalSync);
+          const list = await JsonHelper.ArrayConvert<MalBind>(results, MalBind);
           if (list === undefined || list === null) {
             this.Initializing = false;
             reject(
@@ -39,7 +39,7 @@ export class MalBindData {
   }
 
   public static Insert(discordId: string, malUsername: string, code: string) {
-    return new Promise<MalSync>((resolve, reject) => {
+    return new Promise<MalBind>((resolve, reject) => {
       this.OnReady().then(() => {
         this.Exists(discordId)
           .then(exists => {
@@ -53,7 +53,7 @@ export class MalBindData {
               Mongo.Insert(DataHelper.malsync, data)
                 .then(result => {
                   console.log(result.insertedId);
-                  const malsync = new MalSync();
+                  const malsync = new MalBind();
                   malsync.Id = result.insertedId;
                   malsync.DiscordId = discordId;
                   malsync.MalUsername = malUsername;
@@ -69,7 +69,7 @@ export class MalBindData {
                 });
             }
           })
-          .catch((m: MalSync) => {
+          .catch((m: MalBind) => {
             console.log(`Already Exists, Code: ${m.Code}`);
             reject(m);
           });
@@ -77,8 +77,12 @@ export class MalBindData {
     });
   }
 
+  public static get All() {
+    return this.List;
+  }
+
   public static Verify(discordId: string) {
-    return new Promise<MalSync>((resolve, reject) => {
+    return new Promise<MalBind>((resolve, reject) => {
       this.OnReady().then(() => {
         const query = { discord_id: discordId };
         const newValue = { $set: { verified: true } };
@@ -86,7 +90,7 @@ export class MalBindData {
           this.Get(discordId).then(oldValue => {
             ArrayHelper.remove(this.List, oldValue, () => {
               Mongo.FindOne(DataHelper.malsync, query).then(async res => {
-                const ms = await JsonHelper.ArrayConvert<MalSync>(res, MalSync);
+                const ms = await JsonHelper.ArrayConvert<MalBind>(res, MalBind);
                 const m = ms[0];
                 console.log(`Update MAL bind: ${m.Code}`);
                 if (m !== null && m !== undefined) {
@@ -121,7 +125,7 @@ export class MalBindData {
   }
 
   public static Get(discordId: string) {
-    return new Promise<MalSync>((resolve, reject) => {
+    return new Promise<MalBind>((resolve, reject) => {
       this.OnReady().then(() => {
         let iteration = 0;
         if (this.List.length === 0) {

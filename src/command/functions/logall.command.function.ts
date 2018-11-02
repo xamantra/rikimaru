@@ -5,7 +5,8 @@ import { Message } from "discord.js";
 import { ICommand } from "../../interfaces/command.interface";
 import { UserData } from "../../data/user.data";
 import { SubscriptionData } from "../../data/subscription.data";
-import { MalBindData } from "../../data/mal.sync.data";
+import { MalBindData } from "../../data/mal.bind.data";
+import { MalUserData } from "../../data/mal.user.data";
 
 export class LogAllFunction implements ICommandFunction {
   public async Execute(message?: Message, command?: ICommand, dm?: boolean) {
@@ -23,6 +24,9 @@ export class LogAllFunction implements ICommandFunction {
         console.log(reason.message);
       });
       MalBindData.LogAll().catch((reason: Error) => {
+        console.log(reason.message);
+      });
+      MalUserData.LogAll().catch((reason: Error) => {
         console.log(reason.message);
       });
     }

@@ -1,7 +1,7 @@
 import { ICommandFunction } from "../../interfaces/command.function.interface";
 import { Message } from "discord.js";
 import { ICommand } from "../../interfaces/command.interface";
-import { MalBindData } from "../../data/mal.sync.data";
+import { MalBindData } from "../../data/mal.bind.data";
 import { MediaSearch } from "../../core/media.search";
 import { Sender } from "../../core/sender";
 import { TitleHelper } from "../../helpers/title.helper";
@@ -13,8 +13,10 @@ import { Awaiter } from "../awaiter";
 import { MessageHelper } from "../../helpers/message.helper";
 import { MAL } from "../../core/mal";
 import { MalAnime } from "../../models/mal.anime.model";
+import { sub } from "../commands";
+import { MalUserData } from "../../data/mal.user.data";
 
-export class AutoSubFunction implements ICommandFunction {
+export class MalSyncFunction implements ICommandFunction {
   Execute(message?: Message, command?: ICommand, dm?: boolean): void {
     Awaiter.Send(message, 2000, async (m: Message) => {
       this.GetAll(message, dm)
@@ -88,53 +90,66 @@ export class AutoSubFunction implements ICommandFunction {
     dm: boolean
   ) {
     MalBindData.Get(message.author.id)
-      .then(mal => {
+      .then(async mal => {
         if (mal.Verified === true) {
-          MAL.AnimeList(mal.MalUsername)
-            .then(animeList => {
-              let iteration = 0;
-              animeList.forEach(anime => {
-                iteration++;
-                MediaSearch.Find(anime.anime_id)
-                  .then(media => {
-                    const discordId = message.author.id;
-                    const title = TitleHelper.Get(media.title);
-                    MediaData.Insert(media, title).then(insertId => {
-                      console.log(insertId);
-                      UserData.GetUser(discordId)
-                        .then(user => {
-                          SubscriptionData.Insert(media.idMal, user.Id)
+          await UserData.GetUser(message.author.id)
+            .then(async user => {
+              await MAL.AnimeList(mal.MalUsername)
+                .then(list => {
+                  SubscriptionData.GetUserSubs(user.Id).then(subs => {
+                    subs.forEach($s => {
+                      const malAnime = list.find(
+                        $ma => $ma.anime_id === $s.MediaId
+                      );
+                      if (malAnime !== null && malAnime !== undefined) {
+                      } else {
+                        SubscriptionData.Delete($s.MediaId, user.DiscordId);
+                      }
+                    });
+                  });
+                })
+                .catch(err => {
+                  console.log(err);
+                });
+              await MAL.AnimeList(mal.MalUsername)
+                .then(list => {
+                  let iteration = 0;
+                  list.forEach(anime => {
+                    iteration++;
+                    MediaSearch.Find(anime.anime_id)
+                      .then(media => {
+                        const title = TitleHelper.Get(media.title);
+                        MediaData.Insert(media, title).then(async insertId => {
+                          await SubscriptionData.Insert(media.idMal, user.Id)
                             .then(() => {
-                              this.Check(iteration, animeList, resolve);
+                              this.Check(iteration, list, resolve);
                             })
                             .catch((reason: string) => {
                               if (reason === "EXISTS") {
                                 console.log(`Already subscribed.`);
-                                this.Check(iteration, animeList, resolve);
+                                this.Check(iteration, list, resolve);
                               } else {
                                 console.log(reason);
-                                this.Check(iteration, animeList, resolve);
+                                this.Check(iteration, list, resolve);
                                 return;
                               }
                             });
-                        })
-                        .catch((reason: Error) => {
-                          console.log(reason.message);
-                          this.Check(iteration, animeList, resolve);
-                          return;
                         });
-                    });
-                    return;
-                  })
-                  .catch((reason: Error) => {
-                    console.log(reason.message);
-                    this.Check(iteration, animeList, resolve);
+                        return;
+                      })
+                      .catch((reason: Error) => {
+                        console.log(reason.message);
+                        this.Check(iteration, list, resolve);
+                      });
+                    this.Check(iteration, list, resolve);
                   });
-                this.Check(iteration, animeList, resolve);
-              });
+                })
+                .catch(err => {
+                  reject(err);
+                });
             })
             .catch(err => {
-              reject(err);
+              console.log(err);
             });
         } else {
           Sender.Send(

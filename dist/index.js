@@ -11,7 +11,7 @@ const message_handler_1 = require("./handlers/message.handler");
 const openshift_1 = require("./others/openshift");
 const scheduler_1 = require("./core/scheduler");
 const presence_1 = require("./core/presence");
-const mal_sync_data_1 = require("./data/mal.sync.data");
+const mal_bind_data_1 = require("./data/mal.bind.data");
 class App {
     static get Instance() {
         return this._instance || (this._instance = new this());
@@ -23,7 +23,7 @@ class App {
                 .then(() => {
                 subscription_data_1.SubscriptionData.Init()
                     .then(() => {
-                    mal_sync_data_1.MalBindData.Init().then(() => {
+                    mal_bind_data_1.MalBindData.Init().then(() => {
                         media_data_1.MediaData.Init()
                             .then(() => {
                             scheduler_1.Scheduler.LoopJob(0, 10, 0, () => {

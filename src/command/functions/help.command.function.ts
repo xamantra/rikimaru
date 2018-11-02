@@ -8,9 +8,7 @@ import { Awaiter } from "../awaiter";
 import { MessageHelper } from "../../helpers/message.helper";
 
 export class HelpFunction implements ICommandFunction {
-  constructor() {
-    console.log(`Constructed: "${HelpFunction.name}"`);
-  }
+  constructor() {}
 
   public async Execute(message?: Message, command?: ICommand, dm?: boolean) {
     await this.ShowHelp(message, dm);

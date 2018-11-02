@@ -15,9 +15,7 @@ import { Awaiter } from "../awaiter";
 import { MessageHelper } from "../../helpers/message.helper";
 
 export class MediaFunction implements ICommandFunction {
-  constructor() {
-    console.log(`Constructed: "${MediaFunction.name}"`);
-  }
+  constructor() {}
 
   public async Execute(message?: Message, command?: ICommand, dm?: boolean) {
     await this.Handle(message, command, dm);

@@ -68,7 +68,6 @@ class MediaExample {
             "asobi asobase",
             "goblin slayer"
         ];
-        console.log(`Constructed: "${MediaExample.name}"`);
     }
     Get(command, count) {
         let result = ``;

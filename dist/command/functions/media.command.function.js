@@ -8,9 +8,7 @@ const sender_1 = require("../../core/sender");
 const awaiter_1 = require("../awaiter");
 const message_helper_1 = require("../../helpers/message.helper");
 class MediaFunction {
-    constructor() {
-        console.log(`Constructed: "${MediaFunction.name}"`);
-    }
+    constructor() { }
     async Execute(message, command, dm) {
         await this.Handle(message, command, dm);
     }

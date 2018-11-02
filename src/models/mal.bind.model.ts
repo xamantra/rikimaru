@@ -1,7 +1,7 @@
 import { JsonObject, JsonProperty } from "json2typescript";
 
 @JsonObject("")
-export class MalSync {
+export class MalBind {
   @JsonProperty("_id", String)
   public Id: string = undefined;
   @JsonProperty("discord_id", String)

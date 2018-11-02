@@ -25,17 +25,10 @@ export class SubscribeFunction implements ICommandFunction {
   }
 
   private async Search(message: Message, command: ICommand, dm: boolean) {
-    UserData.Insert(message.author.id).catch((reason: Error) => {
-      console.log(reason.message);
-    });
+    UserData.Insert(message.author.id).catch((reason: Error) => {});
     Awaiter.Send(message, 2000, ($m: Message) => {
       MediaSearch.All(command.Parameter)
         .then(res => {
-          console.log(
-            `There are "${res.length} results" for the search "${
-              command.Parameter
-            }".`
-          );
           const ongoing = MediaHandler.OngoingMedia(res);
           const unreleased = MediaHandler.UnreleasedMedia(res);
           if (ongoing.length === 0 && unreleased.length === 0) {

@@ -4,9 +4,7 @@ const client_1 = require("../../core/client");
 const awaiter_1 = require("../awaiter");
 const message_helper_1 = require("../../helpers/message.helper");
 class PingFunction {
-    constructor() {
-        console.log(`Constructed: "${PingFunction.name}"`);
-    }
+    constructor() { }
     async Execute(message, command, dm) {
         await this.Get(message, dm);
     }

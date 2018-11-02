@@ -3,11 +3,11 @@ import { Message } from "discord.js";
 import { ICommand } from "../../interfaces/command.interface";
 import { Sender } from "../../core/sender";
 import { Random } from "../../helpers/random.helper";
-import { MalBindData } from "../../data/mal.sync.data";
+import { MalBindData } from "../../data/mal.bind.data";
 import cheerio from "cheerio";
 import rp from "request-promise";
 import { Config } from "../../core/config";
-import { MalSync } from "../../models/mal.model";
+import { MalBind } from "../../models/mal.bind.model";
 import { ClientManager } from "../../core/client";
 import { UserData } from "../../data/user.data";
 import { Awaiter } from "../awaiter";
@@ -37,7 +37,7 @@ export class MalBindFunction implements ICommandFunction {
     c: string
   ) {
     Awaiter.Send(message, 2000, (m: Message) => {
-      const code = MalSync.CodeFormat(c);
+      const code = MalBind.CodeFormat(c);
       MalBindData.Get(message.author.id)
         .then(mal => {
           MessageHelper.Delete(m);
@@ -155,7 +155,7 @@ export class MalBindFunction implements ICommandFunction {
           console.log(`resolved code`);
           resolve(code);
         })
-        .catch((m: MalSync) => {
+        .catch((m: MalBind) => {
           console.log(`resolved code`);
           resolve(m.Code);
         });

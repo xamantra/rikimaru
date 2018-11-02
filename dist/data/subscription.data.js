@@ -91,7 +91,6 @@ class SubscriptionData {
                             .catch(err => {
                             console.log(err);
                             if (iteration === this.SubscriptionList.length) {
-                                console.log(`Resolving subscribers...`);
                                 resolve(subscribers);
                             }
                         });
@@ -103,10 +102,8 @@ class SubscriptionData {
     static async Insert(mediaId, userId) {
         return new Promise((resolve, reject) => {
             this.OnReady().then(() => {
-                console.log(`checking if it exists.`);
                 this.Exists(mediaId, userId).then(async (exists) => {
                     if (exists === false) {
-                        console.log(`doesn't exists`);
                         const user = user_data_1.UserData.All.find(x => x.Id === userId);
                         if (user === null || user === undefined) {
                             reject(`"this.UserData.All.find(x => x.Id === userId)" is 'null' or 'undefined'.`);

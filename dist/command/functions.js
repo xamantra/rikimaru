@@ -17,5 +17,5 @@ exports.viewSubsFunction = new viewsubs_command_function_1.ViewSubsFunction();
 exports.unsubFunction = new unsub_command_function_1.UnsubFunction();
 exports.logAllFunction = new logall_command_function_1.LogAllFunction();
 exports.malBindFunction = new malbind_command_function_1.MalBindFunction();
-exports.autoSubFunction = new autosub_command_function_1.AutoSubFunction();
+exports.malSyncFunction = new autosub_command_function_1.MalSyncFunction();
 //# sourceMappingURL=functions.js.map

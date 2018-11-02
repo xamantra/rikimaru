@@ -9,7 +9,7 @@ import { MessageHandler } from "./handlers/message.handler";
 import { OpenShiftUptimer } from "./others/openshift";
 import { Scheduler } from "./core/scheduler";
 import { BotPresence } from "./core/presence";
-import { MalBindData } from "./data/mal.sync.data";
+import { MalBindData } from "./data/mal.bind.data";
 
 class App {
   static _instance: App;

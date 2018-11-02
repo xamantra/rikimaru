@@ -4,7 +4,8 @@ const queue_data_1 = require("./../../data/queue.data");
 const media_data_1 = require("./../../data/media.data");
 const user_data_1 = require("../../data/user.data");
 const subscription_data_1 = require("../../data/subscription.data");
-const mal_sync_data_1 = require("../../data/mal.sync.data");
+const mal_bind_data_1 = require("../../data/mal.bind.data");
+const mal_user_data_1 = require("../../data/mal.user.data");
 class LogAllFunction {
     async Execute(message, command, dm) {
         if (message.author.id === "442621672714010625") {
@@ -20,7 +21,10 @@ class LogAllFunction {
             subscription_data_1.SubscriptionData.LogAll().catch((reason) => {
                 console.log(reason.message);
             });
-            mal_sync_data_1.MalBindData.LogAll().catch((reason) => {
+            mal_bind_data_1.MalBindData.LogAll().catch((reason) => {
+                console.log(reason.message);
+            });
+            mal_user_data_1.MalUserData.LogAll().catch((reason) => {
                 console.log(reason.message);
             });
         }

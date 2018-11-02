@@ -71,7 +71,6 @@ export class MediaExample implements ICommandExample {
       "asobi asobase",
       "goblin slayer"
     ];
-    console.log(`Constructed: "${MediaExample.name}"`);
   }
 
   public Get(command: ICommand, count: number) {

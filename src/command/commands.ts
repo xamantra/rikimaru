@@ -10,7 +10,7 @@ import {
   unsubFunction
 } from "./functions";
 import { mediaExample, malBindExample } from "./examples";
-import { malBindFunction, autoSubFunction } from "./functions";
+import { malBindFunction, malSyncFunction } from "./functions";
 
 export const help = new BotCommand(
   "help",
@@ -119,14 +119,14 @@ export const malbind = new BotCommand(
   malBindExample,
   false
 );
-export const autosub = new BotCommand(
-  "autosub",
-  `Automatically subscribe to all ongoing anime in you currently watching list.`,
+export const malsync = new BotCommand(
+  "malsync",
+  `Automatically subscribe to all ongoing anime in your MAL CW list. And also unsubscribe to any anime that it is not in your list.`,
   false,
   false,
   Response.ChannelReply,
   60,
-  autoSubFunction,
+  malSyncFunction,
   null,
   false
 );

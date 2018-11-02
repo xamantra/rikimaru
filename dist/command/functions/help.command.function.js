@@ -5,9 +5,7 @@ const manager_command_1 = require("../manager.command");
 const awaiter_1 = require("../awaiter");
 const message_helper_1 = require("../../helpers/message.helper");
 class HelpFunction {
-    constructor() {
-        console.log(`Constructed: "${HelpFunction.name}"`);
-    }
+    constructor() { }
     async Execute(message, command, dm) {
         await this.ShowHelp(message, dm);
     }
