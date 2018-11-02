@@ -18,25 +18,19 @@ export class AutoSubFunction implements ICommandFunction {
   Execute(message?: Message, command?: ICommand, dm?: boolean): void {
     Awaiter.Send(message, 2000, async (m: Message) => {
       this.GetAll(message, dm)
-        .then(count => {
+        .then(() => {
           ClientManager.GetClient().then(client => {
             MessageHelper.Delete(m);
-            console.log(`New Sub Count: "${count}"`);
-            const res$m =
-              count > 0
-                ? `**${
-                    Awaiter.Random
-                  }**, You are now subcribe to **${count} ongoing anime** from your MAL List.`
-                : `**${
-                    Awaiter.Random
-                  }**, Cool! You are already subscribe to **all ongoing anime** in your list.`;
+            const res$m = `**${
+              Awaiter.Random
+            }**, You are now subcribed to *all ongoing anime* from your MAL List.`;
             Sender.Send(
               message,
               {
                 embed: {
                   color: message.member.highestRole.color,
                   thumbnail: { url: message.author.avatarURL },
-                  title: `**Rikimaru MAL Auto Subscribe**`,
+                  title: `Rikimaru MAL Auto Subscribe`,
                   description: res$m,
                   fields: [
                     {
@@ -72,7 +66,7 @@ export class AutoSubFunction implements ICommandFunction {
   }
 
   private GetAll(message: Message, dm: boolean) {
-    return new Promise<number>((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       UserData.Insert(message.author.id)
         .then(insertId => {
           this.Run(resolve, reject, message, dm);
@@ -84,7 +78,7 @@ export class AutoSubFunction implements ICommandFunction {
   }
 
   private Run(
-    resolve: (res: number) => void,
+    resolve: () => void,
     reject: (reason?: any) => void,
     message: Message,
     dm: boolean
@@ -92,8 +86,6 @@ export class AutoSubFunction implements ICommandFunction {
     MalBindData.Get(message.author.id)
       .then(mal => {
         if (mal.Verified === true) {
-          let newCount = 0;
-          let oldCount = 0;
           JikanRequest.AnimeList(mal.MalUsername, "watching")
             .then(animeList => {
               let iteration = 0;
@@ -104,62 +96,39 @@ export class AutoSubFunction implements ICommandFunction {
                     const discordId = message.author.id;
                     console.log(media);
                     const title = TitleHelper.Get(media.title);
-                    MediaData.Insert(media, title)
-                      .then(insertId => {
-                        console.log(insertId);
-                        UserData.GetUser(discordId)
-                          .then(user => {
-                            console.log(user);
-                            SubscriptionData.Insert(media.idMal, user.Id)
-                              .then(() => {
-                                newCount++;
-                                this.Check(
-                                  iteration,
-                                  animeList,
-                                  newCount,
-                                  resolve
-                                );
-                              })
-                              .catch((reason: string) => {
-                                if (reason === "EXISTS") {
-                                  console.log(`Already subscribed.`);
-                                  oldCount++;
-                                  this.Check(
-                                    iteration,
-                                    animeList,
-                                    newCount,
-                                    resolve
-                                  );
-                                } else {
-                                  console.log(reason);
-                                  this.Check(
-                                    iteration,
-                                    animeList,
-                                    newCount,
-                                    resolve
-                                  );
-                                  return;
-                                }
-                              });
-                          })
-                          .catch((reason: Error) => {
-                            console.log(reason.message);
-                            this.Check(iteration, animeList, newCount, resolve);
-                            return;
-                          });
-                      })
-                      .catch((reason: Error) => {
-                        console.log(reason.message);
-                        this.Check(iteration, animeList, newCount, resolve);
-                        return;
-                      });
+                    MediaData.Insert(media, title).then(insertId => {
+                      console.log(insertId);
+                      UserData.GetUser(discordId)
+                        .then(user => {
+                          console.log(user);
+                          SubscriptionData.Insert(media.idMal, user.Id)
+                            .then(() => {
+                              this.Check(iteration, animeList, resolve);
+                            })
+                            .catch((reason: string) => {
+                              if (reason === "EXISTS") {
+                                console.log(`Already subscribed.`);
+                                this.Check(iteration, animeList, resolve);
+                              } else {
+                                console.log(reason);
+                                this.Check(iteration, animeList, resolve);
+                                return;
+                              }
+                            });
+                        })
+                        .catch((reason: Error) => {
+                          console.log(reason.message);
+                          this.Check(iteration, animeList, resolve);
+                          return;
+                        });
+                    });
                     return;
                   })
                   .catch((reason: Error) => {
                     console.log(reason.message);
-                    this.Check(iteration, animeList, newCount, resolve);
+                    this.Check(iteration, animeList, resolve);
                   });
-                this.Check(iteration, animeList, newCount, resolve);
+                this.Check(iteration, animeList, resolve);
               });
             })
             .catch(err => {
@@ -178,14 +147,9 @@ export class AutoSubFunction implements ICommandFunction {
       });
   }
 
-  private Check(
-    iteration: number,
-    animeList: AnimeList,
-    count: number,
-    resolve: (count: number) => void
-  ) {
+  private Check(iteration: number, animeList: AnimeList, resolve: () => void) {
     if (iteration === animeList.anime.length) {
-      resolve(count);
+      resolve();
     }
   }
 }

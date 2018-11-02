@@ -115,7 +115,7 @@ class ViewSubsFunction {
                     embed: {
                         color: member.highestRole.color,
                         thumbnail: {
-                            url: user.avatarURL
+                            url: member.user.avatarURL
                         },
                         title: `***${user.username}***'s *Subscription List*`,
                         description: `**${count} Anime**\n\nPlease Note: *The airing schedule for the streaming site you are using might be different.*\n`,

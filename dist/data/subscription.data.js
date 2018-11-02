@@ -5,8 +5,9 @@ const user_data_1 = require("./user.data");
 const subscription_model_1 = require("./../models/subscription.model");
 const json_helper_1 = require("../helpers/json.helper");
 const data_helper_1 = require("../helpers/data.helper");
-const array_helper_1 = require("../helpers/array.helper");
 const mongo_1 = require("../core/mongo");
+const mongodb_1 = require("mongodb");
+const array_helper_1 = require("../helpers/array.helper");
 class SubscriptionData {
     static get All() {
         return this.SubscriptionList;
@@ -15,26 +16,42 @@ class SubscriptionData {
         return new Promise((resolve, reject) => {
             this.OnReady().then(() => {
                 this.Initializing = true;
-                mongo_1.Mongo.FindAll(data_helper_1.DataHelper.subscription).then(async (result) => {
-                    const subs = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Subscription);
-                    // console.log(subs);
-                    if (subs === null || subs === undefined) {
-                        this.Initializing = false;
-                        reject(new Error(`JsonHelper.ArrayConvert<Subscription>(result,Subscription);`));
-                    }
-                    else {
-                        if (subs.length === 0) {
+                this.Clear()
+                    .then(() => {
+                    mongo_1.Mongo.FindAll(data_helper_1.DataHelper.subscription).then(async (result) => {
+                        const subs = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Subscription);
+                        // console.log(subs);
+                        if (subs === null || subs === undefined) {
+                            this.Initializing = false;
+                            reject(new Error(`JsonHelper.ArrayConvert<Subscription>(result,Subscription);`));
+                        }
+                        else {
+                            if (subs.length === 0) {
+                                this.Initializing = false;
+                                resolve();
+                            }
+                            subs.forEach(sub => {
+                                this.SubscriptionList.push(sub);
+                            });
                             this.Initializing = false;
                             resolve();
                         }
-                        subs.forEach(sub => {
-                            this.SubscriptionList.push(sub);
-                        });
-                        this.Initializing = false;
-                        resolve();
-                    }
-                });
+                    });
+                })
+                    .catch(err => console.log(err));
             });
+        });
+    }
+    static Clear() {
+        return new Promise((resolve, reject) => {
+            this.SubscriptionList.length = 0;
+            this.SubscriptionList.splice(0, this.SubscriptionList.length);
+            if (this.SubscriptionList.length === 0) {
+                resolve();
+            }
+            else {
+                reject(new Error(`Array was not cleared.`));
+            }
         });
     }
     static async GetUserSubs(userId) {
@@ -86,8 +103,10 @@ class SubscriptionData {
     static async Insert(mediaId, userId) {
         return new Promise((resolve, reject) => {
             this.OnReady().then(() => {
+                console.log(`checking if it exists.`);
                 this.Exists(mediaId, userId).then(async (exists) => {
                     if (exists === false) {
+                        console.log(`doesn't exists`);
                         const user = user_data_1.UserData.All.find(x => x.Id === userId);
                         if (user === null || user === undefined) {
                             reject(`"this.UserData.All.find(x => x.Id === userId)" is 'null' or 'undefined'.`);
@@ -98,8 +117,12 @@ class SubscriptionData {
                                 reject(`"this.QueueData.All.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`);
                             }
                             else {
-                                const data = { media_id: mediaId, user_id: userId };
+                                const data = {
+                                    media_id: mediaId,
+                                    user_id: new mongodb_1.ObjectId(userId)
+                                };
                                 mongo_1.Mongo.Insert(data_helper_1.DataHelper.subscription, data).then(async (result) => {
+                                    console.log(`new sub added: ${result.insertedId}`);
                                     if (result.insertedId !== undefined &&
                                         result.insertedId !== null) {
                                         const sub = new subscription_model_1.Subscription();
@@ -125,17 +148,17 @@ class SubscriptionData {
             this.OnReady().then(() => {
                 user_data_1.UserData.GetUser(discordId)
                     .then(user => {
-                    const query = { media_id: mediaId, user_id: user.Id };
+                    const query = { media_id: mediaId, user_id: new mongodb_1.ObjectId(user.Id) };
                     mongo_1.Mongo.Delete(data_helper_1.DataHelper.subscription, query).then(() => {
                         const sub = this.SubscriptionList.find(x => x.MediaId === mediaId && x.UserId === user.Id);
                         if (sub !== null && sub !== undefined) {
                             array_helper_1.ArrayHelper.remove(this.SubscriptionList, sub, () => {
                                 console.log(`User <${user.DiscordId}> unsubscribed to Media: "${mediaId}".`);
+                                res();
                             });
-                            res();
                         }
                         else {
-                            rej(new Error(`"this.SubscriptionList.find(   x => x.MediaId === mediaId && x.UserId === user.Id )" is 'null' or 'undefined'.`));
+                            rej(new Error(`Nothing to remove.`));
                         }
                     });
                 })

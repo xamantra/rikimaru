@@ -3,9 +3,10 @@ import { UserData } from "./user.data";
 import { Subscription } from "./../models/subscription.model";
 import { JsonHelper } from "../helpers/json.helper";
 import { DataHelper } from "../helpers/data.helper";
-import { ArrayHelper } from "../helpers/array.helper";
 import { User } from "../models/subscription.model";
 import { Mongo } from "../core/mongo";
+import { ObjectId } from "mongodb";
+import { ArrayHelper } from "../helpers/array.helper";
 
 export class SubscriptionData {
   static Initializing = false;
@@ -18,32 +19,48 @@ export class SubscriptionData {
     return new Promise((resolve, reject) => {
       this.OnReady().then(() => {
         this.Initializing = true;
-        Mongo.FindAll(DataHelper.subscription).then(async result => {
-          const subs = await JsonHelper.ArrayConvert<Subscription>(
-            result,
-            Subscription
-          );
-          // console.log(subs);
-          if (subs === null || subs === undefined) {
-            this.Initializing = false;
-            reject(
-              new Error(
-                `JsonHelper.ArrayConvert<Subscription>(result,Subscription);`
-              )
-            );
-          } else {
-            if (subs.length === 0) {
-              this.Initializing = false;
-              resolve();
-            }
-            subs.forEach(sub => {
-              this.SubscriptionList.push(sub);
+        this.Clear()
+          .then(() => {
+            Mongo.FindAll(DataHelper.subscription).then(async result => {
+              const subs = await JsonHelper.ArrayConvert<Subscription>(
+                result,
+                Subscription
+              );
+              // console.log(subs);
+              if (subs === null || subs === undefined) {
+                this.Initializing = false;
+                reject(
+                  new Error(
+                    `JsonHelper.ArrayConvert<Subscription>(result,Subscription);`
+                  )
+                );
+              } else {
+                if (subs.length === 0) {
+                  this.Initializing = false;
+                  resolve();
+                }
+                subs.forEach(sub => {
+                  this.SubscriptionList.push(sub);
+                });
+                this.Initializing = false;
+                resolve();
+              }
             });
-            this.Initializing = false;
-            resolve();
-          }
-        });
+          })
+          .catch(err => console.log(err));
       });
+    });
+  }
+
+  public static Clear() {
+    return new Promise((resolve, reject) => {
+      this.SubscriptionList.length = 0;
+      this.SubscriptionList.splice(0, this.SubscriptionList.length);
+      if (this.SubscriptionList.length === 0) {
+        resolve();
+      } else {
+        reject(new Error(`Array was not cleared.`));
+      }
     });
   }
 
@@ -98,8 +115,10 @@ export class SubscriptionData {
   public static async Insert(mediaId: number, userId: string) {
     return new Promise((resolve, reject) => {
       this.OnReady().then(() => {
+        console.log(`checking if it exists.`);
         this.Exists(mediaId, userId).then(async exists => {
           if (exists === false) {
+            console.log(`doesn't exists`);
             const user = UserData.All.find(x => x.Id === userId);
             if (user === null || user === undefined) {
               reject(
@@ -112,9 +131,13 @@ export class SubscriptionData {
                   `"this.QueueData.All.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`
                 );
               } else {
-                const data = { media_id: mediaId, user_id: userId };
+                const data = {
+                  media_id: mediaId,
+                  user_id: new ObjectId(userId)
+                };
                 Mongo.Insert(DataHelper.subscription, data).then(
                   async result => {
+                    console.log(`new sub added: ${result.insertedId}`);
                     if (
                       result.insertedId !== undefined &&
                       result.insertedId !== null
@@ -143,7 +166,7 @@ export class SubscriptionData {
       this.OnReady().then(() => {
         UserData.GetUser(discordId)
           .then(user => {
-            const query = { media_id: mediaId, user_id: user.Id };
+            const query = { media_id: mediaId, user_id: new ObjectId(user.Id) };
             Mongo.Delete(DataHelper.subscription, query).then(() => {
               const sub = this.SubscriptionList.find(
                 x => x.MediaId === mediaId && x.UserId === user.Id
@@ -155,14 +178,10 @@ export class SubscriptionData {
                       user.DiscordId
                     }> unsubscribed to Media: "${mediaId}".`
                   );
+                  res();
                 });
-                res();
               } else {
-                rej(
-                  new Error(
-                    `"this.SubscriptionList.find(   x => x.MediaId === mediaId && x.UserId === user.Id )" is 'null' or 'undefined'.`
-                  )
-                );
+                rej(new Error(`Nothing to remove.`));
               }
             });
           })
