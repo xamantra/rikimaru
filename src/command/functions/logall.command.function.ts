@@ -26,9 +26,6 @@ export class LogAllFunction implements ICommandFunction {
       MalBindData.LogAll().catch((reason: Error) => {
         console.log(reason.message);
       });
-      MalUserData.LogAll().catch((reason: Error) => {
-        console.log(reason.message);
-      });
     }
   }
 }
