@@ -23,7 +23,7 @@ class MalBindData {
                         }
                         else {
                             for (let i = 0; i < list.length; i++) {
-                                const malBind = this.List[i];
+                                const malBind = list[i];
                                 this.List.push(malBind);
                                 if (i === list.length - 1) {
                                     this.Initializing = false;
@@ -78,7 +78,6 @@ class MalBindData {
     static Verify(discordId) {
         return new Promise((resolve, reject) => {
             this.OnReady().then(() => {
-                this.Initializing = true;
                 const query = { discord_id: discordId };
                 const newValue = { $set: { verified: true } };
                 mongo_1.Mongo.Update(data_helper_1.DataHelper.malsync, query, newValue).then(result => {
@@ -90,11 +89,9 @@ class MalBindData {
                                 console.log(`Update MAL bind: ${m.Code}`);
                                 if (m !== null && m !== undefined) {
                                     this.List.push(m);
-                                    this.Initializing = false;
                                     resolve(m);
                                 }
                                 else {
-                                    this.Initializing = false;
                                     reject(new Error(`JsonHelper.Convert<MalSync>(res, MalSync) is 'null' or 'undefined'.`));
                                 }
                             });

@@ -18,7 +18,7 @@ class MalSyncFunction {
                 .then(() => {
                 client_1.ClientManager.GetClient().then(client => {
                     message_helper_1.MessageHelper.Delete(m);
-                    const res$m = `**${awaiter_1.Awaiter.Random}**, You are now subcribed to *all ongoing anime* from your MAL List.`;
+                    const res$m = `**${awaiter_1.Awaiter.Random}**, Your *MAL currently watching list* is now synced with your subscriptions.`;
                     sender_1.Sender.Send(message, {
                         embed: {
                             color: message.member.highestRole.color,
@@ -51,7 +51,7 @@ class MalSyncFunction {
                 .catch(err => {
                 message_helper_1.MessageHelper.Delete(m);
                 console.log(err);
-                sender_1.Sender.Send(message, `Oops! It looks like you haven't binded you account with rikimaru discord yet.\nEnter the command **-malbind malusername** to bind your account.`, dm);
+                this.SendStatus(message, dm);
             });
         });
     }
@@ -74,7 +74,8 @@ class MalSyncFunction {
                     .then(async (user) => {
                     await mal_1.MAL.AnimeList(mal.MalUsername)
                         .then(list => {
-                        subscription_data_1.SubscriptionData.GetUserSubs(user.Id).then(subs => {
+                        subscription_data_1.SubscriptionData.GetUserSubs(user.Id)
+                            .then(subs => {
                             subs.forEach($s => {
                                 const malAnime = list.find($ma => $ma.anime_id === $s.MediaId);
                                 if (malAnime !== null && malAnime !== undefined) {
@@ -83,6 +84,9 @@ class MalSyncFunction {
                                     subscription_data_1.SubscriptionData.Delete($s.MediaId, user.DiscordId);
                                 }
                             });
+                        })
+                            .catch(err => {
+                            console.log(err);
                         });
                     })
                         .catch(err => {
@@ -131,17 +135,21 @@ class MalSyncFunction {
                 });
             }
             else {
-                sender_1.Sender.Send(message, `Oops! Your MAL account is not verified and binded.\n Enter the command **-malbind malusername**`, dm);
+                this.SendStatus(message, dm);
             }
         })
             .catch(err => {
-            reject(err);
+            this.SendStatus(message, dm);
+            console.log(err);
         });
     }
     Check(iteration, animeList, resolve) {
         if (iteration === animeList.length) {
             resolve();
         }
+    }
+    SendStatus(message, dm) {
+        sender_1.Sender.Send(message, `Oops! Your MAL account is not verified and binded.\n Enter the command **-malbind malusername**`, dm);
     }
 }
 exports.MalSyncFunction = MalSyncFunction;

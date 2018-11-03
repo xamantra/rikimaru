@@ -27,7 +27,7 @@ export class MalBindData {
               resolve();
             } else {
               for (let i = 0; i < list.length; i++) {
-                const malBind = this.List[i];
+                const malBind = list[i];
                 this.List.push(malBind);
                 if (i === list.length - 1) {
                   this.Initializing = false;
@@ -85,7 +85,6 @@ export class MalBindData {
   public static Verify(discordId: string) {
     return new Promise<MalBind>((resolve, reject) => {
       this.OnReady().then(() => {
-        this.Initializing = true;
         const query = { discord_id: discordId };
         const newValue = { $set: { verified: true } };
         Mongo.Update(DataHelper.malsync, query, newValue).then(result => {
@@ -97,10 +96,8 @@ export class MalBindData {
                 console.log(`Update MAL bind: ${m.Code}`);
                 if (m !== null && m !== undefined) {
                   this.List.push(m);
-                  this.Initializing = false;
                   resolve(m);
                 } else {
-                  this.Initializing = false;
                   reject(
                     new Error(
                       `JsonHelper.Convert<MalSync>(res, MalSync) is 'null' or 'undefined'.`
