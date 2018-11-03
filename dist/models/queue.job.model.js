@@ -29,7 +29,6 @@ class QueueJob {
             this.FindUser(title, queueEpisode, media);
         }
         else if (queueEpisode < media.nextAiringEpisode.next) {
-            console.log(`queueEpisode < media.nextAiringEpisode.next`);
             this.FindUser(title, queueEpisode, media);
         }
     }

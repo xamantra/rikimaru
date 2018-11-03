@@ -21,12 +21,14 @@ class MalBindData {
                             this.Initializing = false;
                             resolve();
                         }
-                        for (let i = 0; i < this.List.length; i++) {
-                            const malBind = this.List[i];
-                            this.List.push(malBind);
-                            if (i === this.List.length - 1) {
-                                this.Initializing = false;
-                                resolve();
+                        else {
+                            for (let i = 0; i < list.length; i++) {
+                                const malBind = this.List[i];
+                                this.List.push(malBind);
+                                if (i === list.length - 1) {
+                                    this.Initializing = false;
+                                    resolve();
+                                }
                             }
                         }
                     }

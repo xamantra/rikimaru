@@ -22,7 +22,6 @@ export class QueueJob {
     if (MediaStatus.Completed(media) && media.episodes === 1) {
       this.FindUser(title, queueEpisode, media);
     } else if (queueEpisode < media.nextAiringEpisode.next) {
-      console.log(`queueEpisode < media.nextAiringEpisode.next`);
       this.FindUser(title, queueEpisode, media);
     }
   }

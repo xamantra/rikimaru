@@ -92,10 +92,8 @@ export class SubscriptionData {
           if (sub.MediaId === malId) {
             UserData.GetUserById(sub.UserId)
               .then(user => {
-                console.log(`Subscriber found: "${user.DiscordId}"`);
                 subscribers.push(user);
                 if (iteration === this.SubscriptionList.length) {
-                  console.log(`Resolving subscribers...`);
                   resolve(subscribers);
                 }
               })
