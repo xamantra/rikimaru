@@ -27,54 +27,48 @@ export class MediaData {
 
   public static async Init() {
     return new Promise(async (resolve, reject) => {
-      this.Clear().then(() => {
-        this.Initializing = true;
-        Mongo.FindAll(DataHelper.media).then(async result => {
-          const $result = await JsonHelper.ArrayConvert<Media>(result, Media);
-          if ($result === undefined || $result === null) {
-            reject(
-              new Error(
-                `"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`
-              )
-            );
-          } else {
-            if ($result.length === 0) {
-              resolve();
-            }
-            let iteration = 0;
-            $result.forEach(m => {
-              iteration++;
-              this.LocalList.push(m);
-              if (iteration === $result.length) {
-                this.LoadFromApi()
-                  .then(() => {
-                    console.log(`Media List Length: ${this.MediaList.length}`);
-                    resolve();
-                  })
-                  .catch((reason: Error) => {
-                    console.log(reason.message);
-                  });
-              }
+      await this.Clear();
+      this.Initializing = true;
+      const result = await Mongo.FindAll(DataHelper.media);
+      const $result = await JsonHelper.ArrayConvert<Media>(result, Media);
+      if ($result === undefined || $result === null) {
+        reject(
+          new Error(
+            `"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`
+          )
+        );
+      } else {
+        if ($result.length === 0) {
+          resolve();
+        }
+        let iteration = 0;
+        $result.forEach(async m => {
+          iteration++;
+          this.LocalList.push(m);
+          if (iteration === $result.length) {
+            await this.LoadFromApi().catch((reason: Error) => {
+              console.log(reason.message);
             });
+            console.log(`Media List Length: ${this.MediaList.length}`);
+            resolve();
           }
         });
-      });
+      }
     });
   }
 
   public static async Clear() {
-    return new Promise((resolve, reject) => {
-      this.OnReady().then(() => {
-        this.LocalList.length = 0;
-        this.MediaList.length = 0;
-        this.LocalList.splice(0, this.LocalList.length);
-        this.MediaList.splice(0, this.MediaList.length);
-        if (this.LocalList.length === 0 && this.MediaList.length === 0) {
-          resolve();
-        } else {
-          reject(new Error(`The arrays were not cleared.`));
-        }
-      });
+    return new Promise(async (resolve, reject) => {
+      await this.OnReady();
+      this.LocalList.length = 0;
+      this.MediaList.length = 0;
+      this.LocalList.splice(0, this.LocalList.length);
+      this.MediaList.splice(0, this.MediaList.length);
+      if (this.LocalList.length === 0 && this.MediaList.length === 0) {
+        resolve();
+      } else {
+        reject(new Error(`The arrays were not cleared.`));
+      }
     });
   }
 
@@ -91,44 +85,31 @@ export class MediaData {
       } else {
         let iteration = 0;
         locals.forEach(lm => {
-          setTimeout(() => {
-            MediaSearch.Find(lm.MalId)
-              .then($m => {
-                iteration++;
-                if (MediaStatus.Ongoing($m) || MediaStatus.NotYetAired($m)) {
-                  QueueData.Insert($m.idMal, $m.nextAiringEpisode.next)
-                    .then(insertId => {
-                      this.MediaList.push($m);
-                      this.Check(iteration, $m, resolve);
-                    })
-                    .catch(() => {
-                      this.Check(iteration, $m, resolve);
-                    });
-                } else {
-                  ArrayHelper.remove(this.LocalList, lm, () => {
-                    const query = { _id: $m.idMal };
-                    Mongo.Delete(DataHelper.media, query).then(() => {
-                      userDatas.forEach(x => {
-                        SubscriptionData.Delete($m.idMal, x.DiscordId).then(
-                          () => {
-                            QueueData.GetJobs().then(jobs => {
-                              jobs.forEach(qj => {
-                                QueueData.RemoveJob(qj);
-                              });
-                            });
-                          }
-                        );
-                      });
-                    });
-                    this.Check(iteration, $m, resolve);
-                  });
+          setTimeout(async () => {
+            const $m = await MediaSearch.Find(lm.MalId);
+            iteration++;
+            if (MediaStatus.Ongoing($m) || MediaStatus.NotYetAired($m)) {
+              await QueueData.Insert($m.idMal, $m.nextAiringEpisode.next).catch(
+                () => {
+                  this.Check(iteration, $m, resolve);
                 }
-              })
-              .catch(error => {
-                console.warn(
-                  `Error while searching : [MediaSearch.Find(${lm.MalId})]`
-                );
+              );
+              this.MediaList.push($m);
+              this.Check(iteration, $m, resolve);
+            } else {
+              ArrayHelper.remove(this.LocalList, lm, async () => {
+                const query = { _id: $m.idMal };
+                await Mongo.Delete(DataHelper.media, query);
+                userDatas.forEach(async x => {
+                  await SubscriptionData.Delete($m.idMal, x.DiscordId);
+                  const jobs = await QueueData.GetJobs();
+                  jobs.forEach(qj => {
+                    QueueData.RemoveJob(qj);
+                  });
+                });
+                this.Check(iteration, $m, resolve);
               });
+            }
           }, 100);
         });
       }
@@ -149,93 +130,80 @@ export class MediaData {
 
   public static async Insert(media: IMedia, title: string, user: User = null) {
     return new Promise<number>(async (resolve, reject) => {
-      this.OnReady().then(() => {
-        this.Exists(media.idMal).then(exists => {
-          if (exists === false) {
-            const data = { _id: media.idMal, title: title };
-            Mongo.Insert(DataHelper.media, data).then(result => {
-              if (
-                result.insertedId !== undefined &&
-                result.insertedId !== null
-              ) {
-                const m = new Media();
-                m.MalId = media.idMal;
-                m.Title = title;
-                this.LocalList.push(m);
-                if (
-                  MediaStatus.Ongoing(media) ||
-                  MediaStatus.NotYetAired(media)
-                ) {
-                  this.MediaList.push(media);
-                  QueueData.Insert(media.idMal, media.nextAiringEpisode.next)
-                    .then(qId => {
-                      resolve(media.idMal);
-                    })
-                    .catch((reason: Error) => {
-                      console.log(reason.message);
-                    });
-                }
-              }
+      await this.OnReady();
+      const exists = await this.Exists(media.idMal);
+      if (exists === false) {
+        const data = { _id: media.idMal, title: title };
+        const result = await Mongo.Insert(DataHelper.media, data);
+        if (result.insertedId !== undefined && result.insertedId !== null) {
+          const m = new Media();
+          m.MalId = media.idMal;
+          m.Title = title;
+          this.LocalList.push(m);
+          if (MediaStatus.Ongoing(media) || MediaStatus.NotYetAired(media)) {
+            this.MediaList.push(media);
+            await QueueData.Insert(
+              media.idMal,
+              media.nextAiringEpisode.next
+            ).catch((reason: Error) => {
+              console.log(reason.message);
             });
-          } else {
             resolve(media.idMal);
           }
-        });
-      });
+        }
+      } else {
+        resolve(media.idMal);
+      }
     });
   }
 
   public static GetMedia(malId: number) {
-    return new Promise<IMedia>((resolve, reject) => {
-      this.OnReady().then(() => {
-        let iteration = 0;
-        this.MediaList.forEach($m => {
-          iteration++;
-          if ($m.idMal === malId) {
-            resolve($m);
-          }
-          if (iteration === this.MediaList.length) {
-            reject(new Error(`NO media with id "${malId}" was found.`));
-          }
-        });
+    return new Promise<IMedia>(async (resolve, reject) => {
+      await this.OnReady();
+      let iteration = 0;
+      this.MediaList.forEach($m => {
+        iteration++;
+        if ($m.idMal === malId) {
+          resolve($m);
+        }
+        if (iteration === this.MediaList.length) {
+          reject(new Error(`NO media with id "${malId}" was found.`));
+        }
       });
     });
   }
 
   public static GetRandom() {
-    return new Promise<IMedia>((resolve, reject) => {
-      this.OnReady().then(() => {
-        setInterval(() => {
-          const media = this.MediaList[
-            Random.Range(0, this.MediaList.length - 1)
-          ];
-          if (media !== null && media !== undefined) {
-            resolve(media);
-          }
-        }, 0);
-      });
+    return new Promise<IMedia>(async (resolve, reject) => {
+      await this.OnReady();
+      setInterval(() => {
+        const media = this.MediaList[
+          Random.Range(0, this.MediaList.length - 1)
+        ];
+        if (media !== null && media !== undefined) {
+          resolve(media);
+        }
+      }, 0);
     });
   }
 
   public static async LogAll() {
     return new Promise(async (res, rej) => {
-      this.OnReady().then(() => {
-        console.log(this.LocalList);
-        res();
-      });
+      await this.OnReady();
+      console.log(this.LocalList);
+      res();
     });
   }
 
   public static async Exists(malId: number) {
     return new Promise<boolean>(async (res, rej) => {
-      this.OnReady().then(() => {
-        const m = this.LocalList.find(x => x.MalId === malId);
-        if (m === null || m === undefined) {
-          res(false);
-        } else {
-          res(true);
-        }
-      });
+      await this.OnReady();
+      const m = this.LocalList.find(x => x.MalId === malId);
+      if (m === null || m === undefined) {
+        res(false);
+      } else {
+        res(true);
+      }
     });
   }
 

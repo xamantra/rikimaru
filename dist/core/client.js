@@ -1,10 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_1 = require("./config");
-const presence_1 = require("./presence");
 class ClientManager {
     static async Init(client) {
-        client.login(config_1.Config.BOT_TOKEN);
+        await client.login(config_1.Config.BOT_TOKEN);
         this.Client = client;
         client.on("guildCreate", guild => {
             console.log(`New server joined: ${guild.name} (Id: ${guild.id}). This server has ${guild.memberCount} members!`);
@@ -16,7 +15,6 @@ class ClientManager {
                 }
             });
             console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} servers.`);
-            presence_1.BotPresence.Set();
         });
     }
     static GetClient() {

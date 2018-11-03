@@ -8,19 +8,19 @@ const mal_bind_data_1 = require("../../data/mal.bind.data");
 class LogAllFunction {
     async Execute(message, command, dm) {
         if (message.author.id === "442621672714010625") {
-            user_data_1.UserData.LogAll().catch((reason) => {
+            await user_data_1.UserData.LogAll().catch((reason) => {
                 console.log(reason.message);
             });
-            media_data_1.MediaData.LogAll().catch((reason) => {
+            await media_data_1.MediaData.LogAll().catch((reason) => {
                 console.log(reason.message);
             });
-            queue_data_1.QueueData.LogAll().catch((reason) => {
+            await queue_data_1.QueueData.LogAll().catch((reason) => {
                 console.log(reason.message);
             });
-            subscription_data_1.SubscriptionData.LogAll().catch((reason) => {
+            await subscription_data_1.SubscriptionData.LogAll().catch((reason) => {
                 console.log(reason.message);
             });
-            mal_bind_data_1.MalBindData.LogAll().catch((reason) => {
+            await mal_bind_data_1.MalBindData.LogAll().catch((reason) => {
                 console.log(reason.message);
             });
         }

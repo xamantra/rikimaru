@@ -9,72 +9,58 @@ export class MalBindData {
   public static Initializing = false;
 
   public static Init() {
-    return new Promise((resolve, reject) => {
-      this.OnReady().then(() => {
-        this.Initializing = true;
-        Mongo.FindAll(DataHelper.malsync).then(async results => {
-          const list = await JsonHelper.ArrayConvert<MalBind>(results, MalBind);
-          if (list === undefined || list === null) {
-            this.Initializing = false;
-            reject(
-              new Error(
-                `JsonHelper.ArrayConvert<MalSync>(results, MalSync) is 'null' or 'undefined'.`
-              )
-            );
-          } else {
-            if (list.length === 0) {
+    return new Promise(async (resolve, reject) => {
+      await this.OnReady();
+      this.Initializing = true;
+      const results = await Mongo.FindAll(DataHelper.malsync);
+      const list = await JsonHelper.ArrayConvert<MalBind>(results, MalBind);
+      if (list === undefined || list === null) {
+        this.Initializing = false;
+        reject(
+          new Error(
+            `JsonHelper.ArrayConvert<MalSync>(results, MalSync) is 'null' or 'undefined'.`
+          )
+        );
+      } else {
+        if (list.length === 0) {
+          this.Initializing = false;
+          resolve();
+        } else {
+          for (let i = 0; i < list.length; i++) {
+            const malBind = list[i];
+            this.List.push(malBind);
+            if (i === list.length - 1) {
               this.Initializing = false;
               resolve();
-            } else {
-              for (let i = 0; i < list.length; i++) {
-                const malBind = list[i];
-                this.List.push(malBind);
-                if (i === list.length - 1) {
-                  this.Initializing = false;
-                  resolve();
-                }
-              }
             }
           }
-        });
-      });
+        }
+      }
     });
   }
 
   public static Insert(discordId: string, malUsername: string, code: string) {
-    return new Promise<MalBind>((resolve, reject) => {
-      this.OnReady().then(() => {
-        this.Exists(discordId)
-          .then(exists => {
-            if (exists === false) {
-              const data = {
-                discord_id: discordId,
-                mal_username: malUsername,
-                code: code,
-                verified: false
-              };
-              Mongo.Insert(DataHelper.malsync, data)
-                .then(result => {
-                  console.log(result.insertedId);
-                  const malsync = new MalBind();
-                  malsync.Id = result.insertedId;
-                  malsync.DiscordId = discordId;
-                  malsync.MalUsername = malUsername;
-                  malsync.Code = code;
-                  malsync.Verified = false;
-                  this.List.push(malsync);
-                  resolve(malsync);
-                })
-                .catch(err => {
-                  console.log(err);
-                  reject(err);
-                });
-            }
-          })
-          .catch((m: MalBind) => {
-            reject(m);
-          });
-      });
+    return new Promise<MalBind>(async (resolve, reject) => {
+      await this.OnReady();
+      const exists = await this.Exists(discordId);
+      if (exists === false) {
+        const data = {
+          discord_id: discordId,
+          mal_username: malUsername,
+          code: code,
+          verified: false
+        };
+        const result = await Mongo.Insert(DataHelper.malsync, data);
+        console.log(result.insertedId);
+        const malsync = new MalBind();
+        malsync.Id = result.insertedId;
+        malsync.DiscordId = discordId;
+        malsync.MalUsername = malUsername;
+        malsync.Code = code;
+        malsync.Verified = false;
+        this.List.push(malsync);
+        resolve(malsync);
+      }
     });
   }
 
@@ -83,87 +69,80 @@ export class MalBindData {
   }
 
   public static Verify(discordId: string) {
-    return new Promise<MalBind>((resolve, reject) => {
-      this.OnReady().then(() => {
-        const query = { discord_id: discordId };
-        const newValue = { $set: { verified: true } };
-        Mongo.Update(DataHelper.malsync, query, newValue).then(result => {
-          this.Get(discordId).then(oldValue => {
-            ArrayHelper.remove(this.List, oldValue, () => {
-              Mongo.FindOne(DataHelper.malsync, query).then(async res => {
-                const ms = await JsonHelper.ArrayConvert<MalBind>(res, MalBind);
-                const m = ms[0];
-                console.log(`Update MAL bind: ${m.Code}`);
-                if (m !== null && m !== undefined) {
-                  this.List.push(m);
-                  resolve(m);
-                } else {
-                  reject(
-                    new Error(
-                      `JsonHelper.Convert<MalSync>(res, MalSync) is 'null' or 'undefined'.`
-                    )
-                  );
-                }
-              });
-            });
-          });
-        });
+    return new Promise<MalBind>(async (resolve, reject) => {
+      await this.OnReady();
+      const query = { discord_id: discordId };
+      const newValue = { $set: { verified: true } };
+      await Mongo.Update(DataHelper.malsync, query, newValue);
+      const oldValue = await this.Get(discordId);
+      ArrayHelper.remove(this.List, oldValue, async () => {
+        const res = await Mongo.FindOne(DataHelper.malsync, query);
+        const ms = await JsonHelper.ArrayConvert<MalBind>(res, MalBind);
+        const m = ms[0];
+        console.log(`Update MAL bind: ${m.Code}`);
+        if (m !== null && m !== undefined) {
+          this.List.push(m);
+          resolve(m);
+        } else {
+          reject(
+            new Error(
+              `JsonHelper.Convert<MalSync>(res, MalSync) is 'null' or 'undefined'.`
+            )
+          );
+        }
       });
     });
   }
 
   public static Exists(discordId: string) {
-    return new Promise<boolean>((resolve, reject) => {
-      this.OnReady().then(() => {
-        const malsync = this.List.find(m => m.DiscordId === discordId);
-        if (malsync === null || malsync === undefined) {
-          resolve(false);
-        } else {
-          reject(malsync);
-        }
-      });
+    return new Promise<boolean>(async (resolve, reject) => {
+      await this.OnReady();
+      const malsync = this.List.find(m => m.DiscordId === discordId);
+      if (malsync === null || malsync === undefined) {
+        resolve(false);
+      } else {
+        resolve(true);
+      }
     });
   }
 
   public static Get(discordId: string) {
-    return new Promise<MalBind>((resolve, reject) => {
-      this.OnReady().then(() => {
-        let iteration = 0;
-        if (this.List.length === 0) {
-          reject(new Error(`List is empty.`));
-        }
-        this.List.forEach(m => {
-          iteration++;
-          if (m.DiscordId === discordId) {
-            resolve(m);
-          } else {
-            if (iteration === this.List.length) {
-              reject(
-                new Error(
-                  `this.List.find(m => m.DiscordId === discordId) is 'null' or 'undefined'.`
-                )
-              );
-            }
+    return new Promise<MalBind>(async (resolve, reject) => {
+      await this.OnReady();
+      let iteration = 0;
+      if (this.List.length === 0) {
+        reject(new Error(`List is empty.`));
+      }
+      this.List.forEach(m => {
+        iteration++;
+        if (m.DiscordId === discordId) {
+          resolve(m);
+        } else {
+          if (iteration === this.List.length) {
+            reject(
+              new Error(
+                `this.List.find(m => m.DiscordId === discordId) is 'null' or 'undefined'.`
+              )
+            );
           }
-        });
+        }
       });
     });
   }
 
   public static LogAll() {
-    return new Promise((resolve, reject) => {
-      this.OnReady().then(() => {
-        if (
-          this.List === null ||
-          this.List === undefined ||
-          this.List.length === 0
-        ) {
-          reject(new Error(`this.List is 'null' or 'empty'.`));
-        } else {
-          console.log(this.List);
-          resolve();
-        }
-      });
+    return new Promise(async (resolve, reject) => {
+      await this.OnReady();
+      if (
+        this.List === null ||
+        this.List === undefined ||
+        this.List.length === 0
+      ) {
+        reject(new Error(`this.List is 'null' or 'empty'.`));
+      } else {
+        console.log(this.List);
+        resolve();
+      }
     });
   }
 

@@ -29,18 +29,16 @@ export class MediaSearch {
   }
 
   public static async Find(id: number) {
-    return new Promise<IMedia>((resolve, reject) => {
-      const result = Anilist.MediaQuery(id);
+    return new Promise<IMedia>(async (resolve, reject) => {
+      const $m = await Anilist.MediaQuery(id);
       let media: IMedia;
-      result
-        .then($m => {
-          media = (JsonHelper.Converter.deserialize($m, RootMedia) as RootMedia)
-            .DataMedia.Media;
-          resolve(media);
-        })
-        .catch(err => {
-          reject(err);
-        });
+      if ($m !== null) {
+        media = (JsonHelper.Converter.deserialize($m, RootMedia) as RootMedia)
+          .DataMedia.Media;
+        resolve(media);
+      } else {
+        resolve(null);
+      }
     });
   }
 }

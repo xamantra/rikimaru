@@ -110,7 +110,7 @@ export const dmunsub = new BotCommand(
 );
 export const malbind = new BotCommand(
   "malbind",
-  `Synchronize your mal account with your Rikimaru Discord.`,
+  `Bind your mal account with your Rikimaru Discord.`,
   true,
   false,
   Response.ChannelReply,

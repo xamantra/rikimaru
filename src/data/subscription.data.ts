@@ -16,39 +16,34 @@ export class SubscriptionData {
   private static SubscriptionList: Subscription[] = [];
 
   public static async Init() {
-    return new Promise((resolve, reject) => {
-      this.OnReady().then(() => {
-        this.Initializing = true;
-        this.Clear()
-          .then(() => {
-            Mongo.FindAll(DataHelper.subscription).then(async result => {
-              const subs = await JsonHelper.ArrayConvert<Subscription>(
-                result,
-                Subscription
-              );
-              // console.log(subs);
-              if (subs === null || subs === undefined) {
-                this.Initializing = false;
-                reject(
-                  new Error(
-                    `JsonHelper.ArrayConvert<Subscription>(result,Subscription);`
-                  )
-                );
-              } else {
-                if (subs.length === 0) {
-                  this.Initializing = false;
-                  resolve();
-                }
-                subs.forEach(sub => {
-                  this.SubscriptionList.push(sub);
-                });
-                this.Initializing = false;
-                resolve();
-              }
-            });
-          })
-          .catch(err => console.log(err));
-      });
+    return new Promise(async (resolve, reject) => {
+      await this.OnReady();
+      this.Initializing = true;
+      await this.Clear();
+      this.Clear().catch(err => console.log(err));
+      const result = await Mongo.FindAll(DataHelper.subscription);
+      const subs = await JsonHelper.ArrayConvert<Subscription>(
+        result,
+        Subscription
+      );
+      if (subs === null || subs === undefined) {
+        this.Initializing = false;
+        reject(
+          new Error(
+            `JsonHelper.ArrayConvert<Subscription>(result,Subscription);`
+          )
+        );
+      } else {
+        if (subs.length === 0) {
+          this.Initializing = false;
+          resolve();
+        }
+        subs.forEach(sub => {
+          this.SubscriptionList.push(sub);
+        });
+        this.Initializing = false;
+        resolve();
+      }
     });
   }
 
@@ -65,151 +60,132 @@ export class SubscriptionData {
   }
 
   public static async GetUserSubs(userId: string) {
-    return new Promise<Subscription[]>((resolve, reject) => {
-      this.OnReady().then(() => {
-        const subs: Subscription[] = [];
-        this.SubscriptionList.forEach(sub => {
-          if (sub.UserId === userId) {
-            subs.push(sub);
-            // console.log(`Pushed: ${sub.Id}`);
-          }
-        });
-        resolve(subs);
+    return new Promise<Subscription[]>(async (resolve, reject) => {
+      await this.OnReady();
+      const subs: Subscription[] = [];
+      this.SubscriptionList.forEach(sub => {
+        if (sub.UserId === userId) {
+          subs.push(sub);
+        }
       });
+      resolve(subs);
     });
   }
 
   public static async GetSubscribers(malId: number) {
-    return new Promise<User[]>((resolve, reject) => {
-      this.OnReady().then(() => {
-        const subscribers: User[] = [];
-        let iteration = 0;
-        if (this.SubscriptionList.length === 0) {
-          reject(new Error(`SubscriptionList is empty`));
-        }
-        this.SubscriptionList.forEach(sub => {
-          iteration++;
-          if (sub.MediaId === malId) {
-            UserData.GetUserById(sub.UserId)
-              .then(user => {
-                subscribers.push(user);
-                if (iteration === this.SubscriptionList.length) {
-                  resolve(subscribers);
-                }
-              })
-              .catch(err => {
-                console.log(err);
-                if (iteration === this.SubscriptionList.length) {
-                  resolve(subscribers);
-                }
-              });
+    return new Promise<User[]>(async (resolve, reject) => {
+      await this.OnReady();
+      const subscribers: User[] = [];
+      let iteration = 0;
+      if (this.SubscriptionList.length === 0) {
+        reject(new Error(`SubscriptionList is empty`));
+      }
+      this.SubscriptionList.forEach(async sub => {
+        iteration++;
+        if (sub.MediaId === malId) {
+          const user = await UserData.GetUserById(sub.UserId).catch(err => {
+            console.log(err);
+            if (iteration === this.SubscriptionList.length) {
+              resolve(subscribers);
+            }
+          });
+          if (user instanceof User) subscribers.push(user);
+          if (iteration === this.SubscriptionList.length) {
+            resolve(subscribers);
           }
-        });
+        }
       });
     });
   }
 
   public static async Insert(mediaId: number, userId: string) {
-    return new Promise((resolve, reject) => {
-      this.OnReady().then(() => {
-        this.Exists(mediaId, userId).then(async exists => {
-          if (exists === false) {
-            const user = UserData.All.find(x => x.Id === userId);
-            if (user === null || user === undefined) {
-              reject(
-                `"this.UserData.All.find(x => x.Id === userId)" is 'null' or 'undefined'.`
-              );
-            } else {
-              const queue = QueueData.All.find(x => x.MediaId === mediaId);
-              if (queue === null || queue === undefined) {
-                reject(
-                  `"this.QueueData.All.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`
-                );
-              } else {
-                const data = {
-                  media_id: mediaId,
-                  user_id: new ObjectId(userId)
-                };
-                Mongo.Insert(DataHelper.subscription, data).then(
-                  async result => {
-                    if (
-                      result.insertedId !== undefined &&
-                      result.insertedId !== null
-                    ) {
-                      const sub = new Subscription();
-                      sub.Id = result.insertedId;
-                      sub.MediaId = mediaId;
-                      sub.UserId = userId;
-                      this.SubscriptionList.push(sub);
-                      resolve();
-                    }
-                  }
-                );
-              }
-            }
+    return new Promise(async (resolve, reject) => {
+      await this.OnReady();
+      const exists = await this.Exists(mediaId, userId);
+      if (exists === false) {
+        const user = UserData.All.find(x => x.Id === userId);
+        if (user === null || user === undefined) {
+          reject(
+            `"this.UserData.All.find(x => x.Id === userId)" is 'null' or 'undefined'.`
+          );
+        } else {
+          const queue = QueueData.All.find(x => x.MediaId === mediaId);
+          if (queue === null || queue === undefined) {
+            reject(
+              `"this.QueueData.All.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`
+            );
           } else {
-            reject("EXISTS");
+            const data = {
+              media_id: mediaId,
+              user_id: new ObjectId(userId)
+            };
+            const result = await Mongo.Insert(DataHelper.subscription, data);
+            if (result.insertedId !== undefined && result.insertedId !== null) {
+              const sub = new Subscription();
+              sub.Id = result.insertedId;
+              sub.MediaId = mediaId;
+              sub.UserId = userId;
+              this.SubscriptionList.push(sub);
+              resolve();
+            }
           }
-        });
-      });
+        }
+      } else {
+        reject("EXISTS");
+      }
     });
   }
 
   public static async Delete(mediaId: number, discordId: string) {
-    return new Promise((res, rej) => {
-      this.OnReady().then(() => {
-        UserData.GetUser(discordId)
-          .then(user => {
-            const query = { media_id: mediaId, user_id: new ObjectId(user.Id) };
-            Mongo.Delete(DataHelper.subscription, query).then(() => {
-              const sub = this.SubscriptionList.find(
-                x => x.MediaId === mediaId && x.UserId === user.Id
-              );
-              if (sub !== null && sub !== undefined) {
-                ArrayHelper.remove(this.SubscriptionList, sub, () => {
-                  res();
-                });
-              } else {
-                rej(new Error(`Nothing to remove.`));
-              }
-            });
-          })
-          .catch((reason: Error) => {
-            rej(reason);
-          });
+    return new Promise(async (res, rej) => {
+      await this.OnReady();
+      const user = await UserData.GetUser(discordId).catch((reason: Error) => {
+        rej(reason);
       });
+      let query: any = null;
+      if (user instanceof User)
+        query = { media_id: mediaId, user_id: new ObjectId(user.Id) };
+      await Mongo.Delete(DataHelper.subscription, query);
+      const sub = this.SubscriptionList.find(
+        x => x.MediaId === mediaId && x.UserId === (user as User).Id
+      );
+      if (sub !== null && sub !== undefined) {
+        ArrayHelper.remove(this.SubscriptionList, sub, () => {
+          res();
+        });
+      } else {
+        rej(new Error(`Nothing to remove.`));
+      }
     });
   }
 
   public static async Exists(mediaId: number, userId: string) {
-    return new Promise<boolean>((resolve, reject) => {
-      this.OnReady().then(() => {
-        const sub = this.All.find(
-          x => x.MediaId === mediaId && x.UserId === userId
-        );
-        if (sub === null || sub === undefined) {
-          resolve(false);
-        } else {
-          resolve(true);
-        }
-      });
+    return new Promise<boolean>(async (resolve, reject) => {
+      await this.OnReady();
+      const sub = this.All.find(
+        x => x.MediaId === mediaId && x.UserId === userId
+      );
+      if (sub === null || sub === undefined) {
+        resolve(false);
+      } else {
+        resolve(true);
+      }
     });
   }
 
   public static async LogAll() {
-    return new Promise((resolve, reject) => {
-      this.OnReady().then(() => {
-        if (
-          this.All === null ||
-          this.All === undefined ||
-          this.All.length === 0
-        ) {
-          reject(new Error(`"this.All" is 'null' or 'undefined'.`));
-        } else {
-          console.log(this.All);
-          resolve();
-        }
-      });
+    return new Promise(async (resolve, reject) => {
+      await this.OnReady();
+      if (
+        this.All === null ||
+        this.All === undefined ||
+        this.All.length === 0
+      ) {
+        reject(new Error(`"this.All" is 'null' or 'undefined'.`));
+      } else {
+        console.log(this.All);
+        resolve();
+      }
     });
   }
 

@@ -20,51 +20,45 @@ class MediaData {
     }
     static async Init() {
         return new Promise(async (resolve, reject) => {
-            this.Clear().then(() => {
-                this.Initializing = true;
-                mongo_1.Mongo.FindAll(data_helper_1.DataHelper.media).then(async (result) => {
-                    const $result = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Media);
-                    if ($result === undefined || $result === null) {
-                        reject(new Error(`"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`));
-                    }
-                    else {
-                        if ($result.length === 0) {
-                            resolve();
-                        }
-                        let iteration = 0;
-                        $result.forEach(m => {
-                            iteration++;
-                            this.LocalList.push(m);
-                            if (iteration === $result.length) {
-                                this.LoadFromApi()
-                                    .then(() => {
-                                    console.log(`Media List Length: ${this.MediaList.length}`);
-                                    resolve();
-                                })
-                                    .catch((reason) => {
-                                    console.log(reason.message);
-                                });
-                            }
+            await this.Clear();
+            this.Initializing = true;
+            const result = await mongo_1.Mongo.FindAll(data_helper_1.DataHelper.media);
+            const $result = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Media);
+            if ($result === undefined || $result === null) {
+                reject(new Error(`"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`));
+            }
+            else {
+                if ($result.length === 0) {
+                    resolve();
+                }
+                let iteration = 0;
+                $result.forEach(async (m) => {
+                    iteration++;
+                    this.LocalList.push(m);
+                    if (iteration === $result.length) {
+                        await this.LoadFromApi().catch((reason) => {
+                            console.log(reason.message);
                         });
+                        console.log(`Media List Length: ${this.MediaList.length}`);
+                        resolve();
                     }
                 });
-            });
+            }
         });
     }
     static async Clear() {
-        return new Promise((resolve, reject) => {
-            this.OnReady().then(() => {
-                this.LocalList.length = 0;
-                this.MediaList.length = 0;
-                this.LocalList.splice(0, this.LocalList.length);
-                this.MediaList.splice(0, this.MediaList.length);
-                if (this.LocalList.length === 0 && this.MediaList.length === 0) {
-                    resolve();
-                }
-                else {
-                    reject(new Error(`The arrays were not cleared.`));
-                }
-            });
+        return new Promise(async (resolve, reject) => {
+            await this.OnReady();
+            this.LocalList.length = 0;
+            this.MediaList.length = 0;
+            this.LocalList.splice(0, this.LocalList.length);
+            this.MediaList.splice(0, this.MediaList.length);
+            if (this.LocalList.length === 0 && this.MediaList.length === 0) {
+                resolve();
+            }
+            else {
+                reject(new Error(`The arrays were not cleared.`));
+            }
         });
     }
     static async LoadFromApi() {
@@ -80,41 +74,30 @@ class MediaData {
             else {
                 let iteration = 0;
                 locals.forEach(lm => {
-                    setTimeout(() => {
-                        media_search_1.MediaSearch.Find(lm.MalId)
-                            .then($m => {
-                            iteration++;
-                            if (media_status_1.MediaStatus.Ongoing($m) || media_status_1.MediaStatus.NotYetAired($m)) {
-                                queue_data_1.QueueData.Insert($m.idMal, $m.nextAiringEpisode.next)
-                                    .then(insertId => {
-                                    this.MediaList.push($m);
-                                    this.Check(iteration, $m, resolve);
-                                })
-                                    .catch(() => {
-                                    this.Check(iteration, $m, resolve);
-                                });
-                            }
-                            else {
-                                array_helper_1.ArrayHelper.remove(this.LocalList, lm, () => {
-                                    const query = { _id: $m.idMal };
-                                    mongo_1.Mongo.Delete(data_helper_1.DataHelper.media, query).then(() => {
-                                        userDatas.forEach(x => {
-                                            subscription_data_1.SubscriptionData.Delete($m.idMal, x.DiscordId).then(() => {
-                                                queue_data_1.QueueData.GetJobs().then(jobs => {
-                                                    jobs.forEach(qj => {
-                                                        queue_data_1.QueueData.RemoveJob(qj);
-                                                    });
-                                                });
-                                            });
-                                        });
+                    setTimeout(async () => {
+                        const $m = await media_search_1.MediaSearch.Find(lm.MalId);
+                        iteration++;
+                        if (media_status_1.MediaStatus.Ongoing($m) || media_status_1.MediaStatus.NotYetAired($m)) {
+                            await queue_data_1.QueueData.Insert($m.idMal, $m.nextAiringEpisode.next).catch(() => {
+                                this.Check(iteration, $m, resolve);
+                            });
+                            this.MediaList.push($m);
+                            this.Check(iteration, $m, resolve);
+                        }
+                        else {
+                            array_helper_1.ArrayHelper.remove(this.LocalList, lm, async () => {
+                                const query = { _id: $m.idMal };
+                                await mongo_1.Mongo.Delete(data_helper_1.DataHelper.media, query);
+                                userDatas.forEach(async (x) => {
+                                    await subscription_data_1.SubscriptionData.Delete($m.idMal, x.DiscordId);
+                                    const jobs = await queue_data_1.QueueData.GetJobs();
+                                    jobs.forEach(qj => {
+                                        queue_data_1.QueueData.RemoveJob(qj);
                                     });
-                                    this.Check(iteration, $m, resolve);
                                 });
-                            }
-                        })
-                            .catch(error => {
-                            console.warn(`Error while searching : [MediaSearch.Find(${lm.MalId})]`);
-                        });
+                                this.Check(iteration, $m, resolve);
+                            });
+                        }
                     }, 100);
                 });
             }
@@ -129,85 +112,73 @@ class MediaData {
     }
     static async Insert(media, title, user = null) {
         return new Promise(async (resolve, reject) => {
-            this.OnReady().then(() => {
-                this.Exists(media.idMal).then(exists => {
-                    if (exists === false) {
-                        const data = { _id: media.idMal, title: title };
-                        mongo_1.Mongo.Insert(data_helper_1.DataHelper.media, data).then(result => {
-                            if (result.insertedId !== undefined &&
-                                result.insertedId !== null) {
-                                const m = new subscription_model_1.Media();
-                                m.MalId = media.idMal;
-                                m.Title = title;
-                                this.LocalList.push(m);
-                                if (media_status_1.MediaStatus.Ongoing(media) ||
-                                    media_status_1.MediaStatus.NotYetAired(media)) {
-                                    this.MediaList.push(media);
-                                    queue_data_1.QueueData.Insert(media.idMal, media.nextAiringEpisode.next)
-                                        .then(qId => {
-                                        resolve(media.idMal);
-                                    })
-                                        .catch((reason) => {
-                                        console.log(reason.message);
-                                    });
-                                }
-                            }
+            await this.OnReady();
+            const exists = await this.Exists(media.idMal);
+            if (exists === false) {
+                const data = { _id: media.idMal, title: title };
+                const result = await mongo_1.Mongo.Insert(data_helper_1.DataHelper.media, data);
+                if (result.insertedId !== undefined && result.insertedId !== null) {
+                    const m = new subscription_model_1.Media();
+                    m.MalId = media.idMal;
+                    m.Title = title;
+                    this.LocalList.push(m);
+                    if (media_status_1.MediaStatus.Ongoing(media) || media_status_1.MediaStatus.NotYetAired(media)) {
+                        this.MediaList.push(media);
+                        await queue_data_1.QueueData.Insert(media.idMal, media.nextAiringEpisode.next).catch((reason) => {
+                            console.log(reason.message);
                         });
-                    }
-                    else {
                         resolve(media.idMal);
                     }
-                });
-            });
+                }
+            }
+            else {
+                resolve(media.idMal);
+            }
         });
     }
     static GetMedia(malId) {
-        return new Promise((resolve, reject) => {
-            this.OnReady().then(() => {
-                let iteration = 0;
-                this.MediaList.forEach($m => {
-                    iteration++;
-                    if ($m.idMal === malId) {
-                        resolve($m);
-                    }
-                    if (iteration === this.MediaList.length) {
-                        reject(new Error(`NO media with id "${malId}" was found.`));
-                    }
-                });
+        return new Promise(async (resolve, reject) => {
+            await this.OnReady();
+            let iteration = 0;
+            this.MediaList.forEach($m => {
+                iteration++;
+                if ($m.idMal === malId) {
+                    resolve($m);
+                }
+                if (iteration === this.MediaList.length) {
+                    reject(new Error(`NO media with id "${malId}" was found.`));
+                }
             });
         });
     }
     static GetRandom() {
-        return new Promise((resolve, reject) => {
-            this.OnReady().then(() => {
-                setInterval(() => {
-                    const media = this.MediaList[random_helper_1.Random.Range(0, this.MediaList.length - 1)];
-                    if (media !== null && media !== undefined) {
-                        resolve(media);
-                    }
-                }, 0);
-            });
+        return new Promise(async (resolve, reject) => {
+            await this.OnReady();
+            setInterval(() => {
+                const media = this.MediaList[random_helper_1.Random.Range(0, this.MediaList.length - 1)];
+                if (media !== null && media !== undefined) {
+                    resolve(media);
+                }
+            }, 0);
         });
     }
     static async LogAll() {
         return new Promise(async (res, rej) => {
-            this.OnReady().then(() => {
-                console.log(this.LocalList);
-                res();
-            });
+            await this.OnReady();
+            console.log(this.LocalList);
+            res();
         });
     }
     static async Exists(malId) {
         return new Promise(async (res, rej) => {
-            this.OnReady().then(() => {
-                const m = this.LocalList.find(x => x.MalId === malId);
-                if (m === null || m === undefined) {
-                    res(false);
-                }
-                else {
-                    res(true);
-                }
-            });
+            await this.OnReady();
+            const m = this.LocalList.find(x => x.MalId === malId);
+            if (m === null || m === undefined) {
+                res(false);
+            }
+            else {
+                res(true);
+            }
         });
     }
     static OnReady() {

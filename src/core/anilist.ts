@@ -28,7 +28,7 @@ export class Anilist {
           resolve(result);
         })
         .catch(error => {
-          reject(error);
+          console.log(error);
         });
     });
   }

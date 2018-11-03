@@ -17,50 +17,44 @@ class App {
     return this._instance || (this._instance = new this());
   }
 
-  public Run() {
-    UserData.Init()
-      .then(() => {
-        QueueData.Init()
-          .then(() => {
-            SubscriptionData.Init()
-              .then(() => {
-                MalBindData.Init().then(() => {
-                  MediaData.Init()
-                    .then(() => {
-                      Scheduler.LoopJob(0, 10, 0, () => {
-                        console.log(`Refreshing Data....`);
-                        QueueData.Init().then(() => {
-                          MediaData.Init().then(() => {
-                            BotPresence.Set();
-                          });
-                        });
-                      });
-                    })
-                    .catch((err: Error) => {
-                      console.log(err.message);
-                    });
-                });
-              })
-              .catch((err: Error) => {
-                console.log(err.message);
-              });
-          })
-          .catch((err: Error) => {
-            console.log(err.message);
-          });
-      })
-      .catch((err: Error) => {
-        console.log(err.message);
+  public async Run() {
+    await UserData.Init().catch(err => {
+      console.log(err);
+    });
+    await QueueData.Init().catch(err => {
+      console.log(err);
+    });
+    await SubscriptionData.Init().catch(err => {
+      console.log(err);
+    });
+    await MalBindData.Init().catch(err => {
+      console.log(err);
+    });
+    await MediaData.Init().catch(err => {
+      console.log(err);
+    });
+    await BotPresence.Set().catch(err => {
+      console.log(err);
+    });
+    Scheduler.LoopJob(0, 10, 0, async () => {
+      console.log(`Refreshing Data....`);
+      await QueueData.Init().catch(err => {
+        console.log(err);
       });
+      await MediaData.Init().catch(err => {
+        console.log(err);
+      });
+      await BotPresence.Set().catch(err => {
+        console.log(err);
+      });
+    });
   }
 }
 
-// OpenShiftUptimer.Log(true);
-// OpenShiftUptimer.AutoConfigure();
+OpenShiftUptimer.Log(true);
+OpenShiftUptimer.AutoConfigure();
 
-ClientManager.Init(new Client()).catch(err => {
-  console.log(err);
-});
+ClientManager.Init(new Client());
 MessageHandler.Init();
 CommandManager.Init();
 

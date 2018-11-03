@@ -10,19 +10,19 @@ import { MalBindData } from "../../data/mal.bind.data";
 export class LogAllFunction implements ICommandFunction {
   public async Execute(message?: Message, command?: ICommand, dm?: boolean) {
     if (message.author.id === "442621672714010625") {
-      UserData.LogAll().catch((reason: Error) => {
+      await UserData.LogAll().catch((reason: Error) => {
         console.log(reason.message);
       });
-      MediaData.LogAll().catch((reason: Error) => {
+      await MediaData.LogAll().catch((reason: Error) => {
         console.log(reason.message);
       });
-      QueueData.LogAll().catch((reason: Error) => {
+      await QueueData.LogAll().catch((reason: Error) => {
         console.log(reason.message);
       });
-      SubscriptionData.LogAll().catch((reason: Error) => {
+      await SubscriptionData.LogAll().catch((reason: Error) => {
         console.log(reason.message);
       });
-      MalBindData.LogAll().catch((reason: Error) => {
+      await MalBindData.LogAll().catch((reason: Error) => {
         console.log(reason.message);
       });
     }

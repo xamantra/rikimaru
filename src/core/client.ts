@@ -6,7 +6,7 @@ export class ClientManager {
   private static Client: Client;
 
   public static async Init(client: Client) {
-    client.login(Config.BOT_TOKEN);
+    await client.login(Config.BOT_TOKEN);
     this.Client = client;
     client.on("guildCreate", guild => {
       console.log(
@@ -27,7 +27,6 @@ export class ClientManager {
           client.channels.size
         } channels of ${client.guilds.size} servers.`
       );
-      BotPresence.Set();
     });
   }
 

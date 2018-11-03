@@ -25,18 +25,17 @@ class MediaSearch {
         });
     }
     static async Find(id) {
-        return new Promise((resolve, reject) => {
-            const result = anilist_1.Anilist.MediaQuery(id);
+        return new Promise(async (resolve, reject) => {
+            const $m = await anilist_1.Anilist.MediaQuery(id);
             let media;
-            result
-                .then($m => {
+            if ($m !== null) {
                 media = json_helper_1.JsonHelper.Converter.deserialize($m, root_model_1.RootMedia)
                     .DataMedia.Media;
                 resolve(media);
-            })
-                .catch(err => {
-                reject(err);
-            });
+            }
+            else {
+                resolve(null);
+            }
         });
     }
 }
