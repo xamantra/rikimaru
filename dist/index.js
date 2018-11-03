@@ -8,7 +8,6 @@ const user_data_1 = require("./data/user.data");
 const client_1 = require("./core/client");
 const manager_command_1 = require("./command/manager.command");
 const message_handler_1 = require("./handlers/message.handler");
-const openshift_1 = require("./others/openshift");
 const scheduler_1 = require("./core/scheduler");
 const presence_1 = require("./core/presence");
 const mal_bind_data_1 = require("./data/mal.bind.data");
@@ -53,8 +52,8 @@ class App {
         });
     }
 }
-openshift_1.OpenShiftUptimer.Log(true);
-openshift_1.OpenShiftUptimer.AutoConfigure();
+// OpenShiftUptimer.Log(true);
+// OpenShiftUptimer.AutoConfigure();
 client_1.ClientManager.Init(new discord_js_1.Client()).catch(err => {
     console.log(err);
 });

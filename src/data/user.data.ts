@@ -127,9 +127,7 @@ export class UserData {
         if (this.All === undefined || this.All === null) {
           rej(new Error(`"UserData.All" is 'null' or 'undefined'.`));
         } else {
-          this.All.forEach(user => {
-            console.log(user);
-          });
+          console.log(this.All);
           res();
         }
       });

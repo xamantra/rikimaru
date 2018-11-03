@@ -13,8 +13,6 @@ import { Awaiter } from "../awaiter";
 import { MessageHelper } from "../../helpers/message.helper";
 import { MAL } from "../../core/mal";
 import { MalAnime } from "../../models/mal.anime.model";
-import { sub } from "../commands";
-import { MalUserData } from "../../data/mal.user.data";
 
 export class MalSyncFunction implements ICommandFunction {
   Execute(message?: Message, command?: ICommand, dm?: boolean): void {
@@ -45,7 +43,7 @@ export class MalSyncFunction implements ICommandFunction {
                     },
                     {
                       name: `Please Note: `,
-                      value: `If you've just modified your list, please wait at least 1 minute to **-autosub**.`
+                      value: `If you've just modified your list, please wait at least 1 minute to **-malsync**.`
                     }
                   ],
                   timestamp: new Date(),

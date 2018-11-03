@@ -113,9 +113,7 @@ class UserData {
                     rej(new Error(`"UserData.All" is 'null' or 'undefined'.`));
                 }
                 else {
-                    this.All.forEach(user => {
-                        console.log(user);
-                    });
+                    console.log(this.All);
                     res();
                 }
             });

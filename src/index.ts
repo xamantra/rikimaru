@@ -55,8 +55,8 @@ class App {
   }
 }
 
-OpenShiftUptimer.Log(true);
-OpenShiftUptimer.AutoConfigure();
+// OpenShiftUptimer.Log(true);
+// OpenShiftUptimer.AutoConfigure();
 
 ClientManager.Init(new Client()).catch(err => {
   console.log(err);

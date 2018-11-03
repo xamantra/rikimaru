@@ -175,12 +175,8 @@ class QueueData {
                     reject(new Error(`"Queues" is 'null' or 'undefined'.`));
                 }
                 else {
-                    this.Queues.forEach(q => {
-                        console.log(q);
-                    });
-                    this.QueueJobs.forEach(qj => {
-                        qj.Log();
-                    });
+                    console.log(this.Queues);
+                    console.log(this.QueueJobs);
                     resolve();
                 }
             });

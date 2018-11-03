@@ -6,7 +6,7 @@ import { SubscribeFunction } from "./functions/subscribe.command.function";
 import { MediaFunction } from "./functions/media.command.function";
 import { PingFunction } from "./functions/ping.command.function";
 import { MalBindFunction } from "./functions/malbind.command.function";
-import { MalSyncFunction } from "./functions/autosub.command.function";
+import { MalSyncFunction } from "./functions/malsync.command.function";
 
 export const helpFunction = new HelpFunction();
 export const whenAnimeFunction = new MediaFunction();

@@ -192,16 +192,8 @@ class MediaData {
     static async LogAll() {
         return new Promise(async (res, rej) => {
             this.OnReady().then(() => {
-                let iteration = 1;
-                this.LocalList.forEach(m => {
-                    console.log(m);
-                    if (iteration === this.LocalList.length) {
-                        res();
-                    }
-                    else {
-                        iteration++;
-                    }
-                });
+                console.log(this.LocalList);
+                res();
             });
         });
     }

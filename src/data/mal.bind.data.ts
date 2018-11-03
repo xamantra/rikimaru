@@ -26,12 +26,14 @@ export class MalBindData {
               this.Initializing = false;
               resolve();
             }
-            list.forEach(malsync => {
-              this.List.push(malsync);
-            });
-            // console.log(this.List);
-            this.Initializing = false;
-            resolve();
+            for (let i = 0; i < this.List.length; i++) {
+              const malBind = this.List[i];
+              this.List.push(malBind);
+              if (i === this.List.length - 1) {
+                this.Initializing = false;
+                resolve();
+              }
+            }
           }
         });
       });
@@ -60,7 +62,6 @@ export class MalBindData {
                   malsync.Code = code;
                   malsync.Verified = false;
                   this.List.push(malsync);
-                  console.log(`pushed: ${malsync.Code}`);
                   resolve(malsync);
                 })
                 .catch(err => {
@@ -70,7 +71,6 @@ export class MalBindData {
             }
           })
           .catch((m: MalBind) => {
-            console.log(`Already Exists, Code: ${m.Code}`);
             reject(m);
           });
       });
@@ -84,6 +84,7 @@ export class MalBindData {
   public static Verify(discordId: string) {
     return new Promise<MalBind>((resolve, reject) => {
       this.OnReady().then(() => {
+        this.Initializing = true;
         const query = { discord_id: discordId };
         const newValue = { $set: { verified: true } };
         Mongo.Update(DataHelper.malsync, query, newValue).then(result => {
@@ -95,8 +96,10 @@ export class MalBindData {
                 console.log(`Update MAL bind: ${m.Code}`);
                 if (m !== null && m !== undefined) {
                   this.List.push(m);
+                  this.Initializing = false;
                   resolve(m);
                 } else {
+                  this.Initializing = false;
                   reject(
                     new Error(
                       `JsonHelper.Convert<MalSync>(res, MalSync) is 'null' or 'undefined'.`

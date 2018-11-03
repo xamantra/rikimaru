@@ -36,7 +36,7 @@ class MalSyncFunction {
                                 },
                                 {
                                     name: `Please Note: `,
-                                    value: `If you've just modified your list, please wait at least 1 minute to **-autosub**.`
+                                    value: `If you've just modified your list, please wait at least 1 minute to **-malsync**.`
                                 }
                             ],
                             timestamp: new Date(),
@@ -145,4 +145,4 @@ class MalSyncFunction {
     }
 }
 exports.MalSyncFunction = MalSyncFunction;
-//# sourceMappingURL=autosub.command.function.js.map
+//# sourceMappingURL=malsync.command.function.js.map
