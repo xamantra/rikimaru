@@ -56,6 +56,9 @@ class MalBindData {
                 this.List.push(malsync);
                 resolve(malsync);
             }
+            else {
+                resolve(this.All.find(x => x.DiscordId === discordId));
+            }
         });
     }
     static get All() {

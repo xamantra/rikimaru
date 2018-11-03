@@ -60,6 +60,8 @@ export class MalBindData {
         malsync.Verified = false;
         this.List.push(malsync);
         resolve(malsync);
+      } else {
+        resolve(this.All.find(x => x.DiscordId === discordId));
       }
     });
   }

@@ -19,9 +19,10 @@ export class QueueData {
   public static async Init() {
     return new Promise(async (resolve, reject) => {
       await this.OnReady();
-      this.Initializing = true;
       await this.Clear()
-        .then(() => {})
+        .then(() => {
+          this.Initializing = true;
+        })
         .catch((err: Error) => {
           console.log(err.message);
         });
