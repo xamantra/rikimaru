@@ -35,17 +35,14 @@ class MalBindFunction {
             mal_bind_data_1.MalBindData.Get(message.author.id)
                 .then(mal => {
                 message_helper_1.MessageHelper.Delete(m);
-                console.log(`checking verification...`);
                 if (mal.Verified === true) {
-                    console.log(`verified!!`);
                     sender_1.Sender.Send(message, `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`, dm);
                 }
                 else {
-                    this.CheckProfile(message, command, dm, code);
+                    this.CheckProfile(message, command, dm, mal_bind_model_1.MalBind.CodeFormat(mal.Code));
                 }
             })
                 .catch(e => {
-                console.log(`checking profile...`);
                 this.CheckProfile(message, command, dm, code);
                 message_helper_1.MessageHelper.Delete(m);
             });
@@ -53,9 +50,7 @@ class MalBindFunction {
     }
     CheckProfile(message, command, dm, code) {
         this.GetProfile(message, command, dm).then(about => {
-            console.log(`checking code...`);
             if (about.includes(code)) {
-                console.log(`verifying code...`);
                 mal_bind_data_1.MalBindData.Verify(message.author.id)
                     .then(msync => {
                     sender_1.Sender.Send(message, `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`, dm);
@@ -65,7 +60,6 @@ class MalBindFunction {
                 });
             }
             else {
-                console.log(`1 replying to user...`);
                 this.EmbedTemplate(message, command, code).then(embed => {
                     sender_1.Sender.Send(message, embed, dm);
                 });
@@ -122,11 +116,9 @@ class MalBindFunction {
             const code = random_helper_1.Random.Range(10000000, 99999999).toString();
             mal_bind_data_1.MalBindData.Insert(message.author.id, command.Parameter, code)
                 .then(() => {
-                console.log(`resolved code`);
                 resolve(code);
             })
                 .catch((m) => {
-                console.log(`resolved code`);
                 resolve(m.Code);
             });
         });

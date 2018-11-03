@@ -41,20 +41,22 @@ export class MalBindFunction implements ICommandFunction {
       MalBindData.Get(message.author.id)
         .then(mal => {
           MessageHelper.Delete(m);
-          console.log(`checking verification...`);
           if (mal.Verified === true) {
-            console.log(`verified!!`);
             Sender.Send(
               message,
               `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`,
               dm
             );
           } else {
-            this.CheckProfile(message, command, dm, code);
+            this.CheckProfile(
+              message,
+              command,
+              dm,
+              MalBind.CodeFormat(mal.Code)
+            );
           }
         })
         .catch(e => {
-          console.log(`checking profile...`);
           this.CheckProfile(message, command, dm, code);
           MessageHelper.Delete(m);
         });
@@ -68,9 +70,7 @@ export class MalBindFunction implements ICommandFunction {
     code: string
   ) {
     this.GetProfile(message, command, dm).then(about => {
-      console.log(`checking code...`);
       if (about.includes(code)) {
-        console.log(`verifying code...`);
         MalBindData.Verify(message.author.id)
           .then(msync => {
             Sender.Send(
@@ -83,7 +83,6 @@ export class MalBindFunction implements ICommandFunction {
             console.log(err);
           });
       } else {
-        console.log(`1 replying to user...`);
         this.EmbedTemplate(message, command, code).then(embed => {
           Sender.Send(message, embed, dm);
         });
@@ -152,11 +151,9 @@ export class MalBindFunction implements ICommandFunction {
       const code = Random.Range(10000000, 99999999).toString();
       MalBindData.Insert(message.author.id, command.Parameter, code)
         .then(() => {
-          console.log(`resolved code`);
           resolve(code);
         })
         .catch((m: MalBind) => {
-          console.log(`resolved code`);
           resolve(m.Code);
         });
     });
