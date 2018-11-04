@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const queue_job_model_1 = require("./../models/queue.job.model");
 const json_helper_1 = require("./../helpers/json.helper");
-const data_helper_1 = require("../helpers/data.helper");
+const tables_1 = require("../core/tables");
 const array_helper_1 = require("../helpers/array.helper");
 const mongo_1 = require("../core/mongo");
 const subscription_model_1 = require("../models/subscription.model");
@@ -20,7 +20,7 @@ class QueueData {
                 .catch((err) => {
                 console.log(err.message);
             });
-            const result = await mongo_1.Mongo.FindAll(data_helper_1.DataHelper.queue);
+            const result = await mongo_1.Mongo.FindAll(tables_1.Tables.queue);
             const queues = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Queue);
             if (queues === null || queues === undefined) {
                 this.Initializing = false;
@@ -99,7 +99,7 @@ class QueueData {
             const exists = await this.Exists(mediaId);
             if (exists === false) {
                 const data = { media_id: mediaId, next_episode: next_episode };
-                const result = await mongo_1.Mongo.Insert(data_helper_1.DataHelper.queue, data);
+                const result = await mongo_1.Mongo.Insert(tables_1.Tables.queue, data);
                 if (result.insertedId !== undefined && result.insertedId !== null) {
                     const q = new subscription_model_1.Queue();
                     q.Id = result.insertedId;
@@ -125,7 +125,7 @@ class QueueData {
             const newValues = {
                 $set: { next_episode: media.nextAiringEpisode.next }
             };
-            await mongo_1.Mongo.Update(data_helper_1.DataHelper.queue, query, newValues);
+            await mongo_1.Mongo.Update(tables_1.Tables.queue, query, newValues);
             await this.Init();
             await this.Init().catch(err => {
                 console.log(err);

@@ -10,7 +10,7 @@ const mal_1 = require("../../core/mal");
 class MalBindFunction {
     async Execute(message, command, dm) {
         await user_data_1.UserData.Insert(message.author.id).catch(err => {
-            this.CheckBind(message, command, dm);
+            console.log(err);
         });
         this.CheckBind(message, command, dm);
     }

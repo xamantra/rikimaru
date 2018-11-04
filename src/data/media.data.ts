@@ -2,7 +2,7 @@ import { MediaStatus } from "./../core/media.status";
 import { SubscriptionData } from "./subscription.data";
 import { MediaSearch } from "./../core/media.search";
 import { JsonHelper } from "../helpers/json.helper";
-import { DataHelper } from "../helpers/data.helper";
+import { Tables } from "../core/tables";
 import { Media, User } from "../models/subscription.model";
 import { IMedia } from "../interfaces/page.interface";
 import { ArrayHelper } from "../helpers/array.helper";
@@ -29,7 +29,7 @@ export class MediaData {
     return new Promise(async (resolve, reject) => {
       await this.Clear();
       this.Initializing = true;
-      const result = await Mongo.FindAll(DataHelper.media);
+      const result = await Mongo.FindAll(Tables.media);
       const $result = await JsonHelper.ArrayConvert<Media>(result, Media);
       if ($result === undefined || $result === null) {
         reject(
@@ -99,7 +99,7 @@ export class MediaData {
             } else {
               ArrayHelper.remove(this.LocalList, lm, async () => {
                 const query = { _id: $m.idMal };
-                await Mongo.Delete(DataHelper.media, query);
+                await Mongo.Delete(Tables.media, query);
                 userDatas.forEach(async x => {
                   await SubscriptionData.Delete($m.idMal, x.DiscordId);
                   const jobs = await QueueData.GetJobs();
@@ -134,7 +134,7 @@ export class MediaData {
       const exists = await this.Exists(media.idMal);
       if (exists === false) {
         const data = { _id: media.idMal, title: title };
-        const result = await Mongo.Insert(DataHelper.media, data);
+        const result = await Mongo.Insert(Tables.media, data);
         if (result.insertedId !== undefined && result.insertedId !== null) {
           const m = new Media();
           m.MalId = media.idMal;

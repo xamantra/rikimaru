@@ -4,7 +4,7 @@ const media_status_1 = require("./../core/media.status");
 const subscription_data_1 = require("./subscription.data");
 const media_search_1 = require("./../core/media.search");
 const json_helper_1 = require("../helpers/json.helper");
-const data_helper_1 = require("../helpers/data.helper");
+const tables_1 = require("../core/tables");
 const subscription_model_1 = require("../models/subscription.model");
 const array_helper_1 = require("../helpers/array.helper");
 const user_data_1 = require("./user.data");
@@ -22,7 +22,7 @@ class MediaData {
         return new Promise(async (resolve, reject) => {
             await this.Clear();
             this.Initializing = true;
-            const result = await mongo_1.Mongo.FindAll(data_helper_1.DataHelper.media);
+            const result = await mongo_1.Mongo.FindAll(tables_1.Tables.media);
             const $result = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Media);
             if ($result === undefined || $result === null) {
                 reject(new Error(`"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`));
@@ -87,7 +87,7 @@ class MediaData {
                         else {
                             array_helper_1.ArrayHelper.remove(this.LocalList, lm, async () => {
                                 const query = { _id: $m.idMal };
-                                await mongo_1.Mongo.Delete(data_helper_1.DataHelper.media, query);
+                                await mongo_1.Mongo.Delete(tables_1.Tables.media, query);
                                 userDatas.forEach(async (x) => {
                                     await subscription_data_1.SubscriptionData.Delete($m.idMal, x.DiscordId);
                                     const jobs = await queue_data_1.QueueData.GetJobs();
@@ -116,7 +116,7 @@ class MediaData {
             const exists = await this.Exists(media.idMal);
             if (exists === false) {
                 const data = { _id: media.idMal, title: title };
-                const result = await mongo_1.Mongo.Insert(data_helper_1.DataHelper.media, data);
+                const result = await mongo_1.Mongo.Insert(tables_1.Tables.media, data);
                 if (result.insertedId !== undefined && result.insertedId !== null) {
                     const m = new subscription_model_1.Media();
                     m.MalId = media.idMal;

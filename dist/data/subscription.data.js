@@ -4,7 +4,7 @@ const queue_data_1 = require("./queue.data");
 const user_data_1 = require("./user.data");
 const subscription_model_1 = require("./../models/subscription.model");
 const json_helper_1 = require("../helpers/json.helper");
-const data_helper_1 = require("../helpers/data.helper");
+const tables_1 = require("../core/tables");
 const subscription_model_2 = require("../models/subscription.model");
 const mongo_1 = require("../core/mongo");
 const mongodb_1 = require("mongodb");
@@ -19,7 +19,7 @@ class SubscriptionData {
             this.Initializing = true;
             await this.Clear();
             this.Clear().catch(err => console.log(err));
-            const result = await mongo_1.Mongo.FindAll(data_helper_1.DataHelper.subscription);
+            const result = await mongo_1.Mongo.FindAll(tables_1.Tables.subscription);
             const subs = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.Subscription);
             if (subs === null || subs === undefined) {
                 this.Initializing = false;
@@ -107,7 +107,7 @@ class SubscriptionData {
                             media_id: mediaId,
                             user_id: new mongodb_1.ObjectId(userId)
                         };
-                        const result = await mongo_1.Mongo.Insert(data_helper_1.DataHelper.subscription, data);
+                        const result = await mongo_1.Mongo.Insert(tables_1.Tables.subscription, data);
                         if (result.insertedId !== undefined && result.insertedId !== null) {
                             const sub = new subscription_model_1.Subscription();
                             sub.Id = result.insertedId;
@@ -133,7 +133,7 @@ class SubscriptionData {
             let query = null;
             if (user instanceof subscription_model_2.User)
                 query = { media_id: mediaId, user_id: new mongodb_1.ObjectId(user.Id) };
-            await mongo_1.Mongo.Delete(data_helper_1.DataHelper.subscription, query);
+            await mongo_1.Mongo.Delete(tables_1.Tables.subscription, query);
             const sub = this.SubscriptionList.find(x => x.MediaId === mediaId && x.UserId === user.Id);
             if (sub !== null && sub !== undefined) {
                 array_helper_1.ArrayHelper.remove(this.SubscriptionList, sub, () => {

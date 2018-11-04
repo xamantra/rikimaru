@@ -2,7 +2,7 @@ import { QueueData } from "./queue.data";
 import { UserData } from "./user.data";
 import { Subscription } from "./../models/subscription.model";
 import { JsonHelper } from "../helpers/json.helper";
-import { DataHelper } from "../helpers/data.helper";
+import { Tables } from "../core/tables";
 import { User } from "../models/subscription.model";
 import { Mongo } from "../core/mongo";
 import { ObjectId } from "mongodb";
@@ -21,7 +21,7 @@ export class SubscriptionData {
       this.Initializing = true;
       await this.Clear();
       this.Clear().catch(err => console.log(err));
-      const result = await Mongo.FindAll(DataHelper.subscription);
+      const result = await Mongo.FindAll(Tables.subscription);
       const subs = await JsonHelper.ArrayConvert<Subscription>(
         result,
         Subscription
@@ -119,7 +119,7 @@ export class SubscriptionData {
               media_id: mediaId,
               user_id: new ObjectId(userId)
             };
-            const result = await Mongo.Insert(DataHelper.subscription, data);
+            const result = await Mongo.Insert(Tables.subscription, data);
             if (result.insertedId !== undefined && result.insertedId !== null) {
               const sub = new Subscription();
               sub.Id = result.insertedId;
@@ -145,7 +145,7 @@ export class SubscriptionData {
       let query: any = null;
       if (user instanceof User)
         query = { media_id: mediaId, user_id: new ObjectId(user.Id) };
-      await Mongo.Delete(DataHelper.subscription, query);
+      await Mongo.Delete(Tables.subscription, query);
       const sub = this.SubscriptionList.find(
         x => x.MediaId === mediaId && x.UserId === (user as User).Id
       );

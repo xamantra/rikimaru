@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongo_1 = require("../core/mongo");
-const data_helper_1 = require("../helpers/data.helper");
+const tables_1 = require("../core/tables");
 const mal_bind_model_1 = require("../models/mal.bind.model");
 const json_helper_1 = require("../helpers/json.helper");
 const array_helper_1 = require("../helpers/array.helper");
@@ -10,7 +10,7 @@ class MalBindData {
         return new Promise(async (resolve, reject) => {
             await this.OnReady();
             this.Initializing = true;
-            const results = await mongo_1.Mongo.FindAll(data_helper_1.DataHelper.malsync);
+            const results = await mongo_1.Mongo.FindAll(tables_1.Tables.malbind);
             const list = await json_helper_1.JsonHelper.ArrayConvert(results, mal_bind_model_1.MalBind);
             if (list === undefined || list === null) {
                 this.Initializing = false;
@@ -45,7 +45,7 @@ class MalBindData {
                     code: code,
                     verified: false
                 };
-                const result = await mongo_1.Mongo.Insert(data_helper_1.DataHelper.malsync, data);
+                const result = await mongo_1.Mongo.Insert(tables_1.Tables.malbind, data);
                 console.log(result.insertedId);
                 const malsync = new mal_bind_model_1.MalBind();
                 malsync.Id = result.insertedId;
@@ -69,10 +69,10 @@ class MalBindData {
             await this.OnReady();
             const query = { discord_id: discordId };
             const newValue = { $set: { verified: true } };
-            await mongo_1.Mongo.Update(data_helper_1.DataHelper.malsync, query, newValue);
+            await mongo_1.Mongo.Update(tables_1.Tables.malbind, query, newValue);
             const oldValue = await this.Get(discordId);
             array_helper_1.ArrayHelper.remove(this.List, oldValue, async () => {
-                const res = await mongo_1.Mongo.FindOne(data_helper_1.DataHelper.malsync, query);
+                const res = await mongo_1.Mongo.FindOne(tables_1.Tables.malbind, query);
                 const ms = await json_helper_1.JsonHelper.ArrayConvert(res, mal_bind_model_1.MalBind);
                 const m = ms[0];
                 console.log(`Update MAL bind: ${m.Code}`);

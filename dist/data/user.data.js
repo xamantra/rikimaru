@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const subscription_model_1 = require("../models/subscription.model");
 const json_helper_1 = require("../helpers/json.helper");
-const data_helper_1 = require("../helpers/data.helper");
+const tables_1 = require("../core/tables");
 const mongo_1 = require("../core/mongo");
 class UserData {
     static get All() {
@@ -12,7 +12,7 @@ class UserData {
         return new Promise(async (resolve, reject) => {
             await this.OnReady();
             this.Initializing = true;
-            const result = await mongo_1.Mongo.FindAll(data_helper_1.DataHelper.user);
+            const result = await mongo_1.Mongo.FindAll(tables_1.Tables.user);
             const users = await json_helper_1.JsonHelper.ArrayConvert(result, subscription_model_1.User);
             let iteration = 1;
             if (users !== undefined && users !== null) {
@@ -69,7 +69,7 @@ class UserData {
             });
             if (exists === false) {
                 const data = { discord_id: discordId };
-                const result = await mongo_1.Mongo.Insert(data_helper_1.DataHelper.user, data);
+                const result = await mongo_1.Mongo.Insert(tables_1.Tables.user, data);
                 if (result.insertedId !== null && result.insertedId !== undefined) {
                     const user = new subscription_model_1.User();
                     user.Id = result.insertedId;

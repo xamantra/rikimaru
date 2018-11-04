@@ -4,9 +4,6 @@ import { ICommand } from "../../interfaces/command.interface";
 import { Sender } from "../../core/sender";
 import { Random } from "../../helpers/random.helper";
 import { MalBindData } from "../../data/mal.bind.data";
-import cheerio from "cheerio";
-import rp from "request-promise";
-import { Config } from "../../core/config";
 import { MalBind } from "../../models/mal.bind.model";
 import { ClientManager } from "../../core/client";
 import { UserData } from "../../data/user.data";
@@ -19,7 +16,7 @@ export class MalBindFunction implements ICommandFunction {
     dm?: boolean
   ): Promise<void> {
     await UserData.Insert(message.author.id).catch(err => {
-      this.CheckBind(message, command, dm);
+      console.log(err);
     });
     this.CheckBind(message, command, dm);
   }
