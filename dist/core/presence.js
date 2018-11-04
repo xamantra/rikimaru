@@ -5,7 +5,7 @@ const title_helper_1 = require("../helpers/title.helper");
 const client_1 = require("./client");
 const random_helper_1 = require("../helpers/random.helper");
 class BotPresence {
-    static Set() {
+    static Init() {
         return new Promise(async (resolve, reject) => {
             const media = await media_data_1.MediaData.GetRandom();
             const title = title_helper_1.TitleHelper.Get(media.title);

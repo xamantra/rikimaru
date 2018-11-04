@@ -6,7 +6,7 @@ import { Random } from "../helpers/random.helper";
 export class BotPresence {
   private static MusicType = ["Ending Song of", "Opening Song of"];
 
-  public static Set() {
+  public static Init() {
     return new Promise(async (resolve, reject) => {
       const media = await MediaData.GetRandom();
       const title = TitleHelper.Get(media.title);

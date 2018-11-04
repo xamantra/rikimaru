@@ -33,7 +33,7 @@ class App {
     await MediaData.Init().catch(err => {
       console.log(err);
     });
-    await BotPresence.Set().catch(err => {
+    await BotPresence.Init().catch(err => {
       console.log(err);
     });
     Scheduler.LoopJob(0, 10, 0, async () => {
@@ -44,7 +44,7 @@ class App {
       await MediaData.Init().catch(err => {
         console.log(err);
       });
-      await BotPresence.Set().catch(err => {
+      await BotPresence.Init().catch(err => {
         console.log(err);
       });
     });
