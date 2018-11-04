@@ -8,7 +8,6 @@ const media_data_1 = require("../../data/media.data");
 const user_data_1 = require("../../data/user.data");
 const subscription_data_1 = require("../../data/subscription.data");
 const client_1 = require("../../core/client");
-const anistrings_1 = require("../../core/anistrings");
 const mal_1 = require("../../core/mal");
 const mal_bind_model_1 = require("../../models/mal.bind.model");
 const subscription_model_1 = require("../../models/subscription.model");
@@ -19,7 +18,7 @@ class MalSyncFunction {
             this.SendStatus(message, dm);
         });
         const client = await client_1.ClientManager.GetClient();
-        const res$m = `**${anistrings_1.AniStrings.Random}**, Your *MAL currently watching list* is now synced with your subscriptions.`;
+        const res$m = `Your *MAL currently watching list* is now synced with your subscriptions.`;
         sender_1.Sender.Send(message, {
             embed: {
                 color: message.member.highestRole.color,

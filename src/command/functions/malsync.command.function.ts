@@ -9,7 +9,6 @@ import { MediaData } from "../../data/media.data";
 import { UserData } from "../../data/user.data";
 import { SubscriptionData } from "../../data/subscription.data";
 import { ClientManager } from "../../core/client";
-import { AniStrings } from "../../core/anistrings";
 import { MAL } from "../../core/mal";
 import { MalAnime } from "../../models/mal.anime.model";
 import { MalBind } from "../../models/mal.bind.model";
@@ -26,9 +25,7 @@ export class MalSyncFunction implements ICommandFunction {
       this.SendStatus(message, dm);
     });
     const client = await ClientManager.GetClient();
-    const res$m = `**${
-      AniStrings.Random
-    }**, Your *MAL currently watching list* is now synced with your subscriptions.`;
+    const res$m = `Your *MAL currently watching list* is now synced with your subscriptions.`;
     Sender.Send(
       message,
       {
