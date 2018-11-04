@@ -2,9 +2,10 @@ import { Config } from "./config";
 import rp from "request-promise";
 import { JsonHelper } from "../helpers/json.helper";
 import { MalAnime } from "../models/mal.anime.model";
+import { ICommand } from "../interfaces/command.interface";
 
 export class MAL {
-  public static AnimeList(username: string) {
+  public static GetCWList(username: string) {
     return new Promise<MalAnime[]>((resolve, reject) => {
       const url = Config.MAL_CW_LINK(username);
       const options = {
@@ -26,6 +27,34 @@ export class MAL {
         })
         .catch((err: any) => {
           reject(err);
+        });
+    });
+  }
+
+  public static GetProfileAbout(username: string) {
+    return new Promise<string>((resolve, reject) => {
+      const url = `${Config.MAL_PROFILE_BASE}/${username}`;
+      const options = {
+        uri: url,
+        transform: function(body: string) {
+          return cheerio.load(body);
+        }
+      };
+
+      rp(options)
+        .then(($: CheerioStatic) => {
+          resolve(
+            $(".profile-about-user")
+              .find(".word-break")
+              .text()
+          );
+        })
+        .catch(err => {
+          reject(
+            new Error(
+              `Go me nasai! I couldn't find mal user **${username}**. Check your spelling or try again later.`
+            )
+          );
         });
     });
   }

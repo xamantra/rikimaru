@@ -9,7 +9,7 @@ export class MalUserData {
     return new Promise<MalAnime[]>((resolve, reject) => {
       MalBindData.Get(message.author.id)
         .then(malBind => {
-          MAL.AnimeList(malBind.MalUsername)
+          MAL.GetCWList(malBind.MalUsername)
             .then(list => {
               resolve(list);
             })

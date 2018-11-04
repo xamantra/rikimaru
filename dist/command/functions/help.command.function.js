@@ -7,30 +7,29 @@ class HelpFunction {
     async Execute(message, command, dm) {
         await this.ShowHelp(message, dm);
     }
-    ShowHelp(message, dm) {
-        this.Embed(message).then(embed => {
-            process.on("unhandledRejection", console.log);
-            if (dm) {
-                message.member
-                    .send(embed)
-                    .then(($m) => {
-                    console.log(`Message <${$m.id}> was sent to "${message.author.username}".`);
-                })
-                    .catch((err) => {
-                    console.log(err.name);
-                });
-            }
-            else {
-                message
-                    .reply(embed)
-                    .then(($m) => {
-                    console.log(`Message <${$m.id}> was sent in "<${message.channel.id}>".`);
-                })
-                    .catch((err) => {
-                    console.log(err.name);
-                });
-            }
-        });
+    async ShowHelp(message, dm) {
+        const embed = await this.Embed(message);
+        process.on("unhandledRejection", console.log);
+        if (dm) {
+            message.member
+                .send(embed)
+                .then(($m) => {
+                console.log(`Message <${$m.id}> was sent to "${message.author.username}".`);
+            })
+                .catch((err) => {
+                console.log(err.name);
+            });
+        }
+        else {
+            message
+                .reply(embed)
+                .then(($m) => {
+                console.log(`Message <${$m.id}> was sent in "<${message.channel.id}>".`);
+            })
+                .catch((err) => {
+                console.log(err.name);
+            });
+        }
     }
     Embed(message) {
         return new Promise((resolve, reject) => {

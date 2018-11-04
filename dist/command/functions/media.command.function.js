@@ -13,12 +13,12 @@ class MediaFunction {
     async Handle(message, command, isDM) {
         const color = message.member.highestRole.color;
         media_search_1.MediaSearch.All(command.Parameter)
-            .then(res => {
-            const ongoing = media_handler_1.MediaHandler.OngoingMedia(res);
-            const unreleased = media_handler_1.MediaHandler.UnreleasedMedia(res);
-            const unreleasedNoDate = media_handler_1.MediaHandler.UnreleasedNoDateMedia(res);
-            const completed = media_handler_1.MediaHandler.CompletedMedia(res);
-            const exactMedia = media_handler_1.MediaHandler.ExactMedia(res, command.Parameter);
+            .then(results => {
+            const ongoing = media_handler_1.MediaHandler.OngoingMedia(results);
+            const unreleased = media_handler_1.MediaHandler.UnreleasedMedia(results);
+            const unreleasedNoDate = media_handler_1.MediaHandler.UnreleasedNoDateMedia(results);
+            const completed = media_handler_1.MediaHandler.CompletedMedia(results);
+            const exactMedia = media_handler_1.MediaHandler.ExactMedia(results, command.Parameter);
             if (exactMedia.length > 0) {
                 exactMedia.forEach(async (m) => {
                     response_message_helper_1.ResponseMessageHelper.CreateMessage(m, m.status, color).then(response => {

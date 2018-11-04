@@ -8,7 +8,7 @@ const request_promise_1 = __importDefault(require("request-promise"));
 const json_helper_1 = require("../helpers/json.helper");
 const mal_anime_model_1 = require("../models/mal.anime.model");
 class MAL {
-    static AnimeList(username) {
+    static GetCWList(username) {
         return new Promise((resolve, reject) => {
             const url = config_1.Config.MAL_CW_LINK(username);
             const options = {
@@ -27,6 +27,26 @@ class MAL {
             })
                 .catch((err) => {
                 reject(err);
+            });
+        });
+    }
+    static GetProfileAbout(username) {
+        return new Promise((resolve, reject) => {
+            const url = `${config_1.Config.MAL_PROFILE_BASE}/${username}`;
+            const options = {
+                uri: url,
+                transform: function (body) {
+                    return cheerio.load(body);
+                }
+            };
+            request_promise_1.default(options)
+                .then(($) => {
+                resolve($(".profile-about-user")
+                    .find(".word-break")
+                    .text());
+            })
+                .catch(err => {
+                reject(new Error(`Go me nasai! I couldn't find mal user **${username}**. Check your spelling or try again later.`));
             });
         });
     }

@@ -10,6 +10,7 @@ const media_list_handler_1 = require("./../../handlers/media.list.handler");
 const media_handler_1 = require("../../handlers/media.handler");
 const client_1 = require("../../core/client");
 const sender_1 = require("../../core/sender");
+const subscription_model_1 = require("../../models/subscription.model");
 class SubscribeFunction {
     async Execute(message, command, dm) {
         await this.Search(message, command, dm);
@@ -19,20 +20,20 @@ class SubscribeFunction {
             console.log(err);
         });
         media_search_1.MediaSearch.All(command.Parameter)
-            .then(res => {
-            const ongoing = media_handler_1.MediaHandler.OngoingMedia(res);
-            const unreleased = media_handler_1.MediaHandler.UnreleasedMedia(res);
+            .then(async (res) => {
+            const ongoing = await media_handler_1.MediaHandler.OngoingMedia(res);
+            const unreleased = await media_handler_1.MediaHandler.UnreleasedMedia(res);
             if (ongoing.length === 0 && unreleased.length === 0) {
                 sender_1.Sender.SendInfo(message, "There is nothing to subscribe. The anime you search might be **already completed** or it is **not yet aired and the release date is currently unknown**, or try **another keyword**.", dm);
                 return;
             }
             const results = [];
             const formattedResults = [];
-            ongoing.forEach(async (m) => {
+            await ongoing.forEach(async (m) => {
                 results.push(m);
                 formattedResults.push(media_list_handler_1.MediaFormatHandler.Get(m));
             });
-            unreleased.forEach(async (m) => {
+            await unreleased.forEach(async (m) => {
                 results.push(m);
                 formattedResults.push(media_list_handler_1.MediaFormatHandler.Get(m));
             });
@@ -41,41 +42,29 @@ class SubscribeFunction {
                 const media = results[0];
                 console.log(media);
                 const title = title_helper_1.TitleHelper.Get(results[0].title);
-                media_data_1.MediaData.Insert(media, title)
-                    .then(insertId => {
-                    console.log(insertId);
-                    user_data_1.UserData.GetUser(discordId)
-                        .then(user => {
-                        console.log(user);
-                        subscription_data_1.SubscriptionData.Insert(media.idMal, user.Id)
-                            .then(() => {
-                            SubscribeFunction.Embed(message, media, true).then(embed => {
-                                sender_1.Sender.SendInfo(message, embed, dm);
-                            });
-                        })
-                            .catch((reason) => {
-                            if (reason === "EXISTS") {
-                                SubscribeFunction.Embed(message, media, false).then(embed => {
-                                    sender_1.Sender.SendInfo(message, embed, dm);
-                                });
-                            }
-                            else {
-                                console.log(reason);
-                            }
-                        });
-                    })
-                        .catch((reason) => {
-                        console.log(reason.message);
-                    });
-                })
-                    .catch((reason) => {
+                await media_data_1.MediaData.Insert(media, title).catch((reason) => {
                     console.log(reason.message);
                 });
+                const user = await user_data_1.UserData.GetUser(discordId).catch((reason) => {
+                    console.log(reason.message);
+                });
+                if (user instanceof subscription_model_1.User === false)
+                    return;
+                await subscription_data_1.SubscriptionData.Insert(media.idMal, user.Id).catch(async (reason) => {
+                    if (reason === "EXISTS") {
+                        const $embed = await SubscribeFunction.Embed(message, media, false);
+                        sender_1.Sender.SendInfo(message, $embed, dm);
+                    }
+                    else {
+                        console.log(reason);
+                    }
+                });
+                const embed = await SubscribeFunction.Embed(message, media, true);
+                sender_1.Sender.SendInfo(message, embed, dm);
             }
             else if (results.length > 1) {
-                search_list_1.SearchList.Embed(message, command, formattedResults).then(embed => {
-                    sender_1.Sender.SendInfo(message, embed, dm);
-                });
+                const embed = await search_list_1.SearchList.Embed(message, command, formattedResults);
+                sender_1.Sender.SendInfo(message, embed, dm);
             }
         })
             .catch((reason) => {
@@ -85,31 +74,30 @@ class SubscribeFunction {
     }
     // tslint:disable-next-line:member-ordering
     static async Embed(message, media, newSub) {
-        return new Promise((resolve, reject) => {
-            client_1.ClientManager.GetClient().then(client => {
-                const t = title_helper_1.TitleHelper.Get(media.title);
-                const embed = {
-                    embed: {
-                        color: message.member.highestRole.color,
-                        thumbnail: { url: media.coverImage.large },
-                        title: `***${t}***`,
-                        url: `https://myanimelist.net/anime/${media.idMal}/`,
-                        description: newSub
-                            ? `You are now subscribed to this anime. *I will DM you when new episode is aired.*`
-                            : `You are already subscribed to this anime.`,
-                        fields: [
-                            { name: `To unsubscribe, type:`, value: `\`-unsub ${t}\`` },
-                            {
-                                name: `To view all subscription, type:`,
-                                value: `\`-viewsubs\``
-                            }
-                        ],
-                        timestamp: new Date(),
-                        footer: { icon_url: client.user.avatarURL, text: "© Rikimaru" }
-                    }
-                };
-                resolve(embed);
-            });
+        return new Promise(async (resolve, reject) => {
+            const client = await client_1.ClientManager.GetClient();
+            const t = title_helper_1.TitleHelper.Get(media.title);
+            const embed = {
+                embed: {
+                    color: message.member.highestRole.color,
+                    thumbnail: { url: media.coverImage.large },
+                    title: `***${t}***`,
+                    url: `https://myanimelist.net/anime/${media.idMal}/`,
+                    description: newSub
+                        ? `You are now subscribed to this anime. *I will DM you when new episode is aired.*`
+                        : `You are already subscribed to this anime.`,
+                    fields: [
+                        { name: `To unsubscribe, type:`, value: `\`-unsub ${t}\`` },
+                        {
+                            name: `To view all subscription, type:`,
+                            value: `\`-viewsubs\``
+                        }
+                    ],
+                    timestamp: new Date(),
+                    footer: { icon_url: client.user.avatarURL, text: "© Rikimaru" }
+                }
+            };
+            resolve(embed);
         });
     }
 }

@@ -7,7 +7,7 @@ class MalUserData {
         return new Promise((resolve, reject) => {
             mal_bind_data_1.MalBindData.Get(message.author.id)
                 .then(malBind => {
-                mal_1.MAL.AnimeList(malBind.MalUsername)
+                mal_1.MAL.GetCWList(malBind.MalUsername)
                     .then(list => {
                     resolve(list);
                 })

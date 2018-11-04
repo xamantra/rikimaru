@@ -11,33 +11,32 @@ export class HelpFunction implements ICommandFunction {
     await this.ShowHelp(message, dm);
   }
 
-  private ShowHelp(message: Message, dm: boolean) {
-    this.Embed(message).then(embed => {
-      process.on("unhandledRejection", console.log);
-      if (dm) {
-        message.member
-          .send(embed)
-          .then(($m: Message) => {
-            console.log(
-              `Message <${$m.id}> was sent to "${message.author.username}".`
-            );
-          })
-          .catch((err: DiscordAPIError) => {
-            console.log(err.name);
-          });
-      } else {
-        message
-          .reply(embed)
-          .then(($m: Message) => {
-            console.log(
-              `Message <${$m.id}> was sent in "<${message.channel.id}>".`
-            );
-          })
-          .catch((err: DiscordAPIError) => {
-            console.log(err.name);
-          });
-      }
-    });
+  private async ShowHelp(message: Message, dm: boolean) {
+    const embed = await this.Embed(message);
+    process.on("unhandledRejection", console.log);
+    if (dm) {
+      message.member
+        .send(embed)
+        .then(($m: Message) => {
+          console.log(
+            `Message <${$m.id}> was sent to "${message.author.username}".`
+          );
+        })
+        .catch((err: DiscordAPIError) => {
+          console.log(err.name);
+        });
+    } else {
+      message
+        .reply(embed)
+        .then(($m: Message) => {
+          console.log(
+            `Message <${$m.id}> was sent in "<${message.channel.id}>".`
+          );
+        })
+        .catch((err: DiscordAPIError) => {
+          console.log(err.name);
+        });
+    }
   }
 
   private Embed(message: Message) {

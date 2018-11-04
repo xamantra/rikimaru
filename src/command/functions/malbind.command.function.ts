@@ -10,128 +10,92 @@ import { Config } from "../../core/config";
 import { MalBind } from "../../models/mal.bind.model";
 import { ClientManager } from "../../core/client";
 import { UserData } from "../../data/user.data";
+import { MAL } from "../../core/mal";
 
 export class MalBindFunction implements ICommandFunction {
-  Execute(message?: Message, command?: ICommand, dm?: boolean): void {
-    UserData.Insert(message.author.id)
-      .then(insertId => {
-        this.CheckBind(message, command, dm);
-      })
-      .catch(err => {
-        this.CheckBind(message, command, dm);
-      });
-  }
-
-  private CheckBind(message?: Message, command?: ICommand, dm?: boolean) {
-    this.SetCode(message, command).then(c => {
-      this.ProcessCode(message, command, dm, c);
+  async Execute(
+    message?: Message,
+    command?: ICommand,
+    dm?: boolean
+  ): Promise<void> {
+    await UserData.Insert(message.author.id).catch(err => {
+      this.CheckBind(message, command, dm);
     });
+    this.CheckBind(message, command, dm);
   }
 
-  private ProcessCode(
+  private async CheckBind(message?: Message, command?: ICommand, dm?: boolean) {
+    const c = await this.SetCode(message, command);
+    this.ProcessCode(message, command, dm, c);
+  }
+
+  private async ProcessCode(
     message: Message,
     command: ICommand,
     dm: boolean,
     c: string
   ) {
     const code = MalBind.CodeFormat(c);
-    MalBindData.Get(message.author.id)
-      .then(mal => {
-        if (mal.Verified === true) {
-          Sender.Send(
-            message,
-            `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`,
-            dm
-          );
-        } else {
-          this.CheckProfile(message, command, dm, MalBind.CodeFormat(mal.Code));
-        }
-      })
-      .catch(e => {
-        this.CheckProfile(message, command, dm, code);
-      });
+    const mal = await MalBindData.Get(message.author.id);
+    if (mal instanceof MalBind) {
+      if (mal.Verified === true) {
+        Sender.Send(
+          message,
+          `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`,
+          dm
+        );
+      } else {
+        this.CheckProfile(message, command, dm, MalBind.CodeFormat(mal.Code));
+      }
+    } else {
+      this.CheckProfile(message, command, dm, code);
+    }
   }
 
-  private CheckProfile(
+  private async CheckProfile(
     message: Message,
     command: ICommand,
     dm: boolean,
     code: string
   ) {
-    this.GetProfile(command).then(about => {
-      if (about.includes(code)) {
-        MalBindData.Verify(message.author.id)
-          .then(msync => {
-            Sender.Send(
-              message,
-              `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`,
-              dm
-            );
-          })
-          .catch(err => {
-            console.log(err);
-          });
-      } else {
-        this.EmbedTemplate(message, command, code).then(embed => {
-          Sender.Send(message, embed, dm);
-        });
-      }
-    });
-  }
-
-  private GetProfile(command: ICommand) {
-    return new Promise<string>((resolve, reject) => {
-      const url = `${Config.MAL_PROFILE_BASE}/${command.Parameter}`;
-      const options = {
-        uri: url,
-        transform: function(body: string) {
-          return cheerio.load(body);
-        }
-      };
-
-      rp(options)
-        .then(($: CheerioStatic) => {
-          resolve(
-            $(".profile-about-user")
-              .find(".word-break")
-              .text()
-          );
-        })
-        .catch(err => {
-          reject(
-            new Error(
-              `Go me nasai! I couldn't find mal user **${
-                command.Parameter
-              }**. Check your spelling or try again later.`
-            )
-          );
-        });
-    });
+    const about = await MAL.GetProfileAbout(command.Parameter);
+    if (about.includes(code)) {
+      await MalBindData.Verify(message.author.id).catch(err => {
+        console.log(err);
+      });
+      Sender.Send(
+        message,
+        `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`,
+        dm
+      );
+    } else {
+      const embed = await this.EmbedTemplate(message, command, code);
+      Sender.Send(message, embed, dm);
+    }
   }
 
   private EmbedTemplate(message: Message, command: ICommand, code: string) {
-    return new Promise<any>((resolve, reject) => {
-      ClientManager.GetClient().then(client => {
-        const embed = {
-          embed: {
-            title: `Rikimaru MAL Sync Center`,
-            description: `**Rikimaru Code not found** on your profile. You first need to verify your ownership.`,
-            color: message.member.highestRole.color,
-            thumbnail: { url: message.author.avatarURL },
-            image: { url: `https://i.imgur.com/9h3vere.png` },
-            fields: [
-              {
-                name: `Instruction`,
-                value: `*Copy and paste* the verification code below in your *MAL about section.*. You can place it anywhere.\n[Edit Profile](https://myanimelist.net/editprofile.php)`
-              },
-              { name: `Code`, value: `***${code}***\n\nExample:` }
-            ],
-            timestamp: new Date(),
-            footer: { icon_url: client.user.avatarURL, text: "© Rikimaru" }
-          }
-        };
-        resolve(embed);
-      });
+    return new Promise<any>(async (resolve, reject) => {
+      const client = await ClientManager.GetClient();
+      const embed = {
+        embed: {
+          title: `Rikimaru MAL Sync Center`,
+          description: `**Rikimaru Code not found** on your profile. You first need to verify your ownership.`,
+          color: message.member.highestRole.color,
+          thumbnail: { url: message.author.avatarURL },
+          image: { url: `https://i.imgur.com/9h3vere.png` },
+          fields: [
+            {
+              name: `Instruction`,
+              value: `*Copy and paste* the verification code below in your *MAL about section.*. You can place it anywhere.\n[Edit Profile](https://myanimelist.net/editprofile.php)`
+            },
+            { name: `Code`, value: `***${code}***\n\nExample:` }
+          ],
+          timestamp: new Date(),
+          footer: { icon_url: client.user.avatarURL, text: "© Rikimaru" }
+        }
+      };
+      resolve(embed);
     });
   }
 

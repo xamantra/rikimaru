@@ -12,6 +12,7 @@ import { ICommand } from "../../interfaces/command.interface";
 import { MediaHandler } from "../../handlers/media.handler";
 import { ClientManager } from "../../core/client";
 import { Sender } from "../../core/sender";
+import { User } from "../../models/subscription.model";
 
 export class SubscribeFunction implements ICommandFunction {
   public async Execute(
@@ -27,9 +28,9 @@ export class SubscribeFunction implements ICommandFunction {
       console.log(err);
     });
     MediaSearch.All(command.Parameter)
-      .then(res => {
-        const ongoing = MediaHandler.OngoingMedia(res);
-        const unreleased = MediaHandler.UnreleasedMedia(res);
+      .then(async res => {
+        const ongoing = await MediaHandler.OngoingMedia(res);
+        const unreleased = await MediaHandler.UnreleasedMedia(res);
         if (ongoing.length === 0 && unreleased.length === 0) {
           Sender.SendInfo(
             message,
@@ -40,11 +41,11 @@ export class SubscribeFunction implements ICommandFunction {
         }
         const results: IMedia[] = [];
         const formattedResults: any[] = [];
-        ongoing.forEach(async m => {
+        await ongoing.forEach(async m => {
           results.push(m);
           formattedResults.push(MediaFormatHandler.Get(m));
         });
-        unreleased.forEach(async m => {
+        await unreleased.forEach(async m => {
           results.push(m);
           formattedResults.push(MediaFormatHandler.Get(m));
         });
@@ -53,43 +54,38 @@ export class SubscribeFunction implements ICommandFunction {
           const media = results[0];
           console.log(media);
           const title = TitleHelper.Get(results[0].title);
-          MediaData.Insert(media, title)
-            .then(insertId => {
-              console.log(insertId);
-              UserData.GetUser(discordId)
-                .then(user => {
-                  console.log(user);
-                  SubscriptionData.Insert(media.idMal, user.Id)
-                    .then(() => {
-                      SubscribeFunction.Embed(message, media, true).then(
-                        embed => {
-                          Sender.SendInfo(message, embed, dm);
-                        }
-                      );
-                    })
-                    .catch((reason: string) => {
-                      if (reason === "EXISTS") {
-                        SubscribeFunction.Embed(message, media, false).then(
-                          embed => {
-                            Sender.SendInfo(message, embed, dm);
-                          }
-                        );
-                      } else {
-                        console.log(reason);
-                      }
-                    });
-                })
-                .catch((reason: Error) => {
-                  console.log(reason.message);
-                });
-            })
-            .catch((reason: Error) => {
-              console.log(reason.message);
-            });
-        } else if (results.length > 1) {
-          SearchList.Embed(message, command, formattedResults).then(embed => {
-            Sender.SendInfo(message, embed, dm);
+          await MediaData.Insert(media, title).catch((reason: Error) => {
+            console.log(reason.message);
           });
+          const user = await UserData.GetUser(discordId).catch(
+            (reason: Error) => {
+              console.log(reason.message);
+            }
+          );
+          if (user instanceof User === false) return;
+          await SubscriptionData.Insert(media.idMal, (user as User).Id).catch(
+            async (reason: string) => {
+              if (reason === "EXISTS") {
+                const $embed = await SubscribeFunction.Embed(
+                  message,
+                  media,
+                  false
+                );
+                Sender.SendInfo(message, $embed, dm);
+              } else {
+                console.log(reason);
+              }
+            }
+          );
+          const embed = await SubscribeFunction.Embed(message, media, true);
+          Sender.SendInfo(message, embed, dm);
+        } else if (results.length > 1) {
+          const embed = await SearchList.Embed(
+            message,
+            command,
+            formattedResults
+          );
+          Sender.SendInfo(message, embed, dm);
         }
       })
       .catch((reason: Error) => {
@@ -104,31 +100,30 @@ export class SubscribeFunction implements ICommandFunction {
 
   // tslint:disable-next-line:member-ordering
   public static async Embed(message: Message, media: IMedia, newSub: boolean) {
-    return new Promise<any>((resolve, reject) => {
-      ClientManager.GetClient().then(client => {
-        const t = TitleHelper.Get(media.title);
-        const embed = {
-          embed: {
-            color: message.member.highestRole.color,
-            thumbnail: { url: media.coverImage.large },
-            title: `***${t}***`,
-            url: `https://myanimelist.net/anime/${media.idMal}/`,
-            description: newSub
-              ? `You are now subscribed to this anime. *I will DM you when new episode is aired.*`
-              : `You are already subscribed to this anime.`,
-            fields: [
-              { name: `To unsubscribe, type:`, value: `\`-unsub ${t}\`` },
-              {
-                name: `To view all subscription, type:`,
-                value: `\`-viewsubs\``
-              }
-            ],
-            timestamp: new Date(),
-            footer: { icon_url: client.user.avatarURL, text: "© Rikimaru" }
-          }
-        };
-        resolve(embed);
-      });
+    return new Promise<any>(async (resolve, reject) => {
+      const client = await ClientManager.GetClient();
+      const t = TitleHelper.Get(media.title);
+      const embed = {
+        embed: {
+          color: message.member.highestRole.color,
+          thumbnail: { url: media.coverImage.large },
+          title: `***${t}***`,
+          url: `https://myanimelist.net/anime/${media.idMal}/`,
+          description: newSub
+            ? `You are now subscribed to this anime. *I will DM you when new episode is aired.*`
+            : `You are already subscribed to this anime.`,
+          fields: [
+            { name: `To unsubscribe, type:`, value: `\`-unsub ${t}\`` },
+            {
+              name: `To view all subscription, type:`,
+              value: `\`-viewsubs\``
+            }
+          ],
+          timestamp: new Date(),
+          footer: { icon_url: client.user.avatarURL, text: "© Rikimaru" }
+        }
+      };
+      resolve(embed);
     });
   }
 }

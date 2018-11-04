@@ -9,6 +9,7 @@ import { MediaFormatHandler } from "../../handlers/media.list.handler";
 import { SearchList } from "../../core/search.list";
 import { TitleHelper } from "../../helpers/title.helper";
 import { Sender } from "./../../core/sender";
+import { User } from "../../models/subscription.model";
 
 export class UnsubFunction implements ICommandFunction {
   public async Execute(
@@ -26,67 +27,63 @@ export class UnsubFunction implements ICommandFunction {
     const userMedia: number[] = [];
     const filteredMedia: IMedia[] = [];
     const formattedResults: any[] = [];
-    UserData.GetUser(discordId)
-      .then(user => {
-        MediaSearch.All(command.Parameter)
-          .then(res => {
-            media = res;
-            SubscriptionData.All.forEach(async sub => {
-              if (sub.UserId === user.Id) {
-                await userMedia.push(sub.MediaId);
-              }
-            });
-            media.forEach(async m => {
-              if (userMedia.includes(m.idMal)) {
-                await filteredMedia.push(m);
-                await formattedResults.push(MediaFormatHandler.Get(m));
-              }
-            });
-            if (filteredMedia.length === 0) {
-              Sender.SendInfo(
-                message,
-                `Hmm..It seems that you are not subscribe to any anime that matches your keyword  ***${title}***.`,
-                dm
-              );
-            } else if (filteredMedia.length === 1) {
-              SubscriptionData.Delete(filteredMedia[0].idMal, discordId).then(
-                () => {
-                  Sender.SendInfo(
-                    message,
-                    `You are now unsubscribed from  ***${TitleHelper.Get(
-                      filteredMedia[0].title
-                    )}***`,
-                    dm
-                  );
-                }
-              );
-            } else {
-              SearchList.Embed(message, command, formattedResults).then(
-                embed => {
-                  Sender.SendInfo(message, embed, dm);
-                }
-              );
-            }
-          })
-          .catch(() => {
-            Sender.Send(
-              message,
-              `Ge mo nasai! I didn't find anime that matches your keyword \`${
-                command.Parameter
-              }\``,
-              dm
-            );
-            console.warn(
-              `Error while searching : [MediaSearch.All(${command.Parameter})]`
-            );
-          });
+    const user = await UserData.GetUser(discordId).catch((reason: Error) => {
+      console.log(reason.message);
+      Sender.Send(
+        message,
+        `System Error!, I couldn't apprehend, please try again later.`,
+        dm
+      );
+    });
+    if (user instanceof User === false) return;
+    MediaSearch.All(command.Parameter)
+      .then(async res => {
+        media = res;
+        await SubscriptionData.All.forEach(async sub => {
+          if (sub.UserId === (user as User).Id) {
+            await userMedia.push(sub.MediaId);
+          }
+        });
+        await media.forEach(async m => {
+          if (userMedia.includes(m.idMal)) {
+            await filteredMedia.push(m);
+            await formattedResults.push(MediaFormatHandler.Get(m));
+          }
+        });
+        if (filteredMedia.length === 0) {
+          Sender.SendInfo(
+            message,
+            `Hmm..It seems that you are not subscribe to any anime that matches your keyword  ***${title}***.`,
+            dm
+          );
+        } else if (filteredMedia.length === 1) {
+          await SubscriptionData.Delete(filteredMedia[0].idMal, discordId);
+          Sender.SendInfo(
+            message,
+            `You are now unsubscribed from  ***${TitleHelper.Get(
+              filteredMedia[0].title
+            )}***`,
+            dm
+          );
+        } else {
+          const embed = await SearchList.Embed(
+            message,
+            command,
+            formattedResults
+          );
+          Sender.SendInfo(message, embed, dm);
+        }
       })
-      .catch((reason: Error) => {
-        console.log(reason.message);
+      .catch(() => {
         Sender.Send(
           message,
-          `System Error!, I couldn't apprehend, please try again later.`,
+          `Ge mo nasai! I didn't find anime that matches your keyword \`${
+            command.Parameter
+          }\``,
           dm
+        );
+        console.warn(
+          `Error while searching : [MediaSearch.All(${command.Parameter})]`
         );
       });
   }

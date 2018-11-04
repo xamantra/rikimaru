@@ -17,12 +17,12 @@ export class MediaFunction implements ICommandFunction {
   public async Handle(message: Message, command: ICommand, isDM: boolean) {
     const color = message.member.highestRole.color;
     MediaSearch.All(command.Parameter)
-      .then(res => {
-        const ongoing = MediaHandler.OngoingMedia(res);
-        const unreleased = MediaHandler.UnreleasedMedia(res);
-        const unreleasedNoDate = MediaHandler.UnreleasedNoDateMedia(res);
-        const completed = MediaHandler.CompletedMedia(res);
-        const exactMedia = MediaHandler.ExactMedia(res, command.Parameter);
+      .then(results => {
+        const ongoing = MediaHandler.OngoingMedia(results);
+        const unreleased = MediaHandler.UnreleasedMedia(results);
+        const unreleasedNoDate = MediaHandler.UnreleasedNoDateMedia(results);
+        const completed = MediaHandler.CompletedMedia(results);
+        const exactMedia = MediaHandler.ExactMedia(results, command.Parameter);
 
         if (exactMedia.length > 0) {
           exactMedia.forEach(async m => {
