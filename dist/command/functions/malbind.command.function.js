@@ -12,8 +12,6 @@ const config_1 = require("../../core/config");
 const mal_bind_model_1 = require("../../models/mal.bind.model");
 const client_1 = require("../../core/client");
 const user_data_1 = require("../../data/user.data");
-const awaiter_1 = require("../awaiter");
-const message_helper_1 = require("../../helpers/message.helper");
 class MalBindFunction {
     Execute(message, command, dm) {
         user_data_1.UserData.Insert(message.author.id)
@@ -30,26 +28,22 @@ class MalBindFunction {
         });
     }
     ProcessCode(message, command, dm, c) {
-        awaiter_1.Awaiter.Send(message, 2000, (m) => {
-            const code = mal_bind_model_1.MalBind.CodeFormat(c);
-            mal_bind_data_1.MalBindData.Get(message.author.id)
-                .then(mal => {
-                message_helper_1.MessageHelper.Delete(m);
-                if (mal.Verified === true) {
-                    sender_1.Sender.Send(message, `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`, dm);
-                }
-                else {
-                    this.CheckProfile(message, command, dm, mal_bind_model_1.MalBind.CodeFormat(mal.Code));
-                }
-            })
-                .catch(e => {
-                this.CheckProfile(message, command, dm, code);
-                message_helper_1.MessageHelper.Delete(m);
-            });
+        const code = mal_bind_model_1.MalBind.CodeFormat(c);
+        mal_bind_data_1.MalBindData.Get(message.author.id)
+            .then(mal => {
+            if (mal.Verified === true) {
+                sender_1.Sender.Send(message, `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`, dm);
+            }
+            else {
+                this.CheckProfile(message, command, dm, mal_bind_model_1.MalBind.CodeFormat(mal.Code));
+            }
+        })
+            .catch(e => {
+            this.CheckProfile(message, command, dm, code);
         });
     }
     CheckProfile(message, command, dm, code) {
-        this.GetProfile(message, command, dm).then(about => {
+        this.GetProfile(command).then(about => {
             if (about.includes(code)) {
                 mal_bind_data_1.MalBindData.Verify(message.author.id)
                     .then(msync => {
@@ -66,9 +60,9 @@ class MalBindFunction {
             }
         });
     }
-    GetProfile(message, command, dm) {
+    GetProfile(command) {
         return new Promise((resolve, reject) => {
-            const url = `${config_1.Config.MAL_PROFILE_BASE}${command.Parameter}`;
+            const url = `${config_1.Config.MAL_PROFILE_BASE}/${command.Parameter}`;
             const options = {
                 uri: url,
                 transform: function (body) {
@@ -125,4 +119,3 @@ class MalBindFunction {
     }
 }
 exports.MalBindFunction = MalBindFunction;
-//# sourceMappingURL=malbind.command.function.js.map

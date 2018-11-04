@@ -24,4 +24,3 @@ Page = __decorate([
     json2typescript_1.JsonObject("Page")
 ], Page);
 exports.Page = Page;
-//# sourceMappingURL=page.model.js.map

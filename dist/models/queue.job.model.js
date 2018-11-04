@@ -120,4 +120,3 @@ class QueueJob {
     }
 }
 exports.QueueJob = QueueJob;
-//# sourceMappingURL=queue.job.model.js.map

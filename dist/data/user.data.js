@@ -120,4 +120,3 @@ class UserData {
 UserData.Initializing = false;
 UserData.UserList = [];
 exports.UserData = UserData;
-//# sourceMappingURL=user.data.js.map

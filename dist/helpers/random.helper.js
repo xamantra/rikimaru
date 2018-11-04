@@ -6,4 +6,3 @@ class Random {
     }
 }
 exports.Random = Random;
-//# sourceMappingURL=random.helper.js.map

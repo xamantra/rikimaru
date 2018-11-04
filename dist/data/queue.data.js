@@ -180,4 +180,3 @@ QueueData.Queues = [];
 QueueData.QueueJobs = [];
 QueueData.Initializing = false;
 exports.QueueData = QueueData;
-//# sourceMappingURL=queue.data.js.map

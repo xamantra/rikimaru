@@ -23,4 +23,3 @@ env.MAL_BASE_URL = "https://myanimelist.net/";
 env.MAL_PROFILE_BASE = "https://myanimelist.net/profile/";
 env.MAL_CW_BASE = "https://myanimelist.net/animelist";
 exports.env = env;
-//# sourceMappingURL=env.sample.js.map

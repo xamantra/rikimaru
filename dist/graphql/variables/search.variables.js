@@ -14,4 +14,3 @@ class SearchVariables {
     }
 }
 exports.SearchVariables = SearchVariables;
-//# sourceMappingURL=search.variables.js.map

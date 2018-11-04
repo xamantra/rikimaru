@@ -42,4 +42,3 @@ class MessageHelper {
     }
 }
 exports.MessageHelper = MessageHelper;
-//# sourceMappingURL=message.helper.js.map

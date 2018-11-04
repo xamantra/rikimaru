@@ -143,4 +143,3 @@ MalAnime = __decorate([
     json2typescript_1.JsonObject("")
 ], MalAnime);
 exports.MalAnime = MalAnime;
-//# sourceMappingURL=mal.anime.model.js.map

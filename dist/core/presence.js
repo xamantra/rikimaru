@@ -28,4 +28,3 @@ class BotPresence {
 }
 BotPresence.MusicType = ["Ending Song of", "Opening Song of"];
 exports.BotPresence = BotPresence;
-//# sourceMappingURL=presence.js.map

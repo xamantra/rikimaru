@@ -91,4 +91,3 @@ GraphQL.Media = `
     }
   }`;
 exports.GraphQL = GraphQL;
-//# sourceMappingURL=graphql.js.map

@@ -11,4 +11,3 @@ class MediaVariables {
     }
 }
 exports.MediaVariables = MediaVariables;
-//# sourceMappingURL=media.variables.js.map

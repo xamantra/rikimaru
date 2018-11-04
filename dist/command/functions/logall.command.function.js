@@ -27,4 +27,3 @@ class LogAllFunction {
     }
 }
 exports.LogAllFunction = LogAllFunction;
-//# sourceMappingURL=logall.command.function.js.map

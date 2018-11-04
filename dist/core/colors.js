@@ -26,4 +26,3 @@ Color.List = [
     2250494
 ];
 exports.Color = Color;
-//# sourceMappingURL=colors.js.map

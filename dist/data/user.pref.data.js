@@ -11,4 +11,3 @@ class UserPrefData {
 UserPrefData.Initializing = false;
 UserPrefData.List = [];
 exports.UserPrefData = UserPrefData;
-//# sourceMappingURL=user.pref.data.js.map

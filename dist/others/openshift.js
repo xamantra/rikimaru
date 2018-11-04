@@ -39,4 +39,3 @@ class OpenShiftUptimer {
 }
 OpenShiftUptimer.logger_enabled = false;
 exports.OpenShiftUptimer = OpenShiftUptimer;
-//# sourceMappingURL=openshift.js.map

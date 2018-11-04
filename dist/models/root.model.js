@@ -37,4 +37,3 @@ RootMedia = __decorate([
     json2typescript_1.JsonObject("root")
 ], RootMedia);
 exports.RootMedia = RootMedia;
-//# sourceMappingURL=root.model.js.map

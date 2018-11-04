@@ -6,7 +6,7 @@ import { MalAnime } from "../models/mal.anime.model";
 export class MAL {
   public static AnimeList(username: string) {
     return new Promise<MalAnime[]>((resolve, reject) => {
-      const url = Config.MAL_CW_BASE(username);
+      const url = Config.MAL_CW_LINK(username);
       const options = {
         uri: url,
         json: true

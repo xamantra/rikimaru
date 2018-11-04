@@ -76,4 +76,3 @@ class CooldownResponse {
     }
 }
 exports.CooldownResponse = CooldownResponse;
-//# sourceMappingURL=cooldown.model.js.map

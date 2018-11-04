@@ -23,4 +23,3 @@ class MalSyncExample {
     }
 }
 exports.MalSyncExample = MalSyncExample;
-//# sourceMappingURL=malsync.command.example.js.map

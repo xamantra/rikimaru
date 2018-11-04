@@ -32,4 +32,3 @@ class EmbedHelper {
     }
 }
 exports.EmbedHelper = EmbedHelper;
-//# sourceMappingURL=embed.helper.js.map

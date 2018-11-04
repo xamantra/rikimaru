@@ -10,4 +10,3 @@ var MediaType;
     MediaType[MediaType["ANIME"] = 0] = "ANIME";
     MediaType[MediaType["MANGA"] = 1] = "MANGA";
 })(MediaType = exports.MediaType || (exports.MediaType = {}));
-//# sourceMappingURL=enums.js.map

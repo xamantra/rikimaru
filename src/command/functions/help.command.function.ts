@@ -3,9 +3,6 @@ import { ICommandFunction } from "../../interfaces/command.function.interface";
 import { ClientManager } from "../../core/client";
 import { ICommand } from "../../interfaces/command.interface";
 import { CommandManager } from "../manager.command";
-import { Color } from "../../core/colors";
-import { Awaiter } from "../awaiter";
-import { MessageHelper } from "../../helpers/message.helper";
 
 export class HelpFunction implements ICommandFunction {
   constructor() {}
@@ -15,34 +12,31 @@ export class HelpFunction implements ICommandFunction {
   }
 
   private ShowHelp(message: Message, dm: boolean) {
-    Awaiter.Send(message, 1000, (m: Message) => {
-      this.Embed(message).then(embed => {
-        MessageHelper.Delete(m);
-        process.on("unhandledRejection", console.log);
-        if (dm) {
-          message.member
-            .send(embed)
-            .then(($m: Message) => {
-              console.log(
-                `Message <${$m.id}> was sent to "${message.author.username}".`
-              );
-            })
-            .catch((err: DiscordAPIError) => {
-              console.log(err.name);
-            });
-        } else {
-          message
-            .reply(embed)
-            .then(($m: Message) => {
-              console.log(
-                `Message <${$m.id}> was sent in "<${message.channel.id}>".`
-              );
-            })
-            .catch((err: DiscordAPIError) => {
-              console.log(err.name);
-            });
-        }
-      });
+    this.Embed(message).then(embed => {
+      process.on("unhandledRejection", console.log);
+      if (dm) {
+        message.member
+          .send(embed)
+          .then(($m: Message) => {
+            console.log(
+              `Message <${$m.id}> was sent to "${message.author.username}".`
+            );
+          })
+          .catch((err: DiscordAPIError) => {
+            console.log(err.name);
+          });
+      } else {
+        message
+          .reply(embed)
+          .then(($m: Message) => {
+            console.log(
+              `Message <${$m.id}> was sent in "<${message.channel.id}>".`
+            );
+          })
+          .catch((err: DiscordAPIError) => {
+            console.log(err.name);
+          });
+      }
     });
   }
 

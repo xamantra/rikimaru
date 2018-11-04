@@ -9,31 +9,26 @@ const media_data_1 = require("./../../data/media.data");
 const title_helper_1 = require("../../helpers/title.helper");
 const time_helper_1 = require("../../helpers/time.helper");
 const client_1 = require("../../core/client");
-const awaiter_1 = require("../awaiter");
-const message_helper_1 = require("../../helpers/message.helper");
 const array_sort_1 = __importDefault(require("array-sort"));
 const sub_model_1 = require("../../models/sub.model");
 class ViewSubsFunction {
     constructor() { }
     async Execute(message, command, dm) {
-        awaiter_1.Awaiter.Send(message, 2000, (m) => {
-            this.Embed(message, dm).then(async (embed) => {
-                message_helper_1.MessageHelper.Delete(m);
-                if (dm === true) {
-                    message.author
-                        .send(embed)
-                        .then(($m) => {
-                        console.log(`Message <${$m.id}> was sent to <${message.author.username}>.`);
-                    })
-                        .catch((err) => {
-                        message.reply(`Oh! it seems that I can't DM you.`);
-                        console.log(err.name);
-                    });
-                }
-                else {
-                    message.reply(embed);
-                }
-            });
+        this.Embed(message, dm).then(async (embed) => {
+            if (dm === true) {
+                message.author
+                    .send(embed)
+                    .then(($m) => {
+                    console.log(`Message <${$m.id}> was sent to <${message.author.username}>.`);
+                })
+                    .catch((err) => {
+                    message.reply(`Oh! it seems that I can't DM you.`);
+                    console.log(err.name);
+                });
+            }
+            else {
+                message.reply(embed);
+            }
         });
     }
     async Embed(message, dm) {
@@ -131,4 +126,3 @@ class ViewSubsFunction {
     }
 }
 exports.ViewSubsFunction = ViewSubsFunction;
-//# sourceMappingURL=viewsubs.command.function.js.map

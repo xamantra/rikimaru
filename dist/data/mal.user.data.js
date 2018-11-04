@@ -39,4 +39,3 @@ class MalUserData {
     }
 }
 exports.MalUserData = MalUserData;
-//# sourceMappingURL=mal.user.data.js.map

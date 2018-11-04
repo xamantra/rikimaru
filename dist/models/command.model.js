@@ -7,4 +7,3 @@ class Command {
     }
 }
 exports.Command = Command;
-//# sourceMappingURL=command.model.js.map

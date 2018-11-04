@@ -86,4 +86,3 @@ class MediaExample {
     }
 }
 exports.MediaExample = MediaExample;
-//# sourceMappingURL=media.command.example.js.map

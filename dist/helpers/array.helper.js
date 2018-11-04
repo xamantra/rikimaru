@@ -14,4 +14,3 @@ class ArrayHelper {
     }
 }
 exports.ArrayHelper = ArrayHelper;
-//# sourceMappingURL=array.helper.js.map

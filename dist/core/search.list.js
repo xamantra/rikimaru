@@ -21,4 +21,3 @@ class SearchList {
     }
 }
 exports.SearchList = SearchList;
-//# sourceMappingURL=search.list.js.map

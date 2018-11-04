@@ -33,4 +33,3 @@ StartDate = __decorate([
     json2typescript_1.JsonObject("startDate")
 ], StartDate);
 exports.StartDate = StartDate;
-//# sourceMappingURL=start.date.model.js.map

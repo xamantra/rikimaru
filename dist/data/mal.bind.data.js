@@ -145,4 +145,3 @@ class MalBindData {
 MalBindData.List = [];
 MalBindData.Initializing = false;
 exports.MalBindData = MalBindData;
-//# sourceMappingURL=mal.bind.data.js.map

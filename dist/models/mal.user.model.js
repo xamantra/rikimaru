@@ -7,4 +7,3 @@ class MalUser {
     }
 }
 exports.MalUser = MalUser;
-//# sourceMappingURL=mal.user.model.js.map

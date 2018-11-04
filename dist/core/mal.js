@@ -10,7 +10,7 @@ const mal_anime_model_1 = require("../models/mal.anime.model");
 class MAL {
     static AnimeList(username) {
         return new Promise((resolve, reject) => {
-            const url = config_1.Config.MAL_CW_BASE(username);
+            const url = config_1.Config.MAL_CW_LINK(username);
             const options = {
                 uri: url,
                 json: true
@@ -32,4 +32,3 @@ class MAL {
     }
 }
 exports.MAL = MAL;
-//# sourceMappingURL=mal.js.map

@@ -34,4 +34,3 @@ class ResponseMessageHelper {
     }
 }
 exports.ResponseMessageHelper = ResponseMessageHelper;
-//# sourceMappingURL=response.message.helper.js.map

@@ -23,4 +23,3 @@ CoverImage = __decorate([
     json2typescript_1.JsonObject("coverImage")
 ], CoverImage);
 exports.CoverImage = CoverImage;
-//# sourceMappingURL=cover.image.model.js.map

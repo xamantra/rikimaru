@@ -9,60 +9,55 @@ import { MediaData } from "../../data/media.data";
 import { UserData } from "../../data/user.data";
 import { SubscriptionData } from "../../data/subscription.data";
 import { ClientManager } from "../../core/client";
-import { Awaiter } from "../awaiter";
-import { MessageHelper } from "../../helpers/message.helper";
+import { AniStrings } from "../../core/anistrings";
 import { MAL } from "../../core/mal";
 import { MalAnime } from "../../models/mal.anime.model";
 
 export class MalSyncFunction implements ICommandFunction {
   Execute(message?: Message, command?: ICommand, dm?: boolean): void {
-    Awaiter.Send(message, 2000, async (m: Message) => {
-      this.GetAll(message, dm)
-        .then(() => {
-          ClientManager.GetClient().then(client => {
-            MessageHelper.Delete(m);
-            const res$m = `**${
-              Awaiter.Random
-            }**, Your *MAL currently watching list* is now synced with your subscriptions.`;
-            Sender.Send(
-              message,
-              {
-                embed: {
-                  color: message.member.highestRole.color,
-                  thumbnail: { url: message.author.avatarURL },
-                  title: `Rikimaru MAL Auto Subscribe`,
-                  description: res$m,
-                  fields: [
-                    {
-                      name: `To unsubscribe, type:`,
-                      value: `\`-unsub anime title or keyword here\``
-                    },
-                    {
-                      name: `To view all subscription, type:`,
-                      value: `\`-viewsubs\``
-                    },
-                    {
-                      name: `Please Note: `,
-                      value: `If you've just modified your list, please wait at least 1 minute to **-malsync**.`
-                    }
-                  ],
-                  timestamp: new Date(),
-                  footer: {
-                    icon_url: client.user.avatarURL,
-                    text: "© Rikimaru"
+    this.GetAll(message, dm)
+      .then(() => {
+        ClientManager.GetClient().then(client => {
+          const res$m = `**${
+            AniStrings.Random
+          }**, Your *MAL currently watching list* is now synced with your subscriptions.`;
+          Sender.Send(
+            message,
+            {
+              embed: {
+                color: message.member.highestRole.color,
+                thumbnail: { url: message.author.avatarURL },
+                title: `Rikimaru MAL Auto Subscribe`,
+                description: res$m,
+                fields: [
+                  {
+                    name: `To unsubscribe, type:`,
+                    value: `\`-unsub anime title or keyword here\``
+                  },
+                  {
+                    name: `To view all subscription, type:`,
+                    value: `\`-viewsubs\``
+                  },
+                  {
+                    name: `Please Note: `,
+                    value: `If you've just modified your list, please wait at least 1 minute to **-malsync**.`
                   }
+                ],
+                timestamp: new Date(),
+                footer: {
+                  icon_url: client.user.avatarURL,
+                  text: "© Rikimaru"
                 }
-              },
-              dm
-            );
-          });
-        })
-        .catch(err => {
-          MessageHelper.Delete(m);
-          console.log(err);
-          this.SendStatus(message, dm);
+              }
+            },
+            dm
+          );
         });
-    });
+      })
+      .catch(err => {
+        console.log(err);
+        this.SendStatus(message, dm);
+      });
   }
 
   private GetAll(message: Message, dm: boolean) {

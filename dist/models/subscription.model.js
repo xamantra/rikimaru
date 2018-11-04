@@ -92,4 +92,3 @@ Queue = __decorate([
     json2typescript_1.JsonObject("")
 ], Queue);
 exports.Queue = Queue;
-//# sourceMappingURL=subscription.model.js.map

@@ -36,4 +36,3 @@ class BotCommand {
     }
 }
 exports.BotCommand = BotCommand;
-//# sourceMappingURL=bot.command.js.map

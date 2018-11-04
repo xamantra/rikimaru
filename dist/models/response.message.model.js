@@ -19,4 +19,3 @@ class ResponseMessage {
     }
 }
 exports.ResponseMessage = ResponseMessage;
-//# sourceMappingURL=response.message.model.js.map

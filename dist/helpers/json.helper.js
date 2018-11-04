@@ -34,4 +34,3 @@ class JsonHelper {
     }
 }
 exports.JsonHelper = JsonHelper;
-//# sourceMappingURL=json.helper.js.map

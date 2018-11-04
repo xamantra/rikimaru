@@ -25,4 +25,3 @@ class MessageHandler {
     }
 }
 exports.MessageHandler = MessageHandler;
-//# sourceMappingURL=message.handler.js.map

@@ -39,4 +39,3 @@ class RescueCenter {
     }
 }
 exports.RescueCenter = RescueCenter;
-//# sourceMappingURL=rescue.center.js.map

@@ -15,4 +15,3 @@ class UserPref {
     }
 }
 exports.UserPref = UserPref;
-//# sourceMappingURL=user.pref.model.js.map

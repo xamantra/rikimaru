@@ -61,4 +61,3 @@ class MediaResult {
     }
 }
 exports.MediaResult = MediaResult;
-//# sourceMappingURL=media.result.js.map

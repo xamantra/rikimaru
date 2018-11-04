@@ -33,4 +33,3 @@ Title = __decorate([
     json2typescript_1.JsonObject("title")
 ], Title);
 exports.Title = Title;
-//# sourceMappingURL=title.model.js.map

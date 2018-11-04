@@ -55,4 +55,3 @@ client_1.ClientManager.Init(new discord_js_1.Client());
 message_handler_1.MessageHandler.Init();
 manager_command_1.CommandManager.Init();
 App.Instance.Run();
-//# sourceMappingURL=index.js.map

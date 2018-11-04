@@ -1,24 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const random_helper_1 = require("../helpers/random.helper");
-class Awaiter {
-    static Send(message, timeout, callback) {
-        message.channel
-            .send(`**${this.FunActions[random_helper_1.Random.Range(0, this.FunActions.length - 1)]}** , please wait a moment master *${message.author.username}*.`)
-            .then((m) => {
-            setTimeout(() => {
-                callback(m);
-            }, timeout);
-        })
-            .catch(err => {
-            console.log(err);
-        });
-    }
-    static get Random() {
-        return this.FunActions[random_helper_1.Random.Range(0, this.FunActions.length - 1)];
-    }
-}
-Awaiter.FunActions = [
+import { Random } from "../helpers/random.helper";
+
+export class AniStrings {
+  private static FunActions = [
     "SUMMONING UNNECESSARILY DRAMATIC ENCOUNTERS",
     "PROCEDURALLY GENERATING BUTTONS",
     "GENERATING TERRAIN...",
@@ -55,6 +38,9 @@ Awaiter.FunActions = [
     "BUFFING BEFORE THE RAID",
     "GETTING DUNKED",
     "ENSURING DANKEST MEMES"
-];
-exports.Awaiter = Awaiter;
-//# sourceMappingURL=awaiter.js.map
+  ];
+
+  public static get Random() {
+    return this.FunActions[Random.Range(0, this.FunActions.length - 1)];
+  }
+}

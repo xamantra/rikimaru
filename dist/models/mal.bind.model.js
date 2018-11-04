@@ -65,4 +65,3 @@ class AnimeStats {
     }
 }
 exports.AnimeStats = AnimeStats;
-//# sourceMappingURL=mal.bind.model.js.map

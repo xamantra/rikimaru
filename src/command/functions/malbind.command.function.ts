@@ -10,8 +10,6 @@ import { Config } from "../../core/config";
 import { MalBind } from "../../models/mal.bind.model";
 import { ClientManager } from "../../core/client";
 import { UserData } from "../../data/user.data";
-import { Awaiter } from "../awaiter";
-import { MessageHelper } from "../../helpers/message.helper";
 
 export class MalBindFunction implements ICommandFunction {
   Execute(message?: Message, command?: ICommand, dm?: boolean): void {
@@ -36,31 +34,22 @@ export class MalBindFunction implements ICommandFunction {
     dm: boolean,
     c: string
   ) {
-    Awaiter.Send(message, 2000, (m: Message) => {
-      const code = MalBind.CodeFormat(c);
-      MalBindData.Get(message.author.id)
-        .then(mal => {
-          MessageHelper.Delete(m);
-          if (mal.Verified === true) {
-            Sender.Send(
-              message,
-              `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`,
-              dm
-            );
-          } else {
-            this.CheckProfile(
-              message,
-              command,
-              dm,
-              MalBind.CodeFormat(mal.Code)
-            );
-          }
-        })
-        .catch(e => {
-          this.CheckProfile(message, command, dm, code);
-          MessageHelper.Delete(m);
-        });
-    });
+    const code = MalBind.CodeFormat(c);
+    MalBindData.Get(message.author.id)
+      .then(mal => {
+        if (mal.Verified === true) {
+          Sender.Send(
+            message,
+            `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`,
+            dm
+          );
+        } else {
+          this.CheckProfile(message, command, dm, MalBind.CodeFormat(mal.Code));
+        }
+      })
+      .catch(e => {
+        this.CheckProfile(message, command, dm, code);
+      });
   }
 
   private CheckProfile(
@@ -69,7 +58,7 @@ export class MalBindFunction implements ICommandFunction {
     dm: boolean,
     code: string
   ) {
-    this.GetProfile(message, command, dm).then(about => {
+    this.GetProfile(command).then(about => {
       if (about.includes(code)) {
         MalBindData.Verify(message.author.id)
           .then(msync => {
@@ -90,9 +79,9 @@ export class MalBindFunction implements ICommandFunction {
     });
   }
 
-  private GetProfile(message: Message, command: ICommand, dm: boolean) {
+  private GetProfile(command: ICommand) {
     return new Promise<string>((resolve, reject) => {
-      const url = `${Config.MAL_PROFILE_BASE}${command.Parameter}`;
+      const url = `${Config.MAL_PROFILE_BASE}/${command.Parameter}`;
       const options = {
         uri: url,
         transform: function(body: string) {

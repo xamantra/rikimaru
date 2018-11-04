@@ -7,7 +7,7 @@ import { ICommand } from "../../interfaces/command.interface";
 import { TitleHelper } from "../../helpers/title.helper";
 import { TimeHelper } from "../../helpers/time.helper";
 import { ClientManager } from "../../core/client";
-import { Awaiter } from "../awaiter";
+import { AniStrings } from "../../core/anistrings";
 import { MessageHelper } from "../../helpers/message.helper";
 import arraySort from "array-sort";
 import { SubMedia } from "../../models/sub.model";
@@ -16,25 +16,22 @@ export class ViewSubsFunction implements ICommandFunction {
   constructor() {}
 
   public async Execute(message?: Message, command?: ICommand, dm?: boolean) {
-    Awaiter.Send(message, 2000, (m: Message) => {
-      this.Embed(message, dm).then(async embed => {
-        MessageHelper.Delete(m);
-        if (dm === true) {
-          message.author
-            .send(embed)
-            .then(($m: Message) => {
-              console.log(
-                `Message <${$m.id}> was sent to <${message.author.username}>.`
-              );
-            })
-            .catch((err: DiscordAPIError) => {
-              message.reply(`Oh! it seems that I can't DM you.`);
-              console.log(err.name);
-            });
-        } else {
-          message.reply(embed);
-        }
-      });
+    this.Embed(message, dm).then(async embed => {
+      if (dm === true) {
+        message.author
+          .send(embed)
+          .then(($m: Message) => {
+            console.log(
+              `Message <${$m.id}> was sent to <${message.author.username}>.`
+            );
+          })
+          .catch((err: DiscordAPIError) => {
+            message.reply(`Oh! it seems that I can't DM you.`);
+            console.log(err.name);
+          });
+      } else {
+        message.reply(embed);
+      }
     });
   }
 

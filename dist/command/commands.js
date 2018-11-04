@@ -20,4 +20,3 @@ exports.malsync = new bot_command_1.BotCommand("malsync", `Automatically subscri
 exports.ping = new bot_command_1.BotCommand("ping", "Just check your ping and the API's ping.", false, false, enums_1.Response.ChannelReply, 3, functions_1.pingFunction);
 exports.dmping = new bot_command_1.BotCommand("dmping", "Just similar with* ***-ping*** *command.", false, false, enums_1.Response.DirectMessage, 3, functions_1.pingFunction);
 exports.logall = new bot_command_1.BotCommand("logall", "Developer only..", false, false, enums_1.Response.DirectMessage, 0, functions_1.logAllFunction, null, true);
-//# sourceMappingURL=commands.js.map

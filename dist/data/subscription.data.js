@@ -184,4 +184,3 @@ class SubscriptionData {
 SubscriptionData.Initializing = false;
 SubscriptionData.SubscriptionList = [];
 exports.SubscriptionData = SubscriptionData;
-//# sourceMappingURL=subscription.data.js.map

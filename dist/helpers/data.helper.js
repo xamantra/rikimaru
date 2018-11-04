@@ -9,4 +9,3 @@ DataHelper.queue = "queues";
 DataHelper.malsync = "malbind";
 DataHelper.userPref = "userprefs";
 exports.DataHelper = DataHelper;
-//# sourceMappingURL=data.helper.js.map

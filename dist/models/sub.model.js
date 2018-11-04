@@ -6,4 +6,3 @@ class SubMedia {
     }
 }
 exports.SubMedia = SubMedia;
-//# sourceMappingURL=sub.model.js.map

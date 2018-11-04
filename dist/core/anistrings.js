@@ -1,7 +1,12 @@
-import { Message } from "discord.js";
-import { Random } from "../helpers/random.helper";
-export class Awaiter {
-  private static FunActions = [
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const random_helper_1 = require("../helpers/random.helper");
+class AniStrings {
+    static get Random() {
+        return this.FunActions[random_helper_1.Random.Range(0, this.FunActions.length - 1)];
+    }
+}
+AniStrings.FunActions = [
     "SUMMONING UNNECESSARILY DRAMATIC ENCOUNTERS",
     "PROCEDURALLY GENERATING BUTTONS",
     "GENERATING TERRAIN...",
@@ -38,30 +43,5 @@ export class Awaiter {
     "BUFFING BEFORE THE RAID",
     "GETTING DUNKED",
     "ENSURING DANKEST MEMES"
-  ];
-
-  public static Send(
-    message: Message,
-    timeout: number,
-    callback?: (message: Message) => void
-  ) {
-    message.channel
-      .send(
-        `**${
-          this.FunActions[Random.Range(0, this.FunActions.length - 1)]
-        }** , please wait a moment master *${message.author.username}*.`
-      )
-      .then((m: Message) => {
-        setTimeout(() => {
-          callback(m);
-        }, timeout);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }
-
-  public static get Random() {
-    return this.FunActions[Random.Range(0, this.FunActions.length - 1)];
-  }
-}
+];
+exports.AniStrings = AniStrings;

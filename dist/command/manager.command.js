@@ -44,4 +44,3 @@ class CommandManager {
 }
 CommandManager.BotCommands = [];
 exports.CommandManager = CommandManager;
-//# sourceMappingURL=manager.command.js.map

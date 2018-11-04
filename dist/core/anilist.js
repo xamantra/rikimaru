@@ -34,4 +34,3 @@ class Anilist {
     }
 }
 exports.Anilist = Anilist;
-//# sourceMappingURL=anilist.js.map

@@ -108,4 +108,3 @@ class Mongo {
     }
 }
 exports.Mongo = Mongo;
-//# sourceMappingURL=mongo.js.map

@@ -8,51 +8,46 @@ const media_data_1 = require("../../data/media.data");
 const user_data_1 = require("../../data/user.data");
 const subscription_data_1 = require("../../data/subscription.data");
 const client_1 = require("../../core/client");
-const awaiter_1 = require("../awaiter");
-const message_helper_1 = require("../../helpers/message.helper");
+const anistrings_1 = require("../../core/anistrings");
 const mal_1 = require("../../core/mal");
 class MalSyncFunction {
     Execute(message, command, dm) {
-        awaiter_1.Awaiter.Send(message, 2000, async (m) => {
-            this.GetAll(message, dm)
-                .then(() => {
-                client_1.ClientManager.GetClient().then(client => {
-                    message_helper_1.MessageHelper.Delete(m);
-                    const res$m = `**${awaiter_1.Awaiter.Random}**, Your *MAL currently watching list* is now synced with your subscriptions.`;
-                    sender_1.Sender.Send(message, {
-                        embed: {
-                            color: message.member.highestRole.color,
-                            thumbnail: { url: message.author.avatarURL },
-                            title: `Rikimaru MAL Auto Subscribe`,
-                            description: res$m,
-                            fields: [
-                                {
-                                    name: `To unsubscribe, type:`,
-                                    value: `\`-unsub anime title or keyword here\``
-                                },
-                                {
-                                    name: `To view all subscription, type:`,
-                                    value: `\`-viewsubs\``
-                                },
-                                {
-                                    name: `Please Note: `,
-                                    value: `If you've just modified your list, please wait at least 1 minute to **-malsync**.`
-                                }
-                            ],
-                            timestamp: new Date(),
-                            footer: {
-                                icon_url: client.user.avatarURL,
-                                text: "© Rikimaru"
+        this.GetAll(message, dm)
+            .then(() => {
+            client_1.ClientManager.GetClient().then(client => {
+                const res$m = `**${anistrings_1.AniStrings.Random}**, Your *MAL currently watching list* is now synced with your subscriptions.`;
+                sender_1.Sender.Send(message, {
+                    embed: {
+                        color: message.member.highestRole.color,
+                        thumbnail: { url: message.author.avatarURL },
+                        title: `Rikimaru MAL Auto Subscribe`,
+                        description: res$m,
+                        fields: [
+                            {
+                                name: `To unsubscribe, type:`,
+                                value: `\`-unsub anime title or keyword here\``
+                            },
+                            {
+                                name: `To view all subscription, type:`,
+                                value: `\`-viewsubs\``
+                            },
+                            {
+                                name: `Please Note: `,
+                                value: `If you've just modified your list, please wait at least 1 minute to **-malsync**.`
                             }
+                        ],
+                        timestamp: new Date(),
+                        footer: {
+                            icon_url: client.user.avatarURL,
+                            text: "© Rikimaru"
                         }
-                    }, dm);
-                });
-            })
-                .catch(err => {
-                message_helper_1.MessageHelper.Delete(m);
-                console.log(err);
-                this.SendStatus(message, dm);
+                    }
+                }, dm);
             });
+        })
+            .catch(err => {
+            console.log(err);
+            this.SendStatus(message, dm);
         });
     }
     GetAll(message, dm) {
@@ -153,4 +148,3 @@ class MalSyncFunction {
     }
 }
 exports.MalSyncFunction = MalSyncFunction;
-//# sourceMappingURL=malsync.command.function.js.map

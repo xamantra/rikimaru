@@ -49,4 +49,3 @@ class TimeHelper {
     }
 }
 exports.TimeHelper = TimeHelper;
-//# sourceMappingURL=time.helper.js.map

@@ -41,4 +41,3 @@ class Sender {
     }
 }
 exports.Sender = Sender;
-//# sourceMappingURL=sender.js.map

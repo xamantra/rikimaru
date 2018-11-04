@@ -33,4 +33,3 @@ NextAiringEpisode = __decorate([
     json2typescript_1.JsonObject("nextAiringEpisode")
 ], NextAiringEpisode);
 exports.NextAiringEpisode = NextAiringEpisode;
-//# sourceMappingURL=next.airing.episode.model.js.map

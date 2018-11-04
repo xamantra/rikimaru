@@ -38,4 +38,3 @@ MediaStreamingEpisode = __decorate([
     json2typescript_1.JsonObject("MediaStreamingEpisode")
 ], MediaStreamingEpisode);
 exports.MediaStreamingEpisode = MediaStreamingEpisode;
-//# sourceMappingURL=media.streaming.episode.model.js.map

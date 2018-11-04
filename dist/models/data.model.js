@@ -38,4 +38,3 @@ DataMedia = __decorate([
     json2typescript_1.JsonObject("data")
 ], DataMedia);
 exports.DataMedia = DataMedia;
-//# sourceMappingURL=data.model.js.map

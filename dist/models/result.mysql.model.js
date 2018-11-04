@@ -58,4 +58,3 @@ MySqlResult = __decorate([
     json2typescript_1.JsonObject("")
 ], MySqlResult);
 exports.MySqlResult = MySqlResult;
-//# sourceMappingURL=result.mysql.model.js.map
