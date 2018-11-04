@@ -81,7 +81,7 @@ class ViewSubsFunction {
                                 const element = unsorted[b];
                                 sorted.push(element.field);
                             }
-                            const template = await this.EmbedTemplate(message, dUser, 0, sorted);
+                            const template = await this.EmbedTemplate(message, dUser, subs.length, sorted);
                             resolve(template);
                         }
                     })

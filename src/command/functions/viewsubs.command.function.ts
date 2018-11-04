@@ -93,7 +93,7 @@ export class ViewSubsFunction implements ICommandFunction {
                   const template = await this.EmbedTemplate(
                     message,
                     dUser as User,
-                    0,
+                    subs.length,
                     sorted
                   );
                   resolve(template);
