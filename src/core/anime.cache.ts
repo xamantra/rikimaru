@@ -58,14 +58,15 @@ export class AnimeCache {
       let fromApi: IMedia = null;
       if (local !== null && local !== undefined) {
         resolve(local);
-      } else if (fromApi !== null && fromApi !== undefined) {
+      } else {
         fromApi = await MediaSearch.Find(id);
+        if (fromApi === null || fromApi === undefined) {
+          resolve(null);
+        }
         const exists = await this.Exists(fromApi.idMal);
         if (exists === false) this.List.push(fromApi);
         QueueData.SetQueue(fromApi);
         resolve(fromApi);
-      } else {
-        resolve(null);
       }
     });
   }
