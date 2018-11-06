@@ -39,12 +39,17 @@ export class QueueData {
         if (queues.length === 0) {
           this.Initializing = false;
           resolve();
+        } else {
+          for (let i = 0; i < queues.length; i++) {
+            const q = queues[i];
+            this.Queues.push(q);
+            if (i === queues.length - 1) {
+              this.Initializing = false;
+              console.log(`Queue Length: ${this.Queues.length}`);
+              resolve();
+            }
+          }
         }
-        queues.forEach(q => {
-          this.Queues.push(q);
-        });
-        this.Initializing = false;
-        resolve();
       }
     });
   }

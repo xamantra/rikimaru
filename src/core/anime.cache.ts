@@ -55,10 +55,11 @@ export class AnimeCache {
   public static async Get(id: number) {
     return new Promise<IMedia>(async (resolve, reject) => {
       const local = this.List.find(x => x.idMal === id);
-      const fromApi = await MediaSearch.Find(id);
+      let fromApi: IMedia = null;
       if (local !== null && local !== undefined) {
         resolve(local);
       } else if (fromApi !== null && fromApi !== undefined) {
+        fromApi = await MediaSearch.Find(id);
         const exists = await this.Exists(fromApi.idMal);
         if (exists === false) this.List.push(fromApi);
         QueueData.SetQueue(fromApi);

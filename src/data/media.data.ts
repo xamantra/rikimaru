@@ -39,16 +39,17 @@ export class MediaData {
       } else {
         if ($result.length === 0) {
           resolve();
-        }
-        for (let i = 0; i < $result.length; i++) {
-          const m = $result[i];
-          this.LocalList.push(m);
-          if (i === $result.length - 1) {
-            await this.LoadFromApi().catch((reason: Error) => {
-              console.log(reason.message);
-            });
-            console.log(`Media List Length: ${this.MediaList.length}`);
-            resolve();
+        } else {
+          for (let i = 0; i < $result.length; i++) {
+            const m = $result[i];
+            this.LocalList.push(m);
+            if (i === $result.length - 1) {
+              await this.LoadFromApi().catch((reason: Error) => {
+                console.log(reason.message);
+              });
+              console.log(`Media List Length: ${this.MediaList.length}`);
+              resolve();
+            }
           }
         }
       }
