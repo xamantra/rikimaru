@@ -1,6 +1,5 @@
 import { MediaStatus } from "./../core/media.status";
 import { SubscriptionData } from "./subscription.data";
-import { MediaSearch } from "./../core/media.search";
 import { JsonHelper } from "../helpers/json.helper";
 import { Tables } from "../core/tables";
 import { Media, User } from "../models/subscription.model";
@@ -10,7 +9,7 @@ import { UserData } from "./user.data";
 import { QueueData } from "./queue.data";
 import { Random } from "../helpers/random.helper";
 import { Mongo } from "../core/mongo";
-import { Sender } from "../core/sender";
+import { AnimeCache } from "../core/anime.cache";
 
 export class MediaData {
   public static get GetLocalList() {
@@ -86,9 +85,12 @@ export class MediaData {
         let iteration = 0;
         locals.forEach(lm => {
           setTimeout(async () => {
-            const $m = await MediaSearch.Find(lm.MalId);
+            const $m = await AnimeCache.Get(lm.MalId);
             iteration++;
-            if (MediaStatus.Ongoing($m) || MediaStatus.NotYetAired($m)) {
+            if (
+              $m !== null &&
+              (MediaStatus.Ongoing($m) || MediaStatus.NotYetAired($m))
+            ) {
               await QueueData.Insert($m.idMal, $m.nextAiringEpisode.next).catch(
                 () => {
                   this.Check(iteration, $m, resolve);

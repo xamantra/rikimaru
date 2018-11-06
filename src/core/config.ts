@@ -1,3 +1,4 @@
+import { IFirebaseConfig } from "../interfaces/firebase.config.interface";
 export class Config {
   public static get BOT_TOKEN(): string {
     return process.env.BOT_TOKEN || require("../extras/env").env.BOT_TOKEN;
@@ -30,5 +31,12 @@ export class Config {
     const base =
       process.env.MAL_CW_BASE || require("../extras/env").env.MAL_CW_BASE;
     return `${base}/${username}/load.json?status=1`;
+  }
+
+  public static FIREBASE_CONFIG(): IFirebaseConfig {
+    return (
+      process.env.FIREBASE_CONFIG ||
+      require("../extras/env").env.FIREBASE_CONFIG
+    );
   }
 }

@@ -1,0 +1,6 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class FirebaseCore {
+}
+exports.FirebaseCore = FirebaseCore;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZmlyZWJhc2UuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9zcmMvY29yZS9maXJlYmFzZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLE1BQWEsWUFBWTtDQUFHO0FBQTVCLG9DQUE0QiIsInNvdXJjZXNDb250ZW50IjpbImV4cG9ydCBjbGFzcyBGaXJlYmFzZUNvcmUge31cclxuIl19

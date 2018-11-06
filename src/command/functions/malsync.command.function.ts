@@ -13,6 +13,7 @@ import { MAL } from "../../core/mal";
 import { MalAnime } from "../../models/mal.anime.model";
 import { MalBind } from "../../models/mal.bind.model";
 import { User } from "../../models/subscription.model";
+import { AnimeCache } from "../../core/anime.cache";
 
 export class MalSyncFunction implements ICommandFunction {
   async Execute(
@@ -101,7 +102,7 @@ export class MalSyncFunction implements ICommandFunction {
           let iteration = 0;
           list.forEach(async anime => {
             iteration++;
-            await MediaSearch.Find(anime.anime_id)
+            await AnimeCache.Get(anime.anime_id)
               .then(media => {
                 const title = TitleHelper.Get(media.title);
                 MediaData.Insert(media, title).then(async insertId => {

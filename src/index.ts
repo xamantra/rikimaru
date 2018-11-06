@@ -10,6 +10,7 @@ import { OpenShiftUptimer } from "./others/openshift";
 import { Scheduler } from "./core/scheduler";
 import { BotPresence } from "./core/presence";
 import { MalBindData } from "./data/mal.bind.data";
+import { AnimeCache } from "./core/anime.cache";
 
 class App {
   static _instance: App;
@@ -36,6 +37,7 @@ class App {
     await BotPresence.Init().catch(err => {
       console.log(err);
     });
+    AnimeCache.Update(0);
     Scheduler.LoopJob(0, 10, 0, async () => {
       console.log(`Refreshing Data....`);
       await QueueData.Init().catch(err => {
@@ -51,8 +53,8 @@ class App {
   }
 }
 
-OpenShiftUptimer.Log(true);
-OpenShiftUptimer.AutoConfigure();
+// OpenShiftUptimer.Log(true);
+// OpenShiftUptimer.AutoConfigure();
 
 ClientManager.Init(new Client());
 MessageHandler.Init();

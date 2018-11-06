@@ -9,6 +9,7 @@ import { Color } from "../core/colors";
 import { SubscriptionData } from "../data/subscription.data";
 import { User } from "discord.js";
 import { MediaStatus } from "../core/media.status";
+import { AnimeCache } from "../core/anime.cache";
 
 export class QueueJob {
   private JobDate: Date;
@@ -79,25 +80,24 @@ export class QueueJob {
     );
   }
 
-  private Update() {
-    MediaSearch.Find(this.media.idMal)
-      .then(media => {
-        QueueData.Update(media, this)
-          .then(() => {
-            console.log(`Removed Queue: ${media.idMal}`);
-          })
-          .catch(err => {
-            console.log(err);
-          });
-      })
-      .catch(error => {
-        console.warn(
-          `Error while searching : [MediaSearch.Find(${
-            this.media.idMal
-          })]. Trying again...`
-        );
-        this.Update();
-      });
+  private async Update() {
+    const media = await AnimeCache.Get(this.media.idMal);
+    if (media !== null) {
+      QueueData.Update(media, this)
+        .then(() => {
+          console.log(`Removed Queue: ${media.idMal}`);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    } else {
+      console.warn(
+        `Error while searching : [MediaSearch.Find(${
+          this.media.idMal
+        })]. Trying again...`
+      );
+      this.Update();
+    }
   }
 
   private async EmbedTemplate(media: IMedia, episode: number) {

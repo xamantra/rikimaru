@@ -10,6 +10,7 @@ import { ArrayHelper } from "../helpers/array.helper";
 import { MediaData } from "./media.data";
 import { MediaSearch } from "../core/media.search";
 import { TitleHelper } from "../helpers/title.helper";
+import { AnimeCache } from "../core/anime.cache";
 
 export class SubscriptionData {
   static Initializing = false;
@@ -44,9 +45,10 @@ export class SubscriptionData {
         for (let i = 0; i < subs.length; i++) {
           const sub = subs[i];
           this.SubscriptionList.push(sub);
-          const media = await MediaSearch.Find(sub.MediaId);
-          const user = await UserData.GetUserById(sub.UserId);
-          await MediaData.Insert(media, TitleHelper.Get(media.title), user);
+          const media = await AnimeCache.Get(sub.MediaId);
+          if (media !== null) {
+            const user = await UserData.GetUserById(sub.UserId);
+          }
           if (i === subs.length - 1) {
             this.Initializing = false;
             resolve();

@@ -13,6 +13,7 @@ import { MediaHandler } from "../../handlers/media.handler";
 import { ClientManager } from "../../core/client";
 import { Sender } from "../../core/sender";
 import { User } from "../../models/subscription.model";
+import { AnimeCache } from "../../core/anime.cache";
 
 export class SubscribeFunction implements ICommandFunction {
   public async Execute(
@@ -27,7 +28,7 @@ export class SubscribeFunction implements ICommandFunction {
     UserData.Insert(message.author.id).catch((err: Error) => {
       console.log(err);
     });
-    MediaSearch.All(command.Parameter)
+    AnimeCache.Search(command.Parameter)
       .then(async res => {
         const ongoing = await MediaHandler.OngoingMedia(res);
         const unreleased = await MediaHandler.UnreleasedMedia(res);

@@ -10,6 +10,7 @@ import { SearchList } from "../../core/search.list";
 import { TitleHelper } from "../../helpers/title.helper";
 import { Sender } from "./../../core/sender";
 import { User } from "../../models/subscription.model";
+import { AnimeCache } from "../../core/anime.cache";
 
 export class UnsubFunction implements ICommandFunction {
   public async Execute(
@@ -36,7 +37,7 @@ export class UnsubFunction implements ICommandFunction {
       );
     });
     if (user instanceof User === false) return;
-    MediaSearch.All(command.Parameter)
+    AnimeCache.Search(command.Parameter)
       .then(async res => {
         media = res;
         await SubscriptionData.All.forEach(async sub => {

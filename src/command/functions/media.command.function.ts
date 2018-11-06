@@ -6,6 +6,7 @@ import { MediaHandler } from "../../handlers/media.handler";
 import { ResponseMessageHelper } from "../../helpers/response.message.helper";
 import { Message } from "discord.js";
 import { Sender } from "../../core/sender";
+import { AnimeCache } from "../../core/anime.cache";
 
 export class MediaFunction implements ICommandFunction {
   constructor() {}
@@ -16,7 +17,7 @@ export class MediaFunction implements ICommandFunction {
 
   public async Handle(message: Message, command: ICommand, isDM: boolean) {
     const color = message.member.highestRole.color;
-    MediaSearch.All(command.Parameter)
+    AnimeCache.Search(command.Parameter)
       .then(results => {
         const ongoing = MediaHandler.OngoingMedia(results);
         const unreleased = MediaHandler.UnreleasedMedia(results);
