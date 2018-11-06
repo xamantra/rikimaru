@@ -29,27 +29,20 @@ export class MediaData {
       await this.Clear();
       this.Initializing = true;
       const result = await Mongo.FindAll(Table.media);
-      const $result = await JsonHelper.ArrayConvert<Media>(result, Media);
-      if ($result === undefined || $result === null) {
+      const list = await JsonHelper.ArrayConvert<Media>(result, Media);
+      if (list === undefined || list === null) {
         reject(
           new Error(
             `"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`
           )
         );
       } else {
-        if ($result.length === 0) {
+        if (list.length === 0) {
           resolve();
-        }
-        for (let i = 0; i < $result.length; i++) {
-          const m = $result[i];
-          this.LocalList.push(m);
-          if (i === $result.length - 1) {
-            await this.LoadFromApi().catch((reason: Error) => {
-              console.log(reason.message);
-            });
-            console.log(`Media List Length: ${this.MediaList.length}`);
-            resolve();
-          }
+        } else {
+          this.LocalList = list;
+          this.Initializing = true;
+          resolve();
         }
       }
     });

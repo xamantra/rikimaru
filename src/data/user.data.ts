@@ -16,21 +16,15 @@ export class UserData {
       this.Initializing = true;
       const result = await Mongo.FindAll(Table.user);
       const users = await JsonHelper.ArrayConvert<User>(result, User);
-      let iteration = 1;
       if (users !== undefined && users !== null) {
         if (users.length === 0) {
           this.Initializing = false;
           resolve();
+        } else {
+          this.UserList = users;
+          this.Initializing = false;
+          resolve();
         }
-        users.forEach(user => {
-          this.UserList.push(user);
-          if (iteration === users.length) {
-            this.Initializing = false;
-            resolve();
-          } else {
-            iteration++;
-          }
-        });
       } else {
         this.Initializing = false;
         reject(

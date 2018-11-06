@@ -41,18 +41,10 @@ export class SubscriptionData {
         if (subs.length === 0) {
           this.Initializing = false;
           resolve();
-        }
-        for (let i = 0; i < subs.length; i++) {
-          const sub = subs[i];
-          this.SubscriptionList.push(sub);
-          const media = await AnimeCache.Get(sub.MediaId);
-          if (media !== null) {
-            const user = await UserData.GetUserById(sub.UserId);
-          }
-          if (i === subs.length - 1) {
-            this.Initializing = false;
-            resolve();
-          }
+        } else {
+          this.SubscriptionList = subs;
+          this.Initializing = false;
+          resolve();
         }
       }
     });

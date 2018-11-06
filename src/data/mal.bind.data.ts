@@ -26,14 +26,9 @@ export class MalBindData {
           this.Initializing = false;
           resolve();
         } else {
-          for (let i = 0; i < list.length; i++) {
-            const malBind = list[i];
-            this.List.push(malBind);
-            if (i === list.length - 1) {
-              this.Initializing = false;
-              resolve();
-            }
-          }
+          this.List = list;
+          this.Initializing = false;
+          resolve();
         }
       }
     });
