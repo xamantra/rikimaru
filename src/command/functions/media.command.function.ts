@@ -34,29 +34,56 @@ export class MediaFunction implements ICommandFunction {
             );
           });
         } else if (ongoing.length > 0) {
-          ongoing.forEach(async m => {
+          if (ongoing.length === 1) {
+            const m = ongoing[0];
             ResponseMessageHelper.CreateMessage(m, m.status, color).then(
               response => {
                 MediaResult.SendMessage(message, isDM, response);
               }
             );
-          });
+          } else {
+            this.SendManyResult(
+              message,
+              command,
+              isDM,
+              ongoing.length,
+              `currently ongoing. Please try to be more specific.`
+            );
+          }
         } else if (unreleased.length > 0) {
-          unreleased.forEach(async m => {
+          if (unreleased.length === 1) {
+            const m = unreleased[0];
             ResponseMessageHelper.CreateMessage(m, m.status, color).then(
               response => {
                 MediaResult.SendMessage(message, isDM, response);
               }
             );
-          });
+          } else {
+            this.SendManyResult(
+              message,
+              command,
+              isDM,
+              unreleased.length,
+              `not yet aired. Please try to be more specific.`
+            );
+          }
         } else if (unreleasedNoDate.length > 0) {
-          unreleasedNoDate.forEach(async m => {
+          if (unreleasedNoDate.length === 1) {
+            const m = unreleasedNoDate[0];
             ResponseMessageHelper.CreateMessage(m, m.status, color).then(
               response => {
                 MediaResult.SendMessage(message, isDM, response);
               }
             );
-          });
+          } else {
+            this.SendManyResult(
+              message,
+              command,
+              isDM,
+              unreleasedNoDate.length,
+              `not yet aired. Please try to be more specific.`
+            );
+          }
         } else if (completed.length > 0) {
           if (completed.length === 1) {
             completed.forEach(async m => {
@@ -67,12 +94,12 @@ export class MediaFunction implements ICommandFunction {
               );
             });
           } else {
-            Sender.SendInfo(
+            this.SendManyResult(
               message,
-              `I found ***${completed.length}*** anime with your keyword ***${
-                command.Parameter
-              }*** and all of them is already completed.`,
-              isDM
+              command,
+              isDM,
+              completed.length,
+              `already completed.`
             );
           }
         } else {
@@ -97,5 +124,21 @@ export class MediaFunction implements ICommandFunction {
           `Error while searching : [MediaSearch.All(${command.Parameter})]`
         );
       });
+  }
+
+  private SendManyResult(
+    message: Message,
+    command: ICommand,
+    isDM: boolean,
+    length: number,
+    type: string
+  ) {
+    Sender.SendInfo(
+      message,
+      `I found ***${length}*** anime with your keyword ***${
+        command.Parameter
+      }*** and all of them is ${type}`,
+      isDM
+    );
   }
 }

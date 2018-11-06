@@ -1,6 +1,6 @@
 import { QueueJob } from "./../models/queue.job.model";
 import { JsonHelper } from "./../helpers/json.helper";
-import { Tables } from "../core/tables";
+import { Table } from "../core/table";
 import { ArrayHelper } from "../helpers/array.helper";
 import { IMedia } from "../interfaces/page.interface";
 import { Mongo } from "../core/mongo";
@@ -26,7 +26,7 @@ export class QueueData {
         .catch((err: Error) => {
           console.log(err.message);
         });
-      const result = await Mongo.FindAll(Tables.queue);
+      const result = await Mongo.FindAll(Table.queue);
       const queues = await JsonHelper.ArrayConvert<Queue>(result, Queue);
       if (queues === null || queues === undefined) {
         this.Initializing = false;
@@ -84,7 +84,7 @@ export class QueueData {
     this.GetQueue($m.idMal).then(async queue => {
       await this.OnReady();
       const queueJob = new QueueJob($m, queue);
-      this.AddJob(queueJob);
+      await this.AddJob(queueJob);
     });
   }
 
@@ -98,7 +98,7 @@ export class QueueData {
   public static AddJob(queueJob: QueueJob) {
     return new Promise(async (resolve, reject) => {
       await this.OnReady();
-      queueJob.Check();
+      queueJob.StartCheck();
       this.QueueJobs.push(queueJob);
       resolve();
     });
@@ -117,7 +117,7 @@ export class QueueData {
       const exists = await this.Exists(mediaId);
       if (exists === false) {
         const data = { media_id: mediaId, next_episode: next_episode };
-        const result = await Mongo.Insert(Tables.queue, data);
+        const result = await Mongo.Insert(Table.queue, data);
         if (result.insertedId !== undefined && result.insertedId !== null) {
           const q = new Queue();
           q.Id = result.insertedId;
@@ -142,7 +142,7 @@ export class QueueData {
       const newValues = {
         $set: { next_episode: media.nextAiringEpisode.next }
       };
-      await Mongo.Update(Tables.queue, query, newValues);
+      await Mongo.Update(Table.queue, query, newValues);
       await this.Init();
       await this.Init().catch(err => {
         console.log(err);
