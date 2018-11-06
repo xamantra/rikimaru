@@ -15,7 +15,7 @@ export class QueueJob {
   private JobDate: Date;
   constructor(public media: IMedia, public queue: Queue) {}
 
-  public StartCheck() {
+  public Check() {
     const queueEpisode = this.queue.NextEpisode;
     const media = this.media;
     const title = TitleHelper.Get(media.title);

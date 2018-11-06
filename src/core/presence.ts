@@ -3,7 +3,6 @@ import { ClientManager } from "./client";
 import { DiscordAPIError } from "discord.js";
 import { Random } from "../helpers/random.helper";
 import { AnimeCache } from "./anime.cache";
-
 export class BotPresence {
   private static MusicType = ["Ending Song of", "Opening Song of"];
 
