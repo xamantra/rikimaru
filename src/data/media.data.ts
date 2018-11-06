@@ -1,7 +1,7 @@
 import { MediaStatus } from "./../core/media.status";
 import { SubscriptionData } from "./subscription.data";
 import { JsonHelper } from "../helpers/json.helper";
-import { Tables } from "../core/tables";
+import { Table } from "../core/table";
 import { Media, User } from "../models/subscription.model";
 import { IMedia } from "../interfaces/page.interface";
 import { ArrayHelper } from "../helpers/array.helper";
@@ -28,7 +28,7 @@ export class MediaData {
     return new Promise(async (resolve, reject) => {
       await this.Clear();
       this.Initializing = true;
-      const result = await Mongo.FindAll(Tables.media);
+      const result = await Mongo.FindAll(Table.media);
       const $result = await JsonHelper.ArrayConvert<Media>(result, Media);
       if ($result === undefined || $result === null) {
         reject(
@@ -82,38 +82,35 @@ export class MediaData {
       } else if (locals === undefined || locals === null) {
         reject(new Error(`"locals = this.LocalList" is 'null' or 'undefined'`));
       } else {
-        let iteration = 0;
-        locals.forEach(lm => {
-          setTimeout(async () => {
-            const $m = await AnimeCache.Get(lm.MalId);
-            iteration++;
-            if (
-              $m !== null &&
-              (MediaStatus.Ongoing($m) || MediaStatus.NotYetAired($m))
-            ) {
-              await QueueData.Insert($m.idMal, $m.nextAiringEpisode.next).catch(
-                () => {
-                  this.Check(iteration, $m, resolve);
-                }
-              );
-              this.MediaList.push($m);
-              this.Check(iteration, $m, resolve);
-            } else {
-              ArrayHelper.remove(this.LocalList, lm, async () => {
-                const query = { _id: $m.idMal };
-                await Mongo.Delete(Tables.media, query);
-                userDatas.forEach(async x => {
-                  await SubscriptionData.Delete($m.idMal, x.DiscordId);
-                  const jobs = await QueueData.GetJobs();
-                  jobs.forEach(qj => {
-                    QueueData.RemoveJob(qj);
-                  });
+        for (let i = 0; i < locals.length; i++) {
+          const lm = locals[i];
+          const $m = await AnimeCache.Get(lm.MalId);
+          if (
+            $m !== null &&
+            (MediaStatus.Ongoing($m) || MediaStatus.NotYetAired($m))
+          ) {
+            await QueueData.Insert($m.idMal, $m.nextAiringEpisode.next).catch(
+              () => {
+                this.Check(i, $m, resolve);
+              }
+            );
+            this.MediaList.push($m);
+            this.Check(i, $m, resolve);
+          } else {
+            ArrayHelper.remove(this.LocalList, lm, async () => {
+              const query = { _id: $m.idMal };
+              await Mongo.Delete(Table.media, query);
+              userDatas.forEach(async x => {
+                await SubscriptionData.Delete($m.idMal, x.DiscordId);
+                const jobs = await QueueData.GetJobs();
+                jobs.forEach(qj => {
+                  QueueData.RemoveJob(qj);
                 });
-                this.Check(iteration, $m, resolve);
               });
-            }
-          }, 100);
-        });
+              this.Check(i, $m, resolve);
+            });
+          }
+        }
       }
     });
   }
@@ -124,7 +121,7 @@ export class MediaData {
     res: (value?: void | PromiseLike<void>) => void
   ) {
     QueueData.SetQueue($m);
-    if (iteration === this.LocalList.length) {
+    if (iteration === this.LocalList.length - 1) {
       this.Initializing = false;
       res();
     }
@@ -136,7 +133,7 @@ export class MediaData {
       const exists = await this.Exists(media.idMal);
       if (exists === false) {
         const data = { _id: media.idMal, title: title };
-        const result = await Mongo.Insert(Tables.media, data);
+        const result = await Mongo.Insert(Table.media, data);
         if (result.insertedId !== undefined && result.insertedId !== null) {
           const m = new Media();
           m.MalId = media.idMal;

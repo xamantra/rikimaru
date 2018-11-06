@@ -1,4 +1,4 @@
-export class Tables {
+export class Table {
   public static user = "users";
   public static media = "media";
   public static subscription = "subscriptions";

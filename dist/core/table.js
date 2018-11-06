@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class Table {
+}
+Table.user = "users";
+Table.media = "media";
+Table.subscription = "subscriptions";
+Table.queue = "queues";
+Table.malbind = "malbind";
+Table.userPref = "userprefs";
+exports.Table = Table;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidGFibGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9zcmMvY29yZS90YWJsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLE1BQWEsS0FBSzs7QUFDRixVQUFJLEdBQUcsT0FBTyxDQUFDO0FBQ2YsV0FBSyxHQUFHLE9BQU8sQ0FBQztBQUNoQixrQkFBWSxHQUFHLGVBQWUsQ0FBQztBQUMvQixXQUFLLEdBQUcsUUFBUSxDQUFDO0FBQ2pCLGFBQU8sR0FBRyxTQUFTLENBQUM7QUFDcEIsY0FBUSxHQUFHLFdBQVcsQ0FBQztBQU52QyxzQkFPQyIsInNvdXJjZXNDb250ZW50IjpbImV4cG9ydCBjbGFzcyBUYWJsZSB7XHJcbiAgcHVibGljIHN0YXRpYyB1c2VyID0gXCJ1c2Vyc1wiO1xyXG4gIHB1YmxpYyBzdGF0aWMgbWVkaWEgPSBcIm1lZGlhXCI7XHJcbiAgcHVibGljIHN0YXRpYyBzdWJzY3JpcHRpb24gPSBcInN1YnNjcmlwdGlvbnNcIjtcclxuICBwdWJsaWMgc3RhdGljIHF1ZXVlID0gXCJxdWV1ZXNcIjtcclxuICBwdWJsaWMgc3RhdGljIG1hbGJpbmQgPSBcIm1hbGJpbmRcIjtcclxuICBwdWJsaWMgc3RhdGljIHVzZXJQcmVmID0gXCJ1c2VycHJlZnNcIjtcclxufVxyXG4iXX0=
