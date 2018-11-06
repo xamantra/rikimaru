@@ -64,8 +64,12 @@ export class SubscribeFunction implements ICommandFunction {
             }
           );
           if (user instanceof User === false) return;
-          await SubscriptionData.Insert(media.idMal, (user as User).Id).catch(
-            async (reason: string) => {
+          await SubscriptionData.Insert(media.idMal, (user as User).Id)
+            .then(async () => {
+              const embed = await SubscribeFunction.Embed(message, media, true);
+              Sender.SendInfo(message, embed, dm);
+            })
+            .catch(async (reason: string) => {
               if (reason === "EXISTS") {
                 const $embed = await SubscribeFunction.Embed(
                   message,
@@ -76,10 +80,7 @@ export class SubscribeFunction implements ICommandFunction {
               } else {
                 console.log(reason);
               }
-            }
-          );
-          const embed = await SubscribeFunction.Embed(message, media, true);
-          Sender.SendInfo(message, embed, dm);
+            });
         } else if (results.length > 1) {
           const embed = await SearchList.Embed(
             message,

@@ -10,11 +10,13 @@ export class AnimeCache {
   public static async Update(index: number) {
     unique(this.List);
     setTimeout(async () => {
+      unique(this.List);
       const local = this.List[index];
       if (this.List.length > 0) {
         const fromApi = await MediaSearch.Find(local.idMal);
         if (fromApi !== null && fromApi !== undefined) {
           ArrayHelper.remove(this.List, local, () => {
+            unique(this.List);
             this.List.push(fromApi);
           });
         } else {
@@ -38,6 +40,7 @@ export class AnimeCache {
         resolve(local);
       } else if (fromApi !== null && fromApi !== undefined) {
         this.List.push(fromApi);
+        unique(this.List);
         resolve(fromApi);
       } else {
         resolve(null);
@@ -53,6 +56,7 @@ export class AnimeCache {
       if (length === 0) {
         const fromApi = await MediaSearch.All(keyword);
         this.List.concat(fromApi);
+        unique(this.List);
         resolve(fromApi);
       }
       for (let i = 0; i < length; i++) {
@@ -77,6 +81,7 @@ export class AnimeCache {
           if (found.length === 0) {
             const fromApi = await MediaSearch.All(keyword);
             this.List = this.List.concat(fromApi);
+            unique(this.List);
             resolve(fromApi);
           } else {
             resolve(found);
