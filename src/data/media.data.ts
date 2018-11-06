@@ -29,8 +29,13 @@ export class MediaData {
       await this.Clear();
       this.Initializing = true;
       const result = await Mongo.FindAll(Table.media);
+<<<<<<< HEAD
       const list = await JsonHelper.ArrayConvert<Media>(result, Media);
       if (list === undefined || list === null) {
+=======
+      const $result = await JsonHelper.ArrayConvert<Media>(result, Media);
+      if ($result === undefined || $result === null) {
+>>>>>>> 603055a6842e3854520589aac8541bfda67d7781
         reject(
           new Error(
             `"JsonHelper.ArrayConvert<Media>(result, Media)" is 'null' or 'undefined'.`
@@ -43,6 +48,21 @@ export class MediaData {
           this.LocalList = list;
           this.Initializing = true;
           resolve();
+<<<<<<< HEAD
+=======
+        } else {
+          for (let i = 0; i < $result.length; i++) {
+            const m = $result[i];
+            this.LocalList.push(m);
+            if (i === $result.length - 1) {
+              await this.LoadFromApi().catch((reason: Error) => {
+                console.log(reason.message);
+              });
+              console.log(`Media List Length: ${this.MediaList.length}`);
+              resolve();
+            }
+          }
+>>>>>>> 603055a6842e3854520589aac8541bfda67d7781
         }
       }
     });

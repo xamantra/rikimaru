@@ -29,6 +29,7 @@ export class AnimeCache {
         }
       } else {
         this.Check(0);
+<<<<<<< HEAD
       }
     }, 3000);
   }
@@ -41,6 +42,20 @@ export class AnimeCache {
       } else {
         resolve(false);
       }
+=======
+      }
+    }, 3000);
+  }
+
+  private static Exists(id: number) {
+    return new Promise<boolean>((resolve, reject) => {
+      const existing = this.List.find(x => x.idMal === id);
+      if (existing !== null && existing !== undefined) {
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+>>>>>>> 603055a6842e3854520589aac8541bfda67d7781
     });
   }
 
@@ -55,24 +70,41 @@ export class AnimeCache {
   public static async Get(id: number) {
     return new Promise<IMedia>(async (resolve, reject) => {
       const local = this.List.find(x => x.idMal === id);
-      const fromApi = await MediaSearch.Find(id);
+      let fromApi: IMedia = null;
       if (local !== null && local !== undefined) {
         resolve(local);
+<<<<<<< HEAD
       } else if (fromApi !== null && fromApi !== undefined) {
         const exists = await this.Exists(fromApi.idMal);
         if (exists === false) this.List.push(fromApi);
         QueueData.SetQueue(fromApi);
         resolve(fromApi);
+=======
+>>>>>>> 603055a6842e3854520589aac8541bfda67d7781
       } else {
-        resolve(null);
+        fromApi = await MediaSearch.Find(id);
+        if (fromApi === null || fromApi === undefined) {
+          resolve(null);
+        }
+        const exists = await this.Exists(fromApi.idMal);
+        if (exists === false) this.List.push(fromApi);
+        QueueData.SetQueue(fromApi);
+        resolve(fromApi);
       }
     });
   }
 
   public static GetRandom() {
     return new Promise<IMedia>((resolve, reject) => {
+<<<<<<< HEAD
       const random = this.List[Random.Range(0, this.List.length - 1)];
       resolve(random);
+=======
+      setInterval(() => {
+        const random = this.List[Random.Range(0, this.List.length - 1)];
+        if (random !== null && random !== undefined) resolve(random);
+      }, 1);
+>>>>>>> 603055a6842e3854520589aac8541bfda67d7781
     });
   }
 

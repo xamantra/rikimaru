@@ -40,9 +40,21 @@ export class QueueData {
           this.Initializing = false;
           resolve();
         } else {
+<<<<<<< HEAD
           this.Queues = queues;
           this.Initializing = false;
           resolve();
+=======
+          for (let i = 0; i < queues.length; i++) {
+            const q = queues[i];
+            this.Queues.push(q);
+            if (i === queues.length - 1) {
+              this.Initializing = false;
+              console.log(`Queue Length: ${this.Queues.length}`);
+              resolve();
+            }
+          }
+>>>>>>> 603055a6842e3854520589aac8541bfda67d7781
         }
       }
     });
