@@ -71,8 +71,10 @@ export class AnimeCache {
 
   public static GetRandom() {
     return new Promise<IMedia>((resolve, reject) => {
-      const random = this.List[Random.Range(0, this.List.length - 1)];
-      resolve(random);
+      setInterval(() => {
+        const random = this.List[Random.Range(0, this.List.length - 1)];
+        if (random !== null && random !== undefined) resolve(random);
+      }, 1);
     });
   }
 
