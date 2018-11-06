@@ -40,18 +40,17 @@ export class MediaData {
         if ($result.length === 0) {
           resolve();
         }
-        let iteration = 0;
-        $result.forEach(async m => {
-          iteration++;
+        for (let i = 0; i < $result.length; i++) {
+          const m = $result[i];
           this.LocalList.push(m);
-          if (iteration === $result.length) {
+          if (i === $result.length - 1) {
             await this.LoadFromApi().catch((reason: Error) => {
               console.log(reason.message);
             });
             console.log(`Media List Length: ${this.MediaList.length}`);
             resolve();
           }
-        });
+        }
       }
     });
   }
