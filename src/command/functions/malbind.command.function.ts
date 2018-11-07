@@ -33,7 +33,9 @@ export class MalBindFunction implements ICommandFunction {
     c: string
   ) {
     const code = MalBind.CodeFormat(c);
-    const mal = await MalBindData.Get(message.author.id);
+    const mal = await MalBindData.Get(message.author.id).catch(err => {
+      console.log(err);
+    });
     if (mal instanceof MalBind) {
       if (mal.Verified === true) {
         Sender.Send(
@@ -55,19 +57,24 @@ export class MalBindFunction implements ICommandFunction {
     dm: boolean,
     code: string
   ) {
+    const embed = await this.EmbedTemplate(message, command, code);
     const about = await MAL.GetProfileAbout(command.Parameter);
-    if (about.includes(code)) {
-      await MalBindData.Verify(message.author.id).catch(err => {
-        console.log(err);
-      });
-      Sender.Send(
-        message,
-        `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`,
-        dm
-      );
-    } else {
-      const embed = await this.EmbedTemplate(message, command, code);
+    if (about === null) {
       Sender.Send(message, embed, dm);
+      return;
+    } else {
+      if (about.includes(code)) {
+        await MalBindData.Verify(message.author.id).catch(err => {
+          console.log(err);
+        });
+        Sender.Send(
+          message,
+          `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`,
+          dm
+        );
+      } else {
+        Sender.Send(message, embed, dm);
+      }
     }
   }
 

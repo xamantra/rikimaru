@@ -2,7 +2,7 @@ import { Config } from "./config";
 import rp from "request-promise";
 import { JsonHelper } from "../helpers/json.helper";
 import { MalAnime } from "../models/mal.anime.model";
-import { ICommand } from "../interfaces/command.interface";
+import cheerio from "cheerio";
 
 export class MAL {
   public static GetCWList(username: string) {
@@ -50,11 +50,8 @@ export class MAL {
           );
         })
         .catch(err => {
-          reject(
-            new Error(
-              `Go me nasai! I couldn't find mal user **${username}**. Check your spelling or try again later.`
-            )
-          );
+          console.log(err);
+          resolve(null);
         });
     });
   }
