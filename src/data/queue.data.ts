@@ -38,10 +38,12 @@ export class QueueData {
       } else {
         if (queues.length === 0) {
           this.Initializing = false;
+          console.log(`Queue List Length: ${this.Queues.length}`);
           resolve();
         } else {
           this.Queues = queues;
           this.Initializing = false;
+          console.log(`Queue List Length: ${this.Queues.length}`);
           resolve();
         }
       }

@@ -9,7 +9,6 @@ import { TimeHelper } from "../../helpers/time.helper";
 import { ClientManager } from "../../core/client";
 import arraySort from "array-sort";
 import { SubMedia } from "../../models/sub.model";
-import { AnimeCache } from "../../core/anime.cache";
 
 export class ViewSubsFunction implements ICommandFunction {
   constructor() {}
@@ -62,7 +61,7 @@ export class ViewSubsFunction implements ICommandFunction {
           }
           for (let v = 0; v < subs.length; v++) {
             const sub = subs[v];
-            AnimeCache.Get(sub.MediaId)
+            MediaData.GetMedia(sub.MediaId)
               .then(async $m => {
                 const title = TitleHelper.Get($m.title);
                 const episode = $m.nextAiringEpisode.next;

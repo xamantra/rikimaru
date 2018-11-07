@@ -19,10 +19,12 @@ export class UserData {
       if (users !== undefined && users !== null) {
         if (users.length === 0) {
           this.Initializing = false;
+          console.log(`User List Length: ${this.UserList.length}`);
           resolve();
         } else {
           this.UserList = users;
           this.Initializing = false;
+          console.log(`User List Length: ${this.UserList.length}`);
           resolve();
         }
       } else {

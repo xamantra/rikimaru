@@ -1,49 +1,60 @@
 import { IMedia } from "../interfaces/page.interface";
 import { MediaSearch } from "./media.search";
 import { ArrayHelper } from "../helpers/array.helper";
-import unique from "array-unique";
 import { Random } from "../helpers/random.helper";
 
 export class AnimeCache {
   private static List: IMedia[] = [];
 
   public static async Update(index: number) {
-    unique(this.List);
     setTimeout(async () => {
-      unique(this.List);
-      const local = this.List[index];
       if (this.List.length > 0) {
+        const local = this.List[index];
         const fromApi = await MediaSearch.Find(local.idMal);
         if (fromApi !== null && fromApi !== undefined) {
+          const exists = await this.Exists(fromApi.idMal);
           ArrayHelper.remove(this.List, local, () => {
-            unique(this.List);
-            this.List.push(fromApi);
+            if (exists === false) {
+              this.List.push(fromApi);
+            }
           });
         } else {
-          this.Update(0);
+          this.Check(0);
         }
-        if (index === this.List.length - 1) {
-          this.Update(0);
-        } else {
-          this.Update(index + 1);
-        }
+      } else {
+        this.Check(0);
       }
     }, 1000);
   }
 
+  private static Check(index: number) {
+    if (index === this.List.length - 1) {
+      this.Update(0);
+    } else {
+      this.Update(index + 1);
+    }
+  }
+
+  private static Exists(id: number) {
+    return new Promise<boolean>((resolve, reject) => {
+      const anime = this.List.find(x => x.idMal === id);
+      if (anime !== null && anime !== undefined) {
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+    });
+  }
+
   public static async Get(id: number) {
     return new Promise<IMedia>(async (resolve, reject) => {
-      unique(this.List);
       const local = this.List.find(x => x.idMal === id);
       if (local !== null && local !== undefined) {
         resolve(local);
       } else {
         const fromApi = await MediaSearch.Find(id);
-        if (fromApi !== null && fromApi !== undefined) {
-          resolve(null);
-        }
-        this.List.push(fromApi);
-        unique(this.List);
+        const exists = await this.Exists(fromApi.idMal);
+        if (exists === false) this.List.push(fromApi);
         resolve(fromApi);
       }
     });
@@ -62,14 +73,19 @@ export class AnimeCache {
 
   public static async Search(keyword: string) {
     return new Promise<IMedia[]>(async (resolve, reject) => {
-      unique(this.List);
       const found: IMedia[] = [];
       const length = this.List.length;
       if (length === 0) {
-        const fromApi = await MediaSearch.All(keyword);
-        this.List.concat(fromApi);
-        unique(this.List);
-        resolve(fromApi);
+        const apiResult = await MediaSearch.All(keyword);
+        if (apiResult.length === 0) {
+          resolve(found);
+        }
+        for (let x = 0; x < apiResult.length; x++) {
+          const fromApi = apiResult[x];
+          const exists = await this.Exists(fromApi.idMal);
+          if (exists === false) this.List.push(fromApi);
+          if (x === apiResult.length - 1) resolve(apiResult);
+        }
       }
       for (let i = 0; i < length; i++) {
         const anime = this.List[i];
@@ -91,10 +107,16 @@ export class AnimeCache {
         if (media !== null) found.push(media);
         if (i === length - 1) {
           if (found.length === 0) {
-            const fromApi = await MediaSearch.All(keyword);
-            this.List = this.List.concat(fromApi);
-            unique(this.List);
-            resolve(fromApi);
+            const apiResult = await MediaSearch.All(keyword);
+            if (apiResult.length === 0) {
+              resolve(found);
+            }
+            for (let x = 0; x < apiResult.length; x++) {
+              const fromApi = apiResult[x];
+              const exists = await this.Exists(fromApi.idMal);
+              if (exists === false) this.List.push(fromApi);
+              if (x === apiResult.length - 1) resolve(apiResult);
+            }
           } else {
             resolve(found);
           }

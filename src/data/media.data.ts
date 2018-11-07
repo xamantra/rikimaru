@@ -28,8 +28,8 @@ export class MediaData {
     return new Promise(async (resolve, reject) => {
       await this.Clear();
       this.Initializing = true;
-      const result = await Mongo.FindAll(Tables.media);
-      const list = await JsonHelper.ArrayConvert<Media>(result, Media);
+      const fromDb = await Mongo.FindAll(Tables.media);
+      const list = await JsonHelper.ArrayConvert<Media>(fromDb, Media);
       if (list === undefined || list === null) {
         reject(
           new Error(
@@ -38,12 +38,14 @@ export class MediaData {
         );
       } else {
         if (list.length === 0) {
+          console.log(`Media List Length: ${this.MediaList.length}`);
           resolve();
         } else {
           this.LocalList = list;
           await this.LoadFromApi().catch((reason: Error) => {
             console.log(reason.message);
           });
+          console.log(`Media List Length: ${this.MediaList.length}`);
           resolve();
         }
       }

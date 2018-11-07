@@ -40,14 +40,16 @@ export class SubscriptionData {
       } else {
         if (subs.length === 0) {
           this.Initializing = false;
+          console.log(`Subs List Length: ${this.SubscriptionList.length}`);
           resolve();
         } else {
+          this.SubscriptionList = subs;
           for (let i = 0; i < subs.length; i++) {
             const sub = subs[i];
-            this.SubscriptionList.push(sub);
             AnimeCache.Get(sub.MediaId);
             if (i === subs.length - 1) {
               this.Initializing = false;
+              console.log(`Subs List Length: ${this.SubscriptionList.length}`);
               resolve();
             }
           }

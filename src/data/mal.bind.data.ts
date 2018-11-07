@@ -24,10 +24,12 @@ export class MalBindData {
       } else {
         if (list.length === 0) {
           this.Initializing = false;
+          console.log(`MalBind List Length: ${this.List.length}`);
           resolve();
         } else {
           this.List = list;
           this.Initializing = false;
+          console.log(`MalBind List Length: ${this.List.length}`);
           resolve();
         }
       }
