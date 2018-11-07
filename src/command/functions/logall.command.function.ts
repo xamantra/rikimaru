@@ -6,6 +6,7 @@ import { ICommand } from "../../interfaces/command.interface";
 import { UserData } from "../../data/user.data";
 import { SubscriptionData } from "../../data/subscription.data";
 import { MalBindData } from "../../data/mal.bind.data";
+import { AnimeCache } from "../../core/anime.cache";
 
 export class LogAllFunction implements ICommandFunction {
   public async Execute(message?: Message, command?: ICommand, dm?: boolean) {
@@ -25,6 +26,7 @@ export class LogAllFunction implements ICommandFunction {
       await MalBindData.LogAll().catch((reason: Error) => {
         console.log(reason.message);
       });
+      AnimeCache.Log();
     }
   }
 }

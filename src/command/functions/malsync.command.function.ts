@@ -103,9 +103,9 @@ export class MalSyncFunction implements ICommandFunction {
           list.forEach(async anime => {
             iteration++;
             await AnimeCache.Get(anime.anime_id)
-              .then(media => {
+              .then(async media => {
                 const title = TitleHelper.Get(media.title);
-                MediaData.Insert(media, title).then(async insertId => {
+                await MediaData.Insert(media, title).then(async insertId => {
                   await SubscriptionData.Insert(media.idMal, (user as User).Id)
                     .then(() => {
                       this.Check(iteration, list, resolve);
@@ -121,7 +121,6 @@ export class MalSyncFunction implements ICommandFunction {
                       }
                     });
                 });
-                return;
               })
               .catch((reason: Error) => {
                 console.log(reason.message);

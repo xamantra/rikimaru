@@ -12,10 +12,13 @@ export class AnimeCache {
         const local = this.List[index];
         const fromApi = await MediaSearch.Find(local.idMal);
         if (fromApi !== null && fromApi !== undefined) {
-          const exists = await this.Exists(fromApi.idMal);
-          ArrayHelper.remove(this.List, local, () => {
+          ArrayHelper.remove(this.List, local, async () => {
+            const exists = await this.Exists(fromApi.idMal);
             if (exists === false) {
               this.List.push(fromApi);
+              this.Check(index + 1);
+            } else {
+              this.Check(index + 1);
             }
           });
         } else {
@@ -24,7 +27,7 @@ export class AnimeCache {
       } else {
         this.Check(0);
       }
-    }, 1000);
+    }, 3000);
   }
 
   private static Check(index: number) {
@@ -151,5 +154,9 @@ export class AnimeCache {
         }
       }
     });
+  }
+
+  public static Log() {
+    console.log(this.List);
   }
 }

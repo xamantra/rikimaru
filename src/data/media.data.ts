@@ -38,6 +38,7 @@ export class MediaData {
         );
       } else {
         if (list.length === 0) {
+          this.Initializing = false;
           console.log(`Media List Length: ${this.MediaList.length}`);
           resolve();
         } else {
@@ -78,38 +79,35 @@ export class MediaData {
       } else if (locals === undefined || locals === null) {
         reject(new Error(`"locals = this.LocalList" is 'null' or 'undefined'`));
       } else {
-        let iteration = 0;
-        locals.forEach(lm => {
-          setTimeout(async () => {
-            const $m = await AnimeCache.Get(lm.MalId);
-            iteration++;
-            if (
-              $m !== null &&
-              (MediaStatus.Ongoing($m) || MediaStatus.NotYetAired($m))
-            ) {
-              await QueueData.Insert($m.idMal, $m.nextAiringEpisode.next).catch(
-                () => {
-                  this.Check(iteration, $m, resolve);
-                }
-              );
-              this.MediaList.push($m);
-              this.Check(iteration, $m, resolve);
-            } else {
-              ArrayHelper.remove(this.LocalList, lm, async () => {
-                const query = { _id: $m.idMal };
-                await Mongo.Delete(Tables.media, query);
-                userDatas.forEach(async x => {
-                  await SubscriptionData.Delete($m.idMal, x.DiscordId);
-                  const jobs = await QueueData.GetJobs();
-                  jobs.forEach(qj => {
-                    QueueData.RemoveJob(qj);
-                  });
+        for (let i = 0; i < locals.length; i++) {
+          const lm = locals[i];
+          const $m = await AnimeCache.Get(lm.MalId);
+          if (
+            $m !== null &&
+            (MediaStatus.Ongoing($m) || MediaStatus.NotYetAired($m))
+          ) {
+            await QueueData.Insert($m.idMal, $m.nextAiringEpisode.next).catch(
+              () => {
+                this.Check(i, $m, resolve);
+              }
+            );
+            this.MediaList.push($m);
+            this.Check(i, $m, resolve);
+          } else {
+            ArrayHelper.remove(this.LocalList, lm, async () => {
+              const query = { _id: $m.idMal };
+              await Mongo.Delete(Tables.media, query);
+              userDatas.forEach(async x => {
+                await SubscriptionData.Delete($m.idMal, x.DiscordId);
+                const jobs = await QueueData.GetJobs();
+                jobs.forEach(qj => {
+                  QueueData.RemoveJob(qj);
                 });
-                this.Check(iteration, $m, resolve);
               });
-            }
-          }, 100);
-        });
+              this.Check(i, $m, resolve);
+            });
+          }
+        }
       }
     });
   }
@@ -120,13 +118,13 @@ export class MediaData {
     res: (value?: void | PromiseLike<void>) => void
   ) {
     QueueData.SetQueue($m);
-    if (iteration === this.LocalList.length) {
+    if (iteration === this.LocalList.length - 1) {
       this.Initializing = false;
       res();
     }
   }
 
-  public static async Insert(media: IMedia, title: string, user: User = null) {
+  public static async Insert(media: IMedia, title: string) {
     return new Promise<number>(async (resolve, reject) => {
       await this.OnReady();
       const exists = await this.Exists(media.idMal);
