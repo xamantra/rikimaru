@@ -1,4 +1,3 @@
-import { MediaSearch } from "./../../core/media.search";
 import { ICommandFunction } from "../../interfaces/command.function.interface";
 import { ICommand } from "../../interfaces/command.interface";
 import { MediaResult } from "../../core/media.result";

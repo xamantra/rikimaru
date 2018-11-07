@@ -16,9 +16,9 @@ export class AnimeCache {
             const exists = await this.Exists(fromApi.idMal);
             if (exists === false) {
               this.List.push(fromApi);
-              this.Check(index + 1);
+              this.Check(index);
             } else {
-              this.Check(index + 1);
+              this.Check(index);
             }
           });
         } else {
