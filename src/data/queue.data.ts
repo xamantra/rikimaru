@@ -72,10 +72,9 @@ export class QueueData {
       if (q !== null && q !== undefined) {
         resolve(q);
       } else {
-        reject(
-          new Error(
-            `"this.All.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`
-          )
+        resolve(null);
+        console.log(
+          `"this.All.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`
         );
       }
     });
@@ -84,8 +83,10 @@ export class QueueData {
   public static SetQueue($m: IMedia) {
     this.GetQueue($m.idMal).then(async queue => {
       await this.OnReady();
-      const queueJob = new QueueJob($m, queue);
-      this.AddJob(queueJob);
+      if (queue !== null) {
+        const queueJob = new QueueJob($m, queue);
+        this.AddJob(queueJob);
+      }
     });
   }
 
@@ -151,11 +152,15 @@ export class QueueData {
       const q = await this.GetQueue(media.idMal).catch(err => {
         console.log(err);
       });
-      let qj: QueueJob = null;
-      if (q instanceof Queue) qj = new QueueJob(media, q as Queue);
-      await this.AddJob(qj);
-      await this.RemoveJob(queueJob);
-      resolve();
+      if (q !== null) {
+        let qj: QueueJob = null;
+        if (q instanceof Queue) qj = new QueueJob(media, q as Queue);
+        await this.AddJob(qj);
+        await this.RemoveJob(queueJob);
+        resolve();
+      } else {
+        resolve();
+      }
     });
   }
 

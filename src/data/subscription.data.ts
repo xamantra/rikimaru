@@ -165,7 +165,8 @@ export class SubscriptionData {
           res();
         });
       } else {
-        rej(new Error(`Nothing to remove.`));
+        res();
+        console.log(`Nothing to remove.`);
       }
     });
   }
