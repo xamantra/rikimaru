@@ -17,11 +17,6 @@ export class ClientManager {
     });
 
     client.on("ready", () => {
-      client.guilds.forEach(guild => {
-        if (guild.id !== "501781353499721739") {
-          guild.leave();
-        }
-      });
       console.log(
         `Bot has started, with ${client.users.size} users, in ${
           client.channels.size
