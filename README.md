@@ -1,35 +1,43 @@
-# rikimaru
-An anime schedule and countdown discord bot!
+#### Rikimaru Bot
 
-[![Discord Bots](https://discordbots.org/api/widget/501772345372049437.svg)](https://discordbots.org/bot/501772345372049437)
+- *Konichiwa!* I am an **anime discord bot** that shows next **episode countdown/schedule**. I can synchronize you **MAL account** like a good boy. I can also let you subscribe to an anime and DM you when an episode is aired like an alarm clock.
 
-#### Hello people! This is my command list:
+###### *Anime Commands:*
 
-* ***-help***
-  * *Show all my command list.*
-  * *No Parameters.*
+> `-when anime name or keyword` command where you can see the countdown for next episode of most anime. Anime that lacks information from the source will sometimes display **null** or **undefined**.
 
-* ***-when***
-  * *Search for an anime that matches the keyword/parameter.*
-  * *You can either put the exact anime title or just a keyword.*
-  * *Parameter is required.*
-  * **Examples:**
-    * > -when dororo
-    * > -when bunny girl senpai
-    * > -when goblin slayer
-    * > -when danmachi
-    * > -when akame ga kill
+> `-dmwhen anime name or keyword` the same with `-when` it just dm you with the result.
 
-* ***-dmwhen***
-  * *Just similar with the* ***-when*** *command.*
-  * *It DMs you with the result.*
-  * *Parameter is required.*
+> `-sub anime name or keyword` command where you can subscribe to an ongoing or soon to be release anime. The bot will dm you when an episode is aired.
 
-* ***-ping***
-  * *Just check your ping and the API's ping.*
-  * *No Parameters.*
+> `-dmsub anime name or keyword` the same with `-sub` it just dm you with the result.
 
-* ***-dmping***
-  * *Just similar with -ping command.*
-  * *It DMs you with the result.*
-  * *No Parameters.*
+> `-unsub anime name or keyword` command where you can unsubscribe to an anime.
+
+> `-dmunsub anime name or keyword` the same with `-unsub` it just dm you with the result.
+
+> `-malbind malusername` command required before using `-malsync`. You will need to put a code given by the bot in you **MAL About Section**. You can then remove it after verification.
+
+> `-malsync` command where you can sync your **MAL account's** *currently watching list* to your subscription. Any anime that *exists in your subscription* that *doesn't exists on the list* will be removed.
+
+> `-viewsubs` command where you can view your own subscriptions with the countdowns. You can also **@mention** *as a parameter* with this command to view other's subscription.
+
+> `-dmviewsubs` the same with `-viewsubs` it just dm you with the result.
+
+##### *Other Commands:*
+
+> `-help` show all commands available.
+
+> `-ping` just ping.
+
+> `-dmping` the same with `-ping`. It just dm you with the result.
+
+*All DM commands might be convenient for crowded channels*
+
+##### TODO:
+
+* Anilist sync support.
+* Profile stats.
+* Random anime recommend.
+* DM delay feature.
+* Episode reminder feature.
