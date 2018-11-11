@@ -1,8 +1,10 @@
 #### Rikimaru Bot
 
-- *Konichiwa!* I am an **anime discord bot** that shows next **episode countdown/schedule**. I can synchronize you **MAL account** like a good boy. I can also let you subscribe to an anime and DM you when an episode is aired like an alarm clock.
+- _Konichiwa!_ I am an **anime discord bot** that shows next **episode countdown/schedule**. I can synchronize you **MAL account** like a good boy. I can also let you subscribe to an anime and DM you when an episode is aired like an alarm clock.
 
-###### *Anime Commands:*
+[![Discord Bots](https://discordbots.org/api/widget/501772345372049437.svg)](https://discordbots.org/bot/501772345372049437)
+
+###### _Anime Commands:_
 
 > `-when anime name or keyword` command where you can see the countdown for next episode of most anime. Anime that lacks information from the source will sometimes display **null** or **undefined**.
 
@@ -18,13 +20,13 @@
 
 > `-malbind malusername` command required before using `-malsync`. You will need to put a code given by the bot in you **MAL About Section**. You can then remove it after verification.
 
-> `-malsync` command where you can sync your **MAL account's** *currently watching list* to your subscription. Any anime that *exists in your subscription* that *doesn't exists on the list* will be removed.
+> `-malsync` command where you can sync your **MAL account's** _currently watching list_ to your subscription. Any anime that _exists in your subscription_ that _doesn't exists on the list_ will be removed.
 
-> `-viewsubs` command where you can view your own subscriptions with the countdowns. You can also **@mention** *as a parameter* with this command to view other's subscription.
+> `-viewsubs` command where you can view your own subscriptions with the countdowns. You can also **@mention** _as a parameter_ with this command to view other's subscription.
 
 > `-dmviewsubs` the same with `-viewsubs` it just dm you with the result.
 
-##### *Other Commands:*
+##### _Other Commands:_
 
 > `-help` show all commands available.
 
@@ -32,12 +34,12 @@
 
 > `-dmping` the same with `-ping`. It just dm you with the result.
 
-*All DM commands might be convenient for crowded channels*
+_All DM commands might be convenient for crowded channels_
 
 ##### TODO:
 
-* Anilist sync support.
-* Profile stats.
-* Random anime recommend.
-* DM delay feature.
-* Episode reminder feature.
+- Anilist sync support.
+- Profile stats.
+- Random anime recommend.
+- DM delay feature.
+- Episode reminder feature.
