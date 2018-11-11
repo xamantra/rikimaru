@@ -11,6 +11,7 @@ import { User } from "discord.js";
 import { MediaStatus } from "../core/media.status";
 import { AnimeCache } from "../core/anime.cache";
 import { NullCheck } from "../helpers/null.checker.helper";
+import { Config } from "../core/config";
 
 export class QueueJob {
   private JobDate: Date;
@@ -61,24 +62,26 @@ export class QueueJob {
     media: IMedia,
     user: User
   ) {
-    return new Promise((resolve, reject) => {
-      this.EmbedTemplate(media, nextEpisode).then(embed => {
-        user
-          .send(embed)
-          .then(async () => {
-            console.log(
-              `DM has been sent to "${
-                user.username
-              }" for "${title} Episode ${nextEpisode}"`
-            );
-            await this.Update();
-            resolve();
-          })
-          .catch((error: Error) => {
-            console.log(`Queue Job: "${error.message}"`);
-            resolve();
+    return new Promise(async (resolve, reject) => {
+      const embed = await this.EmbedTemplate(media, nextEpisode);
+      await user
+        .send(embed)
+        .then(async () => {
+          console.log(
+            `DM has been sent to "${
+              user.username
+            }" for "${title} Episode ${nextEpisode}"`
+          );
+          await this.Update();
+          const support = await this.SupportTemplate();
+          user.send(support).catch(err => {
+            console.log(err);
           });
-      });
+          resolve();
+        })
+        .catch(err => {
+          console.log(err);
+        });
     });
   }
 
@@ -113,35 +116,51 @@ export class QueueJob {
     });
   }
 
-  private async EmbedTemplate(media: IMedia, episode: number) {
-    return new Promise<any>((resolve, reject) => {
-      ClientManager.GetClient().then(client => {
-        const t = TitleHelper.Get(media.title);
-        const embed = {
-          embed: {
-            color: Color.Random,
-            thumbnail: {
-              url: media.coverImage.large
-            },
-            title: `***${t}***`,
-            url: `https://myanimelist.net/anime/${media.idMal}/`,
-            description: `**Episode ${episode}** *has been aired!*`,
-            fields: [
-              { name: `To unsubscribe, type:`, value: `\`-unsub ${t}\`` },
-              {
-                name: `To view all subscription, type:`,
-                value: `\`-viewsubs\``
-              }
-            ],
-            timestamp: new Date(),
-            footer: {
-              icon_url: client.user.avatarURL,
-              text: "© Rikimaru"
+  private EmbedTemplate(media: IMedia, episode: number) {
+    return new Promise<any>(async (resolve, reject) => {
+      const client = await ClientManager.GetClient();
+      const t = TitleHelper.Get(media.title);
+      const embed = {
+        embed: {
+          color: Color.Random,
+          thumbnail: {
+            url: media.coverImage.large
+          },
+          title: `***${t}***`,
+          url: `https://myanimelist.net/anime/${media.idMal}/`,
+          description: `**Episode ${episode}** *has been aired!*`,
+          fields: [
+            { name: `To unsub, type:`, value: `\`-unsub ${t}\`` },
+            {
+              name: `To view subscriptions, type:`,
+              value: `\`-viewsubs\``
             }
+          ],
+          timestamp: new Date(),
+          footer: {
+            icon_url: client.user.avatarURL,
+            text: "© Rikimaru"
           }
-        };
-        resolve(embed);
-      });
+        }
+      };
+      resolve(embed);
+    });
+  }
+
+  private SupportTemplate() {
+    return new Promise<any>((resolve, reject) => {
+      const embed = {
+        embed: {
+          color: Color.Random,
+          fields: [
+            {
+              name: `Support me on Discord Bot List (DBL)`,
+              value: `[Vote to Rikimaru](${Config.DBL_BOT_LINK}/vote)`
+            }
+          ]
+        }
+      };
+      resolve(embed);
     });
   }
 }

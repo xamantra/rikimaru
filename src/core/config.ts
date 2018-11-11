@@ -43,4 +43,10 @@ export class Config {
   public static get DBL_TOKEN() {
     return process.env.DBL_TOKEN || require("../extras/env").env.DBL_TOKEN;
   }
+
+  public static get DBL_BOT_LINK() {
+    return (
+      process.env.DBL_BOT_LINK || require("../extras/env").env.DBL_BOT_LINK
+    );
+  }
 }
