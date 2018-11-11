@@ -26,7 +26,7 @@ class App {
     await QueueData.CheckFromApi();
     AnimeCache.Update(0);
     Scheduler.LoopJob(0, 10, 0, async () => {
-      console.log(`Refreshing Data....`);
+      console.log(`Refreshing Data (Runs every: 10 mins.)`);
       await QueueData.Init();
       await BotPresence.Init();
       await QueueData.CheckFromApi();

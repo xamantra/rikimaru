@@ -77,9 +77,15 @@ export class MalSyncFunction implements ICommandFunction {
 
     if (mal.Verified === true) {
       const user = await UserData.GetUser(message.author.id);
-      if (user === null) return;
+      if (user === null) {
+        Sender.SendError(message, dm);
+        return;
+      }
       const list = await MAL.GetCWList(mal.MalUsername);
-      if (list === null) return;
+      if (list === null) {
+        Sender.SendError(message, dm);
+        return;
+      }
       const subs = await SubscriptionData.GetUserSubs(user.Id);
       for (let i = 0; i < subs.length; i++) {
         const $s = subs[i];

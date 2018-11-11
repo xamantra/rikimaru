@@ -42,12 +42,19 @@ export class ViewSubsFunction implements ICommandFunction {
         mentionId === null ? message.author.id : mentionId;
       const sorted: any[] = [];
       let unsorted: any[] = [];
-      const dUser = await ClientManager.GetUser(discordId).catch(err => {
-        console.log(err);
-      });
-      if (dUser instanceof User === false) return;
+      const dUser = await ClientManager.GetUser(discordId);
+      if (dUser === null) return;
       const u = await UserData.GetUser(discordId);
-      if (u === null) return;
+      if (u === null) {
+        const template = await this.EmbedTemplate(
+          message,
+          dUser as User,
+          0,
+          sorted
+        );
+        resolve(template);
+        return;
+      }
       const subs = await SubscriptionData.GetUserSubs(u.Id);
       if (subs.length === 0) {
         const template = await this.EmbedTemplate(

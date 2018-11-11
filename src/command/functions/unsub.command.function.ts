@@ -28,7 +28,10 @@ export class UnsubFunction implements ICommandFunction {
     const filteredMedia: IMedia[] = [];
     const formattedResults: any[] = [];
     const user = await UserData.GetUser(discordId);
-    if (user === null) return;
+    if (user === null) {
+      Sender.SendError(message, dm);
+      return;
+    }
     AnimeCache.Search(command.Parameter)
       .then(async res => {
         media = res;

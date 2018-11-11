@@ -52,4 +52,12 @@ export class Sender {
   ) {
     this.Send(message, content, isDM);
   }
+
+  public static SendError(message: Message, isDM: boolean = false) {
+    this.Send(
+      message,
+      `:x: Oops, there was some error, please try again later.`,
+      isDM
+    );
+  }
 }

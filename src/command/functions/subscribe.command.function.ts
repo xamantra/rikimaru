@@ -53,7 +53,10 @@ export class SubscribeFunction implements ICommandFunction {
       console.log(media);
       await QueueData.Insert(media.idMal, media.nextAiringEpisode.next);
       const user = await UserData.GetUser(discordId);
-      if (user === null) return;
+      if (user === null) {
+        Sender.SendError(message, dm);
+        return;
+      }
       const subbed = await SubscriptionData.Insert(media.idMal, user.Id);
       if (subbed === true) {
         const embed = await SubscribeFunction.Embed(message, media, true);
