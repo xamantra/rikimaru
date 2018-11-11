@@ -96,9 +96,9 @@ export class SubscriptionData {
         if (sub.MediaId === malId) {
           const user = await UserData.GetUserById(sub.UserId);
           if (NullCheck.Fine(user)) subscribers.push(user);
-          if (i === this.SubscriptionList.length - 1) {
-            resolve(subscribers);
-          }
+        }
+        if (i === this.SubscriptionList.length - 1) {
+          resolve(subscribers);
         }
       }
     });
