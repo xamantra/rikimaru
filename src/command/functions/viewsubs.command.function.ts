@@ -1,7 +1,6 @@
 import { ICommandFunction } from "../../interfaces/command.function.interface";
 import { UserData } from "./../../data/user.data";
 import { SubscriptionData } from "./../../data/subscription.data";
-import { MediaData } from "./../../data/media.data";
 import { Message, User, DiscordAPIError } from "discord.js";
 import { ICommand } from "../../interfaces/command.interface";
 import { TitleHelper } from "../../helpers/title.helper";

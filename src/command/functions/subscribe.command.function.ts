@@ -1,8 +1,6 @@
 import { ICommandFunction } from "./../../interfaces/command.function.interface";
-import { MediaSearch } from "./../../core/media.search";
 import { SubscriptionData } from "./../../data/subscription.data";
 import { TitleHelper } from "./../../helpers/title.helper";
-import { MediaData } from "./../../data/media.data";
 import { UserData } from "./../../data/user.data";
 import { SearchList } from "./../../core/search.list";
 import { MediaFormatHandler } from "./../../handlers/media.list.handler";
@@ -12,7 +10,6 @@ import { ICommand } from "../../interfaces/command.interface";
 import { MediaHandler } from "../../handlers/media.handler";
 import { ClientManager } from "../../core/client";
 import { Sender } from "../../core/sender";
-import { User } from "../../models/subscription.model";
 import { AnimeCache } from "../../core/anime.cache";
 import { QueueData } from "../../data/queue.data";
 

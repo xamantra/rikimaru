@@ -1,6 +1,5 @@
 import { ICommandFunction } from "./../../interfaces/command.function.interface";
 import { QueueData } from "./../../data/queue.data";
-import { MediaData } from "./../../data/media.data";
 import { Message } from "discord.js";
 import { ICommand } from "../../interfaces/command.interface";
 import { UserData } from "../../data/user.data";

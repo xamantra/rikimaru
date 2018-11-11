@@ -1,5 +1,4 @@
 import { ICommandFunction } from "../../interfaces/command.function.interface";
-import { MediaSearch } from "./../../core/media.search";
 import { SubscriptionData } from "./../../data/subscription.data";
 import { Message } from "discord.js";
 import { ICommand } from "../../interfaces/command.interface";
