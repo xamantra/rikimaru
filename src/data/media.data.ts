@@ -117,7 +117,7 @@ export class MediaData {
     $m: IMedia,
     res: (value?: void | PromiseLike<void>) => void
   ) {
-    await QueueData.SetQueue($m);
+    QueueData.SetQueue($m);
     if (iteration === this.LocalList.length - 1) {
       this.Initializing = false;
       res();

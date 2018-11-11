@@ -39,6 +39,7 @@ export class QueueJob {
         this.media.idMal
       );
       if (subscribers.length === 0) {
+        this.Update();
         resolve();
       }
       for (let i = 0; i < subscribers.length; i++) {

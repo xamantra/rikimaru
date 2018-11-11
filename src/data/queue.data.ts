@@ -81,16 +81,13 @@ export class QueueData {
     });
   }
 
-  public static SetQueue($m: IMedia) {
-    return new Promise(async (resolve, reject) => {
-      await this.OnReady();
-      const queue = await this.GetQueue($m.idMal);
-      if (NullCheck.Fine(queue)) {
-        const queueJob = new QueueJob($m, queue);
-        await this.AddJob(queueJob);
-        resolve();
-      }
-    });
+  public static async SetQueue($m: IMedia) {
+    await this.OnReady();
+    const queue = await this.GetQueue($m.idMal);
+    if (NullCheck.Fine(queue)) {
+      const queueJob = new QueueJob($m, queue);
+      await this.AddJob(queueJob);
+    }
   }
 
   public static GetJobs() {
