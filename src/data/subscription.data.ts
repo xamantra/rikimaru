@@ -92,13 +92,11 @@ export class SubscriptionData {
         resolve(subscribers);
       }
       for (let i = 0; i < this.SubscriptionList.length; i++) {
-        const sub = this.SubscriptionList[i];
-        if (sub.MediaId === malId) {
-          const user = await UserData.GetUserById(sub.UserId);
-          if (NullCheck.Fine(user)) subscribers.push(user);
-          if (i === this.SubscriptionList.length - 1) {
-            resolve(subscribers);
-          }
+        const sub = this.SubscriptionList.find(x => x.MediaId === malId);
+        const user = await UserData.GetUserById(sub.UserId);
+        if (NullCheck.Fine(user)) subscribers.push(user);
+        if (i === this.SubscriptionList.length - 1) {
+          resolve(subscribers);
         }
       }
     });
