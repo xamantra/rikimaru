@@ -33,10 +33,8 @@ export class MalBindFunction implements ICommandFunction {
     c: string
   ) {
     const code = MalBind.CodeFormat(c);
-    const mal = await MalBindData.Get(message.author.id).catch(err => {
-      console.log(err);
-    });
-    if (mal instanceof MalBind) {
+    const mal = await MalBindData.Get(message.author.id);
+    if (mal !== null) {
       if (mal.Verified === true) {
         Sender.Send(
           message,
@@ -64,14 +62,18 @@ export class MalBindFunction implements ICommandFunction {
       return;
     } else {
       if (about.includes(code)) {
-        await MalBindData.Verify(message.author.id).catch(err => {
-          console.log(err);
-        });
-        Sender.Send(
-          message,
-          `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`,
-          dm
-        );
+        const v = await MalBindData.Verify(message.author.id);
+        if (v === null) {
+          Sender.Send(message, embed, dm);
+        } else {
+          if (v.Verified) {
+            Sender.Send(
+              message,
+              `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`,
+              dm
+            );
+          }
+        }
       } else {
         Sender.Send(message, embed, dm);
       }
@@ -106,13 +108,11 @@ export class MalBindFunction implements ICommandFunction {
   private SetCode(message: Message, command: ICommand) {
     return new Promise<string>((resolve, reject) => {
       const code = Random.Range(10000000, 99999999).toString();
-      MalBindData.Insert(message.author.id, command.Parameter, code)
-        .then(() => {
+      MalBindData.Insert(message.author.id, command.Parameter, code).then(
+        () => {
           resolve(code);
-        })
-        .catch((m: MalBind) => {
-          resolve(m.Code);
-        });
+        }
+      );
     });
   }
 }

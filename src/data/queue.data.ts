@@ -6,6 +6,7 @@ import { IMedia } from "../interfaces/page.interface";
 import { Mongo } from "../core/mongo";
 import { Queue } from "../models/subscription.model";
 import { NullCheck } from "../helpers/null.checker.helper";
+import { AnimeCache } from "../core/anime.cache";
 
 export class QueueData {
   public static get All() {
@@ -20,22 +21,18 @@ export class QueueData {
   public static async Init() {
     return new Promise(async (resolve, reject) => {
       await this.OnReady();
-      await this.Clear()
-        .then(() => {
-          this.Initializing = true;
-        })
-        .catch((err: Error) => {
-          console.log(err.message);
-        });
+      await this.Clear().catch((err: Error) => {
+        console.log(err.message);
+      });
+      this.Initializing = true;
       const result = await Mongo.FindAll(Tables.queue);
       const queues = await JsonHelper.ArrayConvert<Queue>(result, Queue);
       if (queues === null || queues === undefined) {
         this.Initializing = false;
-        reject(
-          new Error(
-            `"JsonHelper.ArrayConvert<Queue>(result, Queue)" is 'null' or 'undefined'`
-          )
+        console.log(
+          `"JsonHelper.ArrayConvert<Queue>(result, Queue)" is 'null' or 'undefined'`
         );
+        resolve();
       } else {
         if (queues.length === 0) {
           this.Initializing = false;
@@ -45,6 +42,19 @@ export class QueueData {
           this.Queues = queues;
           this.Initializing = false;
           console.log(`Queue List Length: ${this.Queues.length}`);
+          resolve();
+        }
+      }
+    });
+  }
+
+  public static CheckFromApi() {
+    return new Promise(async (resolve, reject) => {
+      for (let i = 0; i < this.Queues.length; i++) {
+        const queue = this.Queues[i];
+        const anime = await AnimeCache.Get(queue.MediaId);
+        this.SetQueue(queue, anime);
+        if (i === this.Queues.length - 1) {
           resolve();
         }
       }
@@ -81,11 +91,10 @@ export class QueueData {
     });
   }
 
-  public static async SetQueue($m: IMedia) {
+  public static async SetQueue(queue: Queue, anime: IMedia) {
     await this.OnReady();
-    const queue = await this.GetQueue($m.idMal);
     if (NullCheck.Fine(queue)) {
-      const queueJob = new QueueJob($m, queue);
+      const queueJob = new QueueJob(anime, queue);
       await this.AddJob(queueJob);
     }
   }
@@ -128,16 +137,12 @@ export class QueueData {
           this.Queues.push(q);
           resolve(q.Id);
         } else {
-          reject(new Error(`ERROR: 654567898765`));
+          resolve(null);
         }
       } else {
-        const queue = this.Queues.find(x => x.MediaId === mediaId);
+        const queue = await this.GetQueue(mediaId);
         if (queue === null || queue === undefined) {
-          reject(
-            new Error(
-              `"this.Queues.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`
-            )
-          );
+          resolve(null);
         } else {
           resolve(queue.Id);
         }
@@ -153,15 +158,10 @@ export class QueueData {
         $set: { next_episode: media.nextAiringEpisode.next }
       };
       await Mongo.Update(Tables.queue, query, newValues);
-      await this.Init().catch(err => {
-        console.log(err);
-      });
-      const q = await this.GetQueue(media.idMal).catch(err => {
-        console.log(err);
-      });
+      await this.Init();
+      const q = await this.GetQueue(media.idMal);
       if (q !== null) {
-        let qj: QueueJob = null;
-        if (q instanceof Queue) qj = new QueueJob(media, q as Queue);
+        const qj = new QueueJob(media, q as Queue);
         await this.AddJob(qj);
         await this.RemoveJob(queueJob);
         resolve();

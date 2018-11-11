@@ -28,15 +28,8 @@ export class UnsubFunction implements ICommandFunction {
     const userMedia: number[] = [];
     const filteredMedia: IMedia[] = [];
     const formattedResults: any[] = [];
-    const user = await UserData.GetUser(discordId).catch((reason: Error) => {
-      console.log(reason.message);
-      Sender.Send(
-        message,
-        `System Error!, I couldn't apprehend, please try again later.`,
-        dm
-      );
-    });
-    if (user instanceof User === false) return;
+    const user = await UserData.GetUser(discordId);
+    if (user === null) return;
     AnimeCache.Search(command.Parameter)
       .then(async res => {
         media = res;

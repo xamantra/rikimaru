@@ -46,6 +46,7 @@ export class MediaData {
           await this.LoadFromApi().catch((reason: Error) => {
             console.log(reason.message);
           });
+          this.Initializing = false;
           console.log(`Media List Length: ${this.MediaList.length}`);
           resolve();
         }
@@ -70,6 +71,7 @@ export class MediaData {
 
   public static async LoadFromApi() {
     return new Promise<void>(async (resolve, reject) => {
+      await this.OnReady();
       const userDatas = UserData.All;
       const locals = this.LocalList;
       if (userDatas === undefined || userDatas === null) {
@@ -86,13 +88,12 @@ export class MediaData {
             $m !== null &&
             (MediaStatus.Ongoing($m) || MediaStatus.NotYetAired($m))
           ) {
-            await QueueData.Insert($m.idMal, $m.nextAiringEpisode.next).catch(
-              async () => {
-                this.Check(i, $m, resolve);
-              }
-            );
+            await QueueData.Insert($m.idMal, $m.nextAiringEpisode.next);
             this.MediaList.push($m);
-            this.Check(i, $m, resolve);
+            // QueueData.SetQueue($m);
+            if (i === this.LocalList.length - 1) {
+              resolve();
+            }
           } else {
             ArrayHelper.remove(this.LocalList, lm, async () => {
               const query = { _id: $m.idMal };
@@ -104,24 +105,15 @@ export class MediaData {
                   QueueData.RemoveJob(qj);
                 });
               });
-              this.Check(i, $m, resolve);
+              // QueueData.SetQueue($m);
+              if (i === this.LocalList.length - 1) {
+                resolve();
+              }
             });
           }
         }
       }
     });
-  }
-
-  private static async Check(
-    iteration: number,
-    $m: IMedia,
-    res: (value?: void | PromiseLike<void>) => void
-  ) {
-    QueueData.SetQueue($m);
-    if (iteration === this.LocalList.length - 1) {
-      this.Initializing = false;
-      res();
-    }
   }
 
   public static async Insert(media: IMedia, title: string) {
@@ -138,12 +130,7 @@ export class MediaData {
           this.LocalList.push(m);
           if (MediaStatus.Ongoing(media) || MediaStatus.NotYetAired(media)) {
             this.MediaList.push(media);
-            await QueueData.Insert(
-              media.idMal,
-              media.nextAiringEpisode.next
-            ).catch((reason: Error) => {
-              console.log(reason.message);
-            });
+            await QueueData.Insert(media.idMal, media.nextAiringEpisode.next);
             resolve(media.idMal);
           }
         }

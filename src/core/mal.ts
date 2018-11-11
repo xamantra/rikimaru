@@ -22,11 +22,13 @@ export class MAL {
           if (converted != null || converted !== undefined) {
             resolve(converted);
           } else {
-            reject(new Error(`Result is either 'null' or 'undefined'.`));
+            console.log(`Result is either 'null' or 'undefined'.`);
+            resolve(null);
           }
         })
         .catch((err: any) => {
-          reject(err);
+          console.log(err);
+          resolve(null);
         });
     });
   }

@@ -16,11 +16,10 @@ export class MalBindData {
       const list = await JsonHelper.ArrayConvert<MalBind>(results, MalBind);
       if (list === undefined || list === null) {
         this.Initializing = false;
-        reject(
-          new Error(
-            `JsonHelper.ArrayConvert<MalSync>(results, MalSync) is 'null' or 'undefined'.`
-          )
+        console.log(
+          `JsonHelper.ArrayConvert<MalSync>(results, MalSync) is 'null' or 'undefined'.`
         );
+        resolve();
       } else {
         if (list.length === 0) {
           this.Initializing = false;
@@ -83,11 +82,10 @@ export class MalBindData {
           this.List.push(m);
           resolve(m);
         } else {
-          reject(
-            new Error(
-              `JsonHelper.Convert<MalSync>(res, MalSync) is 'null' or 'undefined'.`
-            )
+          console.log(
+            `JsonHelper.Convert<MalSync>(res, MalSync) is 'null' or 'undefined'.`
           );
+          resolve(null);
         }
       });
     });
@@ -110,7 +108,8 @@ export class MalBindData {
       await this.OnReady();
       let iteration = 0;
       if (this.List.length === 0) {
-        reject(new Error(`List is empty.`));
+        console.log(`List is empty.`);
+        resolve(null);
       }
       this.List.forEach(m => {
         iteration++;
@@ -118,11 +117,10 @@ export class MalBindData {
           resolve(m);
         } else {
           if (iteration === this.List.length) {
-            reject(
-              new Error(
-                `this.List.find(m => m.DiscordId === discordId) is 'null' or 'undefined'.`
-              )
+            console.log(
+              `this.List.find(m => m.DiscordId === discordId) is 'null' or 'undefined'.`
             );
+            resolve(null);
           }
         }
       });

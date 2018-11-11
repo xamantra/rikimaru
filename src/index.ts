@@ -1,7 +1,6 @@
 import { QueueData } from "./data/queue.data";
 import { Client } from "discord.js";
 import { SubscriptionData } from "./data/subscription.data";
-import { MediaData } from "./data/media.data";
 import { UserData } from "./data/user.data";
 import { ClientManager } from "./core/client";
 import { CommandManager } from "./command/manager.command";
@@ -19,36 +18,18 @@ class App {
   }
 
   public async Run() {
-    await UserData.Init().catch(err => {
-      console.log(err);
-    });
-    await QueueData.Init().catch(err => {
-      console.log(err);
-    });
-    await SubscriptionData.Init().catch(err => {
-      console.log(err);
-    });
-    await MalBindData.Init().catch(err => {
-      console.log(err);
-    });
-    await MediaData.Init().catch(err => {
-      console.log(err);
-    });
-    await BotPresence.Init().catch(err => {
-      console.log(err);
-    });
+    await UserData.Init();
+    await QueueData.Init();
+    await SubscriptionData.Init();
+    await MalBindData.Init();
+    await BotPresence.Init();
+    await QueueData.CheckFromApi();
     AnimeCache.Update(0);
     Scheduler.LoopJob(0, 10, 0, async () => {
       console.log(`Refreshing Data....`);
-      await QueueData.Init().catch(err => {
-        console.log(err);
-      });
-      await MediaData.Init().catch(err => {
-        console.log(err);
-      });
-      await BotPresence.Init().catch(err => {
-        console.log(err);
-      });
+      await QueueData.Init();
+      await BotPresence.Init();
+      await QueueData.CheckFromApi();
     });
   }
 }

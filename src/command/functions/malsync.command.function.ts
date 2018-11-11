@@ -14,6 +14,8 @@ import { MalAnime } from "../../models/mal.anime.model";
 import { MalBind } from "../../models/mal.bind.model";
 import { User } from "../../models/subscription.model";
 import { AnimeCache } from "../../core/anime.cache";
+import { QueueData } from "../../data/queue.data";
+import { MediaStatus } from "../../core/media.status";
 
 export class MalSyncFunction implements ICommandFunction {
   async Execute(
@@ -73,73 +75,44 @@ export class MalSyncFunction implements ICommandFunction {
     message: Message,
     dm: boolean
   ) {
-    const mal = await MalBindData.Get(message.author.id).catch(err => {
+    const mal = await MalBindData.Get(message.author.id);
+    if (mal === null) {
       this.SendStatus(message, dm);
-      console.log(err);
-    });
-    if (mal instanceof MalBind === false) return;
+      return;
+    }
 
-    if ((mal as MalBind).Verified === true) {
-      const user = await UserData.GetUser(message.author.id).catch(err => {
-        console.log(err);
-      });
-      if (user instanceof User === false) return;
-      await MAL.GetCWList((mal as MalBind).MalUsername)
-        .then(async list => {
-          await SubscriptionData.GetUserSubs((user as User).Id)
-            .then(subs => {
-              subs.forEach($s => {
-                const malAnime = list.find($ma => $ma.anime_id === $s.MediaId);
-                if (malAnime !== null && malAnime !== undefined) {
-                } else {
-                  SubscriptionData.Delete($s.MediaId, (user as User).DiscordId);
-                }
-              });
-            })
-            .catch(err => {
-              console.log(err);
-            });
-          let iteration = 0;
-          list.forEach(async anime => {
-            iteration++;
-            await AnimeCache.Get(anime.anime_id)
-              .then(async media => {
-                const title = TitleHelper.Get(media.title);
-                await MediaData.Insert(media, title).then(async insertId => {
-                  await SubscriptionData.Insert(media.idMal, (user as User).Id)
-                    .then(() => {
-                      this.Check(iteration, list, resolve);
-                    })
-                    .catch((reason: string) => {
-                      if (reason === "EXISTS") {
-                        console.log(`Already subscribed.`);
-                        this.Check(iteration, list, resolve);
-                      } else {
-                        console.log(reason);
-                        this.Check(iteration, list, resolve);
-                        return;
-                      }
-                    });
-                });
-              })
-              .catch((reason: Error) => {
-                console.log(reason.message);
-                this.Check(iteration, list, resolve);
-              });
-            this.Check(iteration, list, resolve);
-          });
-        })
-        .catch(err => {
-          console.log(err);
-        });
+    if (mal.Verified === true) {
+      const user = await UserData.GetUser(message.author.id);
+      if (user === null) return;
+      const list = await MAL.GetCWList(mal.MalUsername);
+      if (list === null) return;
+      const subs = await SubscriptionData.GetUserSubs(user.Id);
+      for (let i = 0; i < subs.length; i++) {
+        const $s = subs[i];
+        const malAnime = list.find($ma => $ma.anime_id === $s.MediaId);
+        if (malAnime !== null && malAnime !== undefined) {
+        } else {
+          await SubscriptionData.Delete($s.MediaId, user.DiscordId);
+        }
+      }
+
+      for (let i = 0; i < list.length; i++) {
+        const fromList = list[i];
+        const anime = await AnimeCache.Get(fromList.anime_id);
+        if (MediaStatus.Ongoing(anime) || MediaStatus.NotYetAired(anime)) {
+          await QueueData.Insert(anime.idMal, anime.nextAiringEpisode.next);
+          await SubscriptionData.Insert(anime.idMal, user.Id);
+          if (i === list.length - 1) {
+            resolve();
+          }
+        } else {
+          if (i === list.length - 1) {
+            resolve();
+          }
+        }
+      }
     } else {
       this.SendStatus(message, dm);
-    }
-  }
-
-  private Check(iteration: number, animeList: MalAnime[], resolve: () => void) {
-    if (iteration === animeList.length) {
-      resolve();
     }
   }
 

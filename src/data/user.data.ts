@@ -29,27 +29,25 @@ export class UserData {
         }
       } else {
         this.Initializing = false;
-        reject(
-          new Error(
-            `"JsonHelper.ArrayConvert<User>(result, User)" is 'null' or 'undefined'.`
-          )
+        console.log(
+          `"JsonHelper.ArrayConvert<User>(result, User)" is 'null' or 'undefined'.`
         );
+        resolve();
       }
     });
   }
 
   public static async GetUser(discordId: string) {
-    return new Promise<User>(async (res, rej) => {
+    return new Promise<User>(async (resolve, reject) => {
       await this.OnReady();
       const user = this.All.find(x => x.DiscordId === discordId);
       if (user !== null && user !== undefined) {
-        res(user);
+        resolve(user);
       } else {
-        rej(
-          new Error(
-            `"this.All.find(x => x.DiscordId === discordId)" is 'null' or 'undefined'.`
-          )
+        console.log(
+          `"this.All.find(x => x.DiscordId === discordId)" is 'null' or 'undefined'.`
         );
+        resolve(null);
       }
     });
   }

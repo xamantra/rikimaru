@@ -14,9 +14,6 @@ export class LogAllFunction implements ICommandFunction {
       await UserData.LogAll().catch((reason: Error) => {
         console.log(reason.message);
       });
-      await MediaData.LogAll().catch((reason: Error) => {
-        console.log(reason.message);
-      });
       await QueueData.LogAll().catch((reason: Error) => {
         console.log(reason.message);
       });

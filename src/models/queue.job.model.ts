@@ -98,15 +98,9 @@ export class QueueJob {
     return new Promise(async (resolve, reject) => {
       const media = await AnimeCache.Get(this.media.idMal);
       if (media !== null) {
-        QueueData.Update(media, this)
-          .then(() => {
-            console.log(`Removed Queue: ${media.idMal}`);
-            resolve();
-          })
-          .catch(err => {
-            console.log(err);
-            resolve();
-          });
+        await QueueData.Update(media, this);
+        console.log(`Removed Queue: ${media.idMal}`);
+        resolve();
       } else {
         console.warn(
           `Error while searching : [MediaSearch.Find(${

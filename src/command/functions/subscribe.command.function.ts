@@ -14,6 +14,7 @@ import { ClientManager } from "../../core/client";
 import { Sender } from "../../core/sender";
 import { User } from "../../models/subscription.model";
 import { AnimeCache } from "../../core/anime.cache";
+import { QueueData } from "../../data/queue.data";
 
 export class SubscribeFunction implements ICommandFunction {
   public async Execute(
@@ -28,76 +29,46 @@ export class SubscribeFunction implements ICommandFunction {
     UserData.Insert(message.author.id).catch((err: Error) => {
       console.log(err);
     });
-    AnimeCache.Search(command.Parameter)
-      .then(async res => {
-        const ongoing = await MediaHandler.OngoingMedia(res);
-        const unreleased = await MediaHandler.UnreleasedMedia(res);
-        if (ongoing.length === 0 && unreleased.length === 0) {
-          Sender.SendInfo(
-            message,
-            "There is nothing to subscribe. The anime you search might be **already completed** or it is **not yet aired and the release date is currently unknown**, or try **another keyword**.",
-            dm
-          );
-          return;
-        }
-        const results: IMedia[] = [];
-        const formattedResults: any[] = [];
-        await ongoing.forEach(async m => {
-          results.push(m);
-          formattedResults.push(MediaFormatHandler.Get(m));
-        });
-        await unreleased.forEach(async m => {
-          results.push(m);
-          formattedResults.push(MediaFormatHandler.Get(m));
-        });
-        if (results.length === 1) {
-          const discordId = message.author.id;
-          const media = results[0];
-          console.log(media);
-          const title = TitleHelper.Get(results[0].title);
-          await MediaData.Insert(media, title).catch((reason: Error) => {
-            console.log(reason.message);
-          });
-          const user = await UserData.GetUser(discordId).catch(
-            (reason: Error) => {
-              console.log(reason.message);
-            }
-          );
-          if (user instanceof User === false) return;
-          await SubscriptionData.Insert(media.idMal, (user as User).Id)
-            .then(async () => {
-              const embed = await SubscribeFunction.Embed(message, media, true);
-              Sender.SendInfo(message, embed, dm);
-            })
-            .catch(async (reason: string) => {
-              if (reason === "EXISTS") {
-                const $embed = await SubscribeFunction.Embed(
-                  message,
-                  media,
-                  false
-                );
-                Sender.SendInfo(message, $embed, dm);
-              } else {
-                console.log(reason);
-              }
-            });
-        } else if (results.length > 1) {
-          const embed = await SearchList.Embed(
-            message,
-            command,
-            formattedResults
-          );
-          Sender.SendInfo(message, embed, dm);
-        }
-      })
-      .catch((reason: Error) => {
-        Sender.SendInfo(
-          message,
-          "SYSTEM ERROR!!!. I couldn't apprehend. Please try again.",
-          dm
-        );
-        console.log(reason.message);
-      });
+    const res = await AnimeCache.Search(command.Parameter);
+    const ongoing = await MediaHandler.OngoingMedia(res);
+    const unreleased = await MediaHandler.UnreleasedMedia(res);
+    if (ongoing.length === 0 && unreleased.length === 0) {
+      Sender.SendInfo(
+        message,
+        "There is nothing to subscribe. The anime you search might be **already completed** or it is **not yet aired and the release date is currently unknown**, or try **another keyword**.",
+        dm
+      );
+      return;
+    }
+    const results: IMedia[] = [];
+    const formattedResults: any[] = [];
+    await ongoing.forEach(async m => {
+      results.push(m);
+      formattedResults.push(MediaFormatHandler.Get(m));
+    });
+    await unreleased.forEach(async m => {
+      results.push(m);
+      formattedResults.push(MediaFormatHandler.Get(m));
+    });
+    if (results.length === 1) {
+      const discordId = message.author.id;
+      const media = results[0];
+      console.log(media);
+      await QueueData.Insert(media.idMal, media.nextAiringEpisode.next);
+      const user = await UserData.GetUser(discordId);
+      if (user === null) return;
+      const subbed = await SubscriptionData.Insert(media.idMal, user.Id);
+      if (subbed === true) {
+        const embed = await SubscribeFunction.Embed(message, media, true);
+        Sender.SendInfo(message, embed, dm);
+      } else {
+        const embed = await SubscribeFunction.Embed(message, media, false);
+        Sender.SendInfo(message, embed, dm);
+      }
+    } else if (results.length > 1) {
+      const embed = await SearchList.Embed(message, command, formattedResults);
+      Sender.SendInfo(message, embed, dm);
+    }
   }
 
   // tslint:disable-next-line:member-ordering

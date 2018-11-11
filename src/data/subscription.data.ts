@@ -29,11 +29,10 @@ export class SubscriptionData {
       );
       if (subs === null || subs === undefined) {
         this.Initializing = false;
-        reject(
-          new Error(
-            `JsonHelper.ArrayConvert<Subscription>(result,Subscription);`
-          )
+        console.log(
+          `JsonHelper.ArrayConvert<Subscription>(result,Subscription);`
         );
+        resolve();
       } else {
         if (subs.length === 0) {
           this.Initializing = false;
@@ -43,7 +42,7 @@ export class SubscriptionData {
           this.SubscriptionList = subs;
           for (let i = 0; i < subs.length; i++) {
             const sub = subs[i];
-            AnimeCache.Get(sub.MediaId);
+            await AnimeCache.Get(sub.MediaId);
             if (i === subs.length - 1) {
               this.Initializing = false;
               console.log(`Subs List Length: ${this.SubscriptionList.length}`);
@@ -103,21 +102,17 @@ export class SubscriptionData {
   }
 
   public static async Insert(mediaId: number, userId: string) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise<boolean>(async (resolve, reject) => {
       await this.OnReady();
       const exists = await this.Exists(mediaId, userId);
       if (exists === false) {
         const user = UserData.All.find(x => x.Id === userId);
         if (user === null || user === undefined) {
-          reject(
-            `"this.UserData.All.find(x => x.Id === userId)" is 'null' or 'undefined'.`
-          );
+          resolve(true);
         } else {
-          const queue = QueueData.All.find(x => x.MediaId === mediaId);
+          const queue = QueueData.GetQueue(mediaId);
           if (queue === null || queue === undefined) {
-            reject(
-              `"this.QueueData.All.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`
-            );
+            resolve(true);
           } else {
             const data = {
               media_id: mediaId,
@@ -130,24 +125,22 @@ export class SubscriptionData {
               sub.MediaId = mediaId;
               sub.UserId = userId;
               this.SubscriptionList.push(sub);
-              resolve();
+              resolve(true);
             }
           }
         }
       } else {
-        reject("EXISTS");
+        resolve(false);
       }
     });
   }
 
   public static async Delete(mediaId: number, discordId: string) {
-    return new Promise(async (res, rej) => {
+    return new Promise(async (resolve, reject) => {
       await this.OnReady();
-      const user = await UserData.GetUser(discordId).catch((reason: Error) => {
-        rej(reason);
-      });
+      const user = await UserData.GetUser(discordId);
       let query: any = null;
-      if (user instanceof User)
+      if (user !== null)
         query = { media_id: mediaId, user_id: new ObjectId(user.Id) };
       await Mongo.Delete(Tables.subscription, query);
       const sub = this.SubscriptionList.find(
@@ -155,10 +148,10 @@ export class SubscriptionData {
       );
       if (sub !== null && sub !== undefined) {
         ArrayHelper.remove(this.SubscriptionList, sub, () => {
-          res();
+          resolve();
         });
       } else {
-        res();
+        resolve();
         console.log(`Nothing to remove.`);
       }
     });
