@@ -6,7 +6,6 @@ export class ClientManager {
   private static Client: Client;
 
   public static async Init(client: Client) {
-    await client.login(Config.BOT_TOKEN);
     const dbl = new DBL(Config.DBL_TOKEN);
     this.Client = client;
     client.on("guildCreate", guild => {
@@ -28,6 +27,7 @@ export class ClientManager {
         dbl.postStats(client.guilds.size);
       }, 1800000);
     });
+    await client.login(Config.BOT_TOKEN);
   }
 
   public static GetClient() {
