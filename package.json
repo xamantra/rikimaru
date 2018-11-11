@@ -42,6 +42,7 @@
     "cheerio": "^1.0.0-rc.2",
     "class-transformer": "^0.1.10",
     "countdown": "^2.6.0",
+    "dblapi.js": "^2.3.0",
     "discord.js": "^11.4.2",
     "endeavor": "^2.3.0",
     "eslint": "^5.7.0",

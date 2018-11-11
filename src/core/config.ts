@@ -39,4 +39,8 @@ export class Config {
       require("../extras/env").env.FIREBASE_CONFIG
     );
   }
+
+  public static get DBL_TOKEN() {
+    return process.env.DBL_TOKEN || require("../extras/env").env.DBL_TOKEN;
+  }
 }
