@@ -5,6 +5,7 @@ import { ArrayHelper } from "../helpers/array.helper";
 import { IMedia } from "../interfaces/page.interface";
 import { Mongo } from "../core/mongo";
 import { Queue } from "../models/subscription.model";
+import { NullCheck } from "../helpers/null.checker.helper";
 
 export class QueueData {
   public static get All() {
@@ -81,11 +82,13 @@ export class QueueData {
   }
 
   public static SetQueue($m: IMedia) {
-    this.GetQueue($m.idMal).then(async queue => {
+    return new Promise(async (resolve, reject) => {
       await this.OnReady();
-      if (queue !== null) {
+      const queue = await this.GetQueue($m.idMal);
+      if (NullCheck.Fine(queue)) {
         const queueJob = new QueueJob($m, queue);
-        this.AddJob(queueJob);
+        await this.AddJob(queueJob);
+        resolve();
       }
     });
   }
@@ -100,7 +103,7 @@ export class QueueData {
   public static AddJob(queueJob: QueueJob) {
     return new Promise(async (resolve, reject) => {
       await this.OnReady();
-      queueJob.Check();
+      await queueJob.Check();
       this.QueueJobs.push(queueJob);
       resolve();
     });
@@ -132,7 +135,15 @@ export class QueueData {
         }
       } else {
         const queue = this.Queues.find(x => x.MediaId === mediaId);
-        resolve(queue.Id);
+        if (queue === null || queue === undefined) {
+          reject(
+            new Error(
+              `"this.Queues.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`
+            )
+          );
+        } else {
+          resolve(queue.Id);
+        }
       }
     });
   }
@@ -145,7 +156,6 @@ export class QueueData {
         $set: { next_episode: media.nextAiringEpisode.next }
       };
       await Mongo.Update(Tables.queue, query, newValues);
-      await this.Init();
       await this.Init().catch(err => {
         console.log(err);
       });

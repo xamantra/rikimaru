@@ -10,43 +10,48 @@ import { SubscriptionData } from "../data/subscription.data";
 import { User } from "discord.js";
 import { MediaStatus } from "../core/media.status";
 import { AnimeCache } from "../core/anime.cache";
+import { NullCheck } from "../helpers/null.checker.helper";
 
 export class QueueJob {
   private JobDate: Date;
   constructor(public media: IMedia, public queue: Queue) {}
 
-  public Check() {
-    const queueEpisode = this.queue.NextEpisode;
-    const media = this.media;
-    const title = TitleHelper.Get(media.title);
-    this.JobDate = unix(media.nextAiringEpisode.airingAt).toDate();
-    if (MediaStatus.Completed(media) && media.episodes === 1) {
-      this.FindUser(title, queueEpisode, media);
-    } else if (queueEpisode < media.nextAiringEpisode.next) {
-      this.FindUser(title, queueEpisode, media);
-    }
+  public async Check() {
+    return new Promise(async (resolve, reject) => {
+      const queueEpisode = this.queue.NextEpisode;
+      const media = this.media;
+      const title = TitleHelper.Get(media.title);
+      this.JobDate = unix(media.nextAiringEpisode.airingAt).toDate();
+      if (MediaStatus.Completed(media) && media.episodes === 1) {
+        await this.FindUser(title, queueEpisode, media);
+        resolve();
+      } else if (queueEpisode < media.nextAiringEpisode.next) {
+        await this.FindUser(title, queueEpisode, media);
+        resolve();
+      }
+    });
   }
 
   private FindUser(title: string, nextEpisode: number, media: IMedia) {
-    console.log(`Getting subscribers of "${title}"`);
-    SubscriptionData.GetSubscribers(this.media.idMal)
-      .then(subscribers => {
-        subscribers.forEach(subscriber => {
-          console.log(subscriber);
-          ClientManager.GetUser(subscriber.DiscordId)
-            .then(user => {
-              if (user.id === subscriber.DiscordId) {
-                this.SendMessage(title, nextEpisode, media, user);
-              }
-            })
-            .catch((err: Error) => {
-              console.log(err.message);
-            });
-        });
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    return new Promise(async (resolve, reject) => {
+      console.log(`Getting subscribers of "${title}"`);
+      const subscribers = await SubscriptionData.GetSubscribers(
+        this.media.idMal
+      );
+      if (subscribers.length === 0) {
+        resolve();
+      }
+      for (let i = 0; i < subscribers.length; i++) {
+        const subscriber = subscribers[i];
+        const user = await ClientManager.GetUser(subscriber.DiscordId);
+        if (NullCheck.Fine(user)) {
+          await this.SendMessage(title, nextEpisode, media, user);
+        }
+        if (i === subscribers.length - 1) {
+          resolve();
+        }
+      }
+    });
   }
 
   private SendMessage(
@@ -55,16 +60,24 @@ export class QueueJob {
     media: IMedia,
     user: User
   ) {
-    console.log(`Oh!, ${title} Episode ${nextEpisode} has been released!`);
-    this.EmbedTemplate(media, nextEpisode).then(embed => {
-      user
-        .send(embed)
-        .then(() => {
-          this.Update();
-        })
-        .catch((error: Error) => {
-          console.log(`Queue Job: "${error.message}"`);
-        });
+    return new Promise((resolve, reject) => {
+      this.EmbedTemplate(media, nextEpisode).then(embed => {
+        user
+          .send(embed)
+          .then(async () => {
+            console.log(
+              `DM has been sent to "${
+                user.username
+              }" for "${title} Episode ${nextEpisode}"`
+            );
+            await this.Update();
+            resolve();
+          })
+          .catch((error: Error) => {
+            console.log(`Queue Job: "${error.message}"`);
+            resolve();
+          });
+      });
     });
   }
 
@@ -80,24 +93,29 @@ export class QueueJob {
     );
   }
 
-  private async Update() {
-    const media = await AnimeCache.Get(this.media.idMal);
-    if (media !== null) {
-      QueueData.Update(media, this)
-        .then(() => {
-          console.log(`Removed Queue: ${media.idMal}`);
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    } else {
-      console.warn(
-        `Error while searching : [MediaSearch.Find(${
-          this.media.idMal
-        })]. Trying again...`
-      );
-      this.Update();
-    }
+  private Update() {
+    return new Promise(async (resolve, reject) => {
+      const media = await AnimeCache.Get(this.media.idMal);
+      if (media !== null) {
+        QueueData.Update(media, this)
+          .then(() => {
+            console.log(`Removed Queue: ${media.idMal}`);
+            resolve();
+          })
+          .catch(err => {
+            console.log(err);
+            resolve();
+          });
+      } else {
+        console.warn(
+          `Error while searching : [MediaSearch.Find(${
+            this.media.idMal
+          })]. Trying again...`
+        );
+        await this.Update();
+        resolve();
+      }
+    });
   }
 
   private async EmbedTemplate(media: IMedia, episode: number) {

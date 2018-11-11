@@ -42,9 +42,9 @@ export class ClientManager {
         if (user !== null && user !== undefined) {
           resolve(user);
         }
-      }, 0);
+      }, 1);
       setTimeout(() => {
-        reject(new Error(`Unable to get user <${discordId}>.`));
+        resolve(null);
       }, 10000);
     });
   }

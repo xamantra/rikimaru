@@ -87,7 +87,7 @@ export class MediaData {
             (MediaStatus.Ongoing($m) || MediaStatus.NotYetAired($m))
           ) {
             await QueueData.Insert($m.idMal, $m.nextAiringEpisode.next).catch(
-              () => {
+              async () => {
                 this.Check(i, $m, resolve);
               }
             );
@@ -112,12 +112,12 @@ export class MediaData {
     });
   }
 
-  private static Check(
+  private static async Check(
     iteration: number,
     $m: IMedia,
     res: (value?: void | PromiseLike<void>) => void
   ) {
-    QueueData.SetQueue($m);
+    await QueueData.SetQueue($m);
     if (iteration === this.LocalList.length - 1) {
       this.Initializing = false;
       res();

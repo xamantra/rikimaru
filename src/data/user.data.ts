@@ -61,11 +61,7 @@ export class UserData {
       if (user !== null && user !== undefined) {
         resolve(user);
       } else {
-        reject(
-          new Error(
-            `"this.All.find(x => x.Id === id)" is 'null' or 'undefined'.`
-          )
-        );
+        resolve(null);
       }
     });
   }

@@ -11,6 +11,7 @@ import { MediaData } from "./media.data";
 import { MediaSearch } from "../core/media.search";
 import { TitleHelper } from "../helpers/title.helper";
 import { AnimeCache } from "../core/anime.cache";
+import { NullCheck } from "../helpers/null.checker.helper";
 
 export class SubscriptionData {
   static Initializing = false;
@@ -87,25 +88,19 @@ export class SubscriptionData {
     return new Promise<User[]>(async (resolve, reject) => {
       await this.OnReady();
       const subscribers: User[] = [];
-      let iteration = 0;
       if (this.SubscriptionList.length === 0) {
-        reject(new Error(`SubscriptionList is empty`));
+        resolve(subscribers);
       }
-      this.SubscriptionList.forEach(async sub => {
-        iteration++;
+      for (let i = 0; i < this.SubscriptionList.length; i++) {
+        const sub = this.SubscriptionList[i];
         if (sub.MediaId === malId) {
-          const user = await UserData.GetUserById(sub.UserId).catch(err => {
-            console.log(err);
-            if (iteration === this.SubscriptionList.length) {
-              resolve(subscribers);
-            }
-          });
-          if (user instanceof User) subscribers.push(user);
-          if (iteration === this.SubscriptionList.length) {
+          const user = await UserData.GetUserById(sub.UserId);
+          if (NullCheck.Fine(user)) subscribers.push(user);
+          if (i === this.SubscriptionList.length - 1) {
             resolve(subscribers);
           }
         }
-      });
+      }
     });
   }
 
