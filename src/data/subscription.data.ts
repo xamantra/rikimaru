@@ -1,15 +1,11 @@
 import { QueueData } from "./queue.data";
 import { UserData } from "./user.data";
-import { Subscription } from "./../models/subscription.model";
 import { JsonHelper } from "../helpers/json.helper";
 import { Tables } from "../core/tables";
-import { User } from "../models/subscription.model";
+import { User, Subscription } from "../models/subscription.model";
 import { Mongo } from "../core/mongo";
 import { ObjectId } from "mongodb";
 import { ArrayHelper } from "../helpers/array.helper";
-import { MediaData } from "./media.data";
-import { MediaSearch } from "../core/media.search";
-import { TitleHelper } from "../helpers/title.helper";
 import { AnimeCache } from "../core/anime.cache";
 import { NullCheck } from "../helpers/null.checker.helper";
 
@@ -91,14 +87,21 @@ export class SubscriptionData {
       if (this.SubscriptionList.length === 0) {
         resolve(subscribers);
       }
+      const filtered: Subscription[] = [];
       for (let i = 0; i < this.SubscriptionList.length; i++) {
         const sub = this.SubscriptionList[i];
         if (sub.MediaId === malId) {
-          const user = await UserData.GetUserById(sub.UserId);
-          if (NullCheck.Fine(user)) subscribers.push(user);
+          filtered.push(sub);
         }
         if (i === this.SubscriptionList.length - 1) {
-          resolve(subscribers);
+          for (let x = 0; x < filtered.length; x++) {
+            const element = filtered[x];
+            const user = await UserData.GetUserById(element.UserId);
+            if (NullCheck.Fine(user)) subscribers.push(user);
+            if (x === filtered.length - 1) {
+              resolve(subscribers);
+            }
+          }
         }
       }
     });
