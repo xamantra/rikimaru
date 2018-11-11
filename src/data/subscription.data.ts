@@ -87,21 +87,13 @@ export class SubscriptionData {
       if (this.SubscriptionList.length === 0) {
         resolve(subscribers);
       }
-      const filtered: Subscription[] = [];
-      for (let i = 0; i < this.SubscriptionList.length; i++) {
-        const sub = this.SubscriptionList[i];
-        if (sub.MediaId === malId) {
-          filtered.push(sub);
-        }
-        if (i === this.SubscriptionList.length - 1) {
-          for (let x = 0; x < filtered.length; x++) {
-            const element = filtered[x];
-            const user = await UserData.GetUserById(element.UserId);
-            if (NullCheck.Fine(user)) subscribers.push(user);
-            if (x === filtered.length - 1) {
-              resolve(subscribers);
-            }
-          }
+      const subs = this.SubscriptionList.filter(x => x.MediaId === malId);
+      for (let i = 0; i < subs.length; i++) {
+        const sub = subs[i];
+        const user = await UserData.GetUserById(sub.UserId);
+        if (NullCheck.Fine(user)) subscribers.push(user);
+        if (i === subs.length - 1) {
+          resolve(subscribers);
         }
       }
     });
