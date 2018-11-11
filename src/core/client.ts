@@ -36,9 +36,10 @@ export class ClientManager {
   }
 
   public static GetUser(discordId: string) {
-    return new Promise<User>((resolve, reject) => {
+    return new Promise<User>(async (resolve, reject) => {
+      const client = await this.GetClient();
       setInterval(() => {
-        const user = this.Client.users.get(discordId);
+        const user = client.users.get(discordId);
         if (user !== null && user !== undefined) {
           resolve(user);
         }
