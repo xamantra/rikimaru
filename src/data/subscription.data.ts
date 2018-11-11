@@ -88,6 +88,9 @@ export class SubscriptionData {
         resolve(subscribers);
       }
       const subs = this.SubscriptionList.filter(x => x.MediaId === malId);
+      if (subs.length === 0) {
+        resolve(subscribers);
+      }
       for (let i = 0; i < subs.length; i++) {
         const sub = subs[i];
         const user = await UserData.GetUserById(sub.UserId);
