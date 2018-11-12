@@ -39,7 +39,6 @@ export class QueueJob {
       const subscribers = await SubscriptionData.GetSubscribers(
         this.media.idMal
       );
-      console.log(subscribers);
       if (subscribers.length === 0) {
         this.Update();
         resolve();
@@ -91,18 +90,6 @@ export class QueueJob {
           resolve();
         });
     });
-  }
-
-  public Log() {
-    const countdown = moment(this.JobDate).toNow(true);
-    const title = TitleHelper.Get(this.media.title);
-    console.log(
-      `Queue Job { Queue Episode: "${
-        this.queue.NextEpisode
-      }", "${title} Episode ${
-        this.media.nextAiringEpisode.next
-      }"  in  ${countdown} }`
-    );
   }
 
   private Update() {
