@@ -1,5 +1,8 @@
 import { IFirebaseConfig } from "../interfaces/firebase.config.interface";
 export class Config {
+  public static get BOT_NAME() {
+    return process.env.BOT_NAME || require("../extras/env").env.BOT_NAME;
+  }
   public static get BOT_TOKEN(): string {
     return process.env.BOT_TOKEN || require("../extras/env").env.BOT_TOKEN;
   }
