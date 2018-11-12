@@ -48,9 +48,13 @@ export class QueueJob {
         const user = await ClientManager.GetUser(subscriber.DiscordId);
         if (NullCheck.Fine(user)) {
           await this.SendMessage(title, nextEpisode, media, user);
-        }
-        if (i === subscribers.length - 1) {
-          resolve();
+          if (i === subscribers.length - 1) {
+            resolve();
+          }
+        } else {
+          if (i === subscribers.length - 1) {
+            resolve();
+          }
         }
       }
     });
@@ -74,13 +78,14 @@ export class QueueJob {
           );
           await this.Update();
           const support = await this.SupportTemplate();
-          user.send(support).catch(err => {
+          await user.send(support).catch(err => {
             console.log(err);
           });
           resolve();
         })
         .catch(err => {
           console.log(err);
+          resolve();
         });
     });
   }
