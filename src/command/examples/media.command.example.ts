@@ -1,6 +1,7 @@
 import { Random } from "../../helpers/random.helper";
 import { ICommandExample } from "../../interfaces/command.example.interface";
 import { ICommand } from "../../interfaces/command.interface";
+import { Config } from "../../core/config";
 
 export class MediaExample implements ICommandExample {
   public Count: number;
@@ -79,7 +80,7 @@ export class MediaExample implements ICommandExample {
     for (let i = 0; i < this.media.length; i++) {
       const item: string = this.media[Random.Range(0, this.media.length - 1)];
       if (!picked.includes(item) && picked.length < count) {
-        result += `\n-*${command.Name}* ${item}`;
+        result += `\n${Config.COMMAND_PREFIX}*${command.Name}* ${item}`;
         picked.push(item);
       }
       if (picked.length === count) {

@@ -1,6 +1,6 @@
-import { Color } from "./../core/colors";
 import { GuildMember, Guild } from "discord.js";
 import { ClientManager } from "../core/client";
+import { Config } from "../core/config";
 
 export class EmbedHelper {
   public async WelcomeEmbed(server: Guild, member: GuildMember) {
@@ -21,13 +21,15 @@ export class EmbedHelper {
           },
           {
             name: `**What are my commands?**`,
-            value: `Type ***-help*** to show all commands\nNote: *You can do it here or in the server.*`
+            value: `Type ***${
+              Config.COMMAND_PREFIX
+            }help*** to show all commands\nNote: *You can do it here or in the server.*`
           }
         ],
         timestamp: new Date(),
         footer: {
           icon_url: client.user.avatarURL,
-          text: "© Rikimaru"
+          text: `© ${Config.BOT_NAME}`
         }
       }
     };

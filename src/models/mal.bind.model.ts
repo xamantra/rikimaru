@@ -1,4 +1,5 @@
 import { JsonObject, JsonProperty } from "json2typescript";
+import { Config } from "../core/config";
 
 @JsonObject("")
 export class MalBind {
@@ -14,7 +15,7 @@ export class MalBind {
   public Verified: boolean = undefined;
 
   public static CodeFormat(code: string) {
-    return `[Rikimaru: ${code}]`;
+    return `[${Config.BOT_NAME}: ${code}]`;
   }
 }
 

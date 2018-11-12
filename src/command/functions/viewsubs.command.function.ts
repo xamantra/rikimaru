@@ -9,6 +9,7 @@ import { ClientManager } from "../../core/client";
 import arraySort from "array-sort";
 import { SubMedia } from "../../models/sub.model";
 import { AnimeCache } from "../../core/anime.cache";
+import { Config } from "../../core/config";
 
 export class ViewSubsFunction implements ICommandFunction {
   constructor() {}
@@ -129,7 +130,7 @@ export class ViewSubsFunction implements ICommandFunction {
           timestamp: new Date(),
           footer: {
             icon_url: client.user.avatarURL,
-            text: "© Rikimaru"
+            text: `© ${Config.BOT_NAME}`
           }
         }
       });

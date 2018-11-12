@@ -1,6 +1,7 @@
 import { ICommandExample } from "../../interfaces/command.example.interface";
 import { ICommand } from "../../interfaces/command.interface";
 import { Random } from "../../helpers/random.helper";
+import { Config } from "../../core/config";
 
 export class MalSyncExample implements ICommandExample {
   Count: number;
@@ -19,7 +20,7 @@ export class MalSyncExample implements ICommandExample {
         Random.Range(0, this.Usernames.length - 1)
       ];
       if (!picked.includes(item) && picked.length < count) {
-        result += `\n-*${command.Name}* ${item}`;
+        result += `\n${Config.COMMAND_PREFIX}*${command.Name}* ${item}`;
         picked.push(item);
       }
       if (picked.length === count) {

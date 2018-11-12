@@ -16,6 +16,7 @@ import {
 } from "./commands";
 import { ICommand } from "../interfaces/command.interface";
 import { malbind, malsync } from "./commands";
+import { Config } from "../core/config";
 
 export class CommandManager {
   private static BotCommands: BotCommand[] = [];
@@ -55,13 +56,8 @@ export class CommandManager {
           resolve(cmd);
         } else {
           if (iteration === this.BotCommands.length) {
-            reject(
-              new Error(
-                `The command ***-${
-                  command.Name
-                }*** doesn't exists. Type the command: ***-help***  to see all commands.`
-              )
-            );
+            console.log(`Unknown Command.`);
+            resolve(null);
           }
         }
       });

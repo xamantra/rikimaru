@@ -3,6 +3,7 @@ import { ICommand } from "../interfaces/command.interface";
 import { Color } from "./colors";
 import { ClientManager } from "./client";
 import { Message } from "discord.js";
+import { Config } from "./config";
 
 export class RescueCenter {
   public static async RequireParameter(
@@ -12,6 +13,7 @@ export class RescueCenter {
   ) {
     return new Promise((resolve, reject) => {
       ClientManager.GetClient().then(client => {
+        const prefix = Config.COMMAND_PREFIX;
         let example: any = cmd.Example;
         if (example === undefined) {
           example = "";
@@ -23,13 +25,13 @@ export class RescueCenter {
             ? {
                 embed: {
                   color: message.member.highestRole.color,
-                  title: `**Rikimaru Rescue Center**`,
-                  description: `The command ***-${
+                  title: `**${Config.BOT_NAME} Rescue Center**`,
+                  description: `The command ***${prefix}${
                     command.Name
                   }*** requires a parameter.`,
                   fields: [
                     {
-                      name: `Example|s for ***-${command.Name}*** : `,
+                      name: `Example|s for ***${prefix}${command.Name}*** : `,
                       // tslint:disable-next-line:max-line-length
                       value: example
                     }
@@ -37,11 +39,13 @@ export class RescueCenter {
                   timestamp: new Date(),
                   footer: {
                     icon_url: client.user.avatarURL,
-                    text: "© Rikimaru"
+                    text: `© ${Config.BOT_NAME}`
                   }
                 }
               }
-            : `The command ***-${command.Name}*** doesn't need a parameter.`;
+            : `The command ***${prefix}${
+                command.Name
+              }*** doesn't need a parameter.`;
         resolve(msg);
       });
     });

@@ -11,6 +11,9 @@ import {
 } from "./functions";
 import { mediaExample, malBindExample } from "./examples";
 import { malBindFunction, malSyncFunction } from "./functions";
+import { Config } from "../core/config";
+
+const prefix = Config.COMMAND_PREFIX;
 
 export const help = new BotCommand(
   "help",
@@ -23,7 +26,7 @@ export const help = new BotCommand(
 );
 export const dmhelp = new BotCommand(
   "dmhelp",
-  "Just similar with the* ***-help*** *command.",
+  `Just similar with the* ***${prefix}help*** *command.`,
   false,
   false,
   Response.DirectMessage,
@@ -42,7 +45,7 @@ export const when = new BotCommand(
 );
 export const dmwhen = new BotCommand(
   "dmwhen",
-  "Just similar with the* ***-when*** *command.",
+  `Just similar with the* ***${prefix}when*** *command.`,
   true,
   false,
   Response.DirectMessage,
@@ -62,7 +65,7 @@ export const sub = new BotCommand(
 );
 export const dmsub = new BotCommand(
   "dmsub",
-  "Just similar with* ***-sub.**",
+  `Just similar with* ***${prefix}sub.**`,
   true,
   false,
   Response.DirectMessage,
@@ -81,7 +84,7 @@ export const viewsubs = new BotCommand(
 );
 export const dmviewsubs = new BotCommand(
   "dmviewsubs",
-  "Just similar with* ***-viewsubs.**",
+  `Just similar with* ***${prefix}viewsubs.**`,
   false,
   true,
   Response.DirectMessage,
@@ -100,7 +103,7 @@ export const unsub = new BotCommand(
 );
 export const dmunsub = new BotCommand(
   "dmunsub",
-  "Just similar with* ***-unsub.**",
+  "Just similar with* ***unsub.**",
   true,
   false,
   Response.DirectMessage,
@@ -110,7 +113,7 @@ export const dmunsub = new BotCommand(
 );
 export const malbind = new BotCommand(
   "malbind",
-  `Bind your mal account with your Rikimaru Discord.`,
+  `Bind your mal account with your C.C.`,
   true,
   false,
   Response.ChannelReply,
@@ -141,7 +144,7 @@ export const ping = new BotCommand(
 );
 export const dmping = new BotCommand(
   "dmping",
-  "Just similar with* ***-ping*** *command.",
+  `Just similar with* ***${prefix}ping*** *command.`,
   false,
   false,
   Response.DirectMessage,

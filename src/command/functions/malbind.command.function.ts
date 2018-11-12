@@ -8,6 +8,7 @@ import { MalBind } from "../../models/mal.bind.model";
 import { ClientManager } from "../../core/client";
 import { UserData } from "../../data/user.data";
 import { MAL } from "../../core/mal";
+import { Config } from "../../core/config";
 
 export class MalBindFunction implements ICommandFunction {
   async Execute(
@@ -38,7 +39,9 @@ export class MalBindFunction implements ICommandFunction {
       if (mal.Verified === true) {
         Sender.Send(
           message,
-          `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`,
+          `Cool! Your MAL account is **binded** with ${
+            Config.BOT_NAME
+          }, You can **remove** the code in your **mal about section**.`,
           dm
         );
       } else {
@@ -69,7 +72,9 @@ export class MalBindFunction implements ICommandFunction {
           if (v.Verified) {
             Sender.Send(
               message,
-              `Cool! Your MAL account is **binded** with rikimaru discord. You can **remove** the code in your **mal about section**.`,
+              `Cool! Your MAL account is **binded** with ${
+                Config.BOT_NAME
+              }, You can **remove** the code in your **mal about section**.`,
               dm
             );
           }
@@ -85,8 +90,10 @@ export class MalBindFunction implements ICommandFunction {
       const client = await ClientManager.GetClient();
       const embed = {
         embed: {
-          title: `Rikimaru MAL Sync Center`,
-          description: `**Rikimaru Code not found** on your profile. You first need to verify your ownership.`,
+          title: `${Config.BOT_NAME} MAL Sync Center`,
+          description: `**${
+            Config.BOT_NAME
+          } Code not found** on your profile. You first need to verify your ownership.`,
           color: message.member.highestRole.color,
           thumbnail: { url: message.author.avatarURL },
           image: { url: `https://i.imgur.com/9h3vere.png` },
@@ -98,7 +105,10 @@ export class MalBindFunction implements ICommandFunction {
             { name: `Code`, value: `***${code}***\n\nExample:` }
           ],
           timestamp: new Date(),
-          footer: { icon_url: client.user.avatarURL, text: "© Rikimaru" }
+          footer: {
+            icon_url: client.user.avatarURL,
+            text: `© ${Config.BOT_NAME}`
+          }
         }
       };
       resolve(embed);

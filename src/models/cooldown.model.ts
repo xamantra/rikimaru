@@ -1,6 +1,7 @@
 import { User, Message } from "discord.js";
 import { BotCommand } from "../command/bot.command";
 import { TimeHelper } from "../helpers/time.helper";
+import { Config } from "../core/config";
 
 export class Cooldown {
   private constructor(public command: BotCommand, public user: User) {
@@ -41,7 +42,7 @@ export class Cooldown {
             new CooldownResponse(
               `:alarm_clock: **${
                 this.user.username
-              }** You are on cooldown for **-${
+              }** You are on cooldown for **${Config.COMMAND_PREFIX}${
                 this.command.Name
               }** - \`${countdown}s\``,
               countdown * 1000

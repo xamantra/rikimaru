@@ -12,6 +12,7 @@ import { ClientManager } from "../../core/client";
 import { Sender } from "../../core/sender";
 import { AnimeCache } from "../../core/anime.cache";
 import { QueueData } from "../../data/queue.data";
+import { Config } from "../../core/config";
 
 export class SubscribeFunction implements ICommandFunction {
   public async Execute(
@@ -86,14 +87,20 @@ export class SubscribeFunction implements ICommandFunction {
             ? `You are now subscribed to this anime. *I will DM you when new episode is aired.*`
             : `You are already subscribed to this anime.`,
           fields: [
-            { name: `To unsubscribe, type:`, value: `\`-unsub ${t}\`` },
+            {
+              name: `To unsubscribe, type:`,
+              value: `\`${Config.COMMAND_PREFIX}unsub ${t}\``
+            },
             {
               name: `To view all subscription, type:`,
-              value: `\`-viewsubs\``
+              value: `\`${Config.COMMAND_PREFIX}viewsubs\``
             }
           ],
           timestamp: new Date(),
-          footer: { icon_url: client.user.avatarURL, text: "© Rikimaru" }
+          footer: {
+            icon_url: client.user.avatarURL,
+            text: `© ${Config.BOT_NAME}`
+          }
         }
       };
       resolve(embed);

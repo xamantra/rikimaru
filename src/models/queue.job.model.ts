@@ -118,6 +118,7 @@ export class QueueJob {
 
   private EmbedTemplate(media: IMedia, episode: number) {
     return new Promise<any>(async (resolve, reject) => {
+      const prefix = Config.COMMAND_PREFIX;
       const client = await ClientManager.GetClient();
       const t = TitleHelper.Get(media.title);
       const embed = {
@@ -130,16 +131,19 @@ export class QueueJob {
           url: `https://myanimelist.net/anime/${media.idMal}/`,
           description: `**Episode ${episode}** *has been aired!*`,
           fields: [
-            { name: `To unsub, type:`, value: `\`-unsub ${t}\`` },
+            {
+              name: `To unsub, type:`,
+              value: `\`${prefix}unsub ${t}\``
+            },
             {
               name: `To view subscriptions, type:`,
-              value: `\`-viewsubs\``
+              value: `\`${prefix}viewsubs\``
             }
           ],
           timestamp: new Date(),
           footer: {
             icon_url: client.user.avatarURL,
-            text: "© Rikimaru"
+            text: `© ${Config.BOT_NAME}`
           }
         }
       };
@@ -155,7 +159,7 @@ export class QueueJob {
           fields: [
             {
               name: `Support me on Discord Bot List (DBL)`,
-              value: `[Vote to Rikimaru](${Config.DBL_BOT_LINK}/vote)`
+              value: `[Vote to ${Config.BOT_NAME}](${Config.DBL_BOT_LINK}/vote)`
             }
           ]
         }

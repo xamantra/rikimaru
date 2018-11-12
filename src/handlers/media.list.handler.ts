@@ -7,9 +7,7 @@ export class MediaFormatHandler {
       name: `**${TitleHelper.Get(media.title)}**`, // tslint:disable-next-line:max-line-length
       value: `[MyAnimeList](https://myanimelist.net/anime/${
         media.idMal
-      }/)\nStatus:  *${
-        media.status
-      }*\n▬▬▬▬▬▬▬▬▬▬  :small_orange_diamond: :small_orange_diamond: :small_orange_diamond:   ▬▬▬▬▬▬▬▬▬▬`
+      }/)\nStatus:  *${media.status}*\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`
     };
     return format;
   }

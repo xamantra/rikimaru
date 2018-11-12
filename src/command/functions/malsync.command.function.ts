@@ -10,6 +10,7 @@ import { MAL } from "../../core/mal";
 import { AnimeCache } from "../../core/anime.cache";
 import { QueueData } from "../../data/queue.data";
 import { MediaStatus } from "../../core/media.status";
+import { Config } from "../../core/config";
 
 export class MalSyncFunction implements ICommandFunction {
   async Execute(
@@ -23,32 +24,33 @@ export class MalSyncFunction implements ICommandFunction {
     });
     const client = await ClientManager.GetClient();
     const res$m = `Your *MAL currently watching list* is now synced with your subscriptions.`;
+    const prefix = Config.COMMAND_PREFIX;
     Sender.Send(
       message,
       {
         embed: {
           color: message.member.highestRole.color,
           thumbnail: { url: message.author.avatarURL },
-          title: `Rikimaru MAL Auto Subscribe`,
+          title: `${Config.BOT_NAME} MAL Auto Subscribe`,
           description: res$m,
           fields: [
             {
               name: `To unsubscribe, type:`,
-              value: `\`-unsub anime title or keyword here\``
+              value: `\`${prefix}unsub anime title or keyword here\``
             },
             {
               name: `To view all subscription, type:`,
-              value: `\`-viewsubs\``
+              value: `\`${prefix}viewsubs\``
             },
             {
               name: `Please Note: `,
-              value: `If you've just modified your list, please wait at least 1 minute to **-malsync**.`
+              value: `If you've just modified your list, please wait at least 1 minute to **${prefix}malsync**.`
             }
           ],
           timestamp: new Date(),
           footer: {
             icon_url: client.user.avatarURL,
-            text: "© Rikimaru"
+            text: `© ${Config.BOT_NAME}`
           }
         }
       },
@@ -119,7 +121,9 @@ export class MalSyncFunction implements ICommandFunction {
   private SendStatus(message: Message, dm: boolean) {
     Sender.Send(
       message,
-      `Oops! Your MAL account is not verified and binded.\n Enter the command **-malbind malusername**`,
+      `Oops! Your MAL account is not verified and binded.\n Enter the command **${
+        Config.COMMAND_PREFIX
+      }malbind malusername**`,
       dm
     );
   }
