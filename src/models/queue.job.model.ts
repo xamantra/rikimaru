@@ -39,6 +39,7 @@ export class QueueJob {
       const subscribers = await SubscriptionData.GetSubscribers(
         this.media.idMal
       );
+      console.log(subscribers);
       if (subscribers.length === 0) {
         this.Update();
         resolve();
@@ -49,10 +50,12 @@ export class QueueJob {
         if (NullCheck.Fine(user)) {
           await this.SendMessage(title, nextEpisode, media, user);
           if (i === subscribers.length - 1) {
+            await this.Update();
             resolve();
           }
         } else {
           if (i === subscribers.length - 1) {
+            await this.Update();
             resolve();
           }
         }
@@ -76,7 +79,7 @@ export class QueueJob {
               user.username
             }" for "${title} Episode ${nextEpisode}"`
           );
-          await this.Update();
+          await this.Sleep(1000);
           const support = await this.SupportTemplate();
           await user.send(support).catch(err => {
             console.log(err);
@@ -105,7 +108,7 @@ export class QueueJob {
   private Update() {
     return new Promise(async (resolve, reject) => {
       const media = await AnimeCache.Get(this.media.idMal);
-      if (media !== null) {
+      if (NullCheck.Fine(media)) {
         await QueueData.Update(media, this);
         console.log(`Removed Queue: ${media.idMal}`);
         resolve();
@@ -170,6 +173,14 @@ export class QueueJob {
         }
       };
       resolve(embed);
+    });
+  }
+
+  private Sleep(timeout: number) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve();
+      }, timeout);
     });
   }
 }

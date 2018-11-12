@@ -80,13 +80,13 @@ export class QueueData {
     return new Promise<Queue>(async (resolve, reject) => {
       await this.OnReady();
       const q = this.All.find(x => x.MediaId === mediaId);
-      if (q !== null && q !== undefined) {
+      if (NullCheck.Fine(q)) {
         resolve(q);
       } else {
-        resolve(null);
         console.log(
           `"this.All.find(x => x.MediaId === mediaId)" is 'null' or 'undefined'.`
         );
+        resolve(null);
       }
     });
   }
@@ -160,7 +160,7 @@ export class QueueData {
       await Mongo.Update(Tables.queue, query, newValues);
       await this.Init();
       const q = await this.GetQueue(media.idMal);
-      if (q !== null) {
+      if (NullCheck.Fine(q)) {
         const qj = new QueueJob(media, q as Queue);
         await this.AddJob(qj);
         await this.RemoveJob(queueJob);
