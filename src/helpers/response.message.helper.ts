@@ -33,6 +33,7 @@ export class ResponseMessageHelper {
         }
       }
       responseMessage = new ResponseMessage(
+        media.id,
         media.idMal,
         color,
         media.coverImage.large,

@@ -81,19 +81,17 @@ export class SubscribeFunction implements ICommandFunction {
         embed: {
           color: message.member.highestRole.color,
           thumbnail: { url: media.coverImage.large },
-          title: `***${t}***`,
-          url: `https://myanimelist.net/anime/${media.idMal}/`,
+          title: `${t}`,
+          url: `${Config.MAL_ANIME_BASE}/${media.idMal}/`,
           description: newSub
             ? `You are now subscribed to this anime. *I will DM you when new episode is aired.*`
             : `You are already subscribed to this anime.`,
           fields: [
             {
-              name: `To unsubscribe, type:`,
-              value: `\`${Config.COMMAND_PREFIX}unsub ${t}\``
-            },
-            {
-              name: `To view all subscription, type:`,
-              value: `\`${Config.COMMAND_PREFIX}viewsubs\``
+              name: `Links:`,
+              value: `[MyAnimeList](${Config.MAL_ANIME_BASE}/${
+                media.idMal
+              })  |  [AniList](${Config.ANI_ANIME_BASE}/${media.id})`
             }
           ],
           timestamp: new Date(),

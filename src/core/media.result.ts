@@ -1,6 +1,7 @@
 import { Message, DiscordAPIError } from "discord.js";
 import { ResponseMessage } from "../models/response.message.model";
 import { Sender } from "./sender";
+import { Config } from "./config";
 
 export class MediaResult {
   public static SendMessage(
@@ -26,7 +27,7 @@ export class MediaResult {
       }
       switch (rsMessage.Status) {
         case "RELEASING":
-          name = `*Episode* ***${rsMessage.Current}***/${episodes}`;
+          name = `Episode ***${rsMessage.Current}***/${episodes}`;
           value = `Will air in approximately **${
             rsMessage.Countdown
           }**\nLast update: *${rsMessage.UpdatedAt}*`;
@@ -63,12 +64,18 @@ export class MediaResult {
           thumbnail: {
             url: rsMessage.Thumbnail
           },
-          title: `***${rsMessage.Title}***   `,
-          url: `https://myanimelist.net/anime/${rsMessage.Id}/`,
+          title: `${rsMessage.Title}`,
+          url: `${Config.MAL_ANIME_BASE}/${rsMessage.IdMal}/`,
           fields: [
             {
               name: name,
               value: value
+            },
+            {
+              name: `Links:`,
+              value: `[MyAnimeList](${Config.MAL_ANIME_BASE}/${
+                rsMessage.IdMal
+              }/)  |  [AniList](${Config.ANI_ANIME_BASE}/${rsMessage.Id}/)`
             }
           ]
         }

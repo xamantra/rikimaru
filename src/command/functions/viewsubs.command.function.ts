@@ -85,9 +85,11 @@ export class ViewSubsFunction implements ICommandFunction {
           timeUntilAiring: $m.nextAiringEpisode.timeUntilAiring,
           field: {
             name: `\n${title}`,
-            value: `[MyAnimeList](https://myanimelist.net/anime/${
+            value: `[MyAnimeList](${Config.MAL_ANIME_BASE}/${
               $m.idMal
-            }/)\nEpisode **${episode}**/${episodes} in ***${countdown}***\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`
+            })  |  [AniList](${Config.ANI_ANIME_BASE}/${
+              $m.id
+            })\nEpisode **${episode}**/${episodes} in ***${countdown}***\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`
           }
         });
         unsorted.push(pre.data);

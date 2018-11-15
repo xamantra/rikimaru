@@ -30,6 +30,18 @@ export class Config {
     );
   }
 
+  public static get MAL_ANIME_BASE(): string {
+    return (
+      process.env.MAL_ANIME_BASE || require("../extras/env").env.MAL_ANIME_BASE
+    );
+  }
+
+  public static get ANI_ANIME_BASE(): string {
+    return (
+      process.env.ANI_ANIME_BASE || require("../extras/env").env.ANI_ANIME_BASE
+    );
+  }
+
   public static MAL_CW_LINK(username: string) {
     const base =
       process.env.MAL_CW_BASE || require("../extras/env").env.MAL_CW_BASE;

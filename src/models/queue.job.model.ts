@@ -116,23 +116,25 @@ export class QueueJob {
       const prefix = Config.COMMAND_PREFIX;
       const client = await ClientManager.GetClient();
       const t = TitleHelper.Get(media.title);
+      let episodes = `?`;
+      if (NullCheck.Fine(media.episodes)) {
+        episodes = `${media.episodes}`;
+      }
       const embed = {
         embed: {
           color: Color.Random,
           thumbnail: {
             url: media.coverImage.large
           },
-          title: `***${t}***`,
-          url: `https://myanimelist.net/anime/${media.idMal}/`,
-          description: `**Episode ${episode}** *has been aired!*`,
+          title: `${t}`,
+          url: `${Config.MAL_ANIME_BASE}/${media.idMal}/`,
+          description: `Episode ***${episode}***/${episodes} is now airing.`,
           fields: [
             {
-              name: `To unsub, type:`,
-              value: `\`${prefix}unsub ${t}\``
-            },
-            {
-              name: `To view subscriptions, type:`,
-              value: `\`${prefix}viewsubs\``
+              name: `Links:`,
+              value: `[MyAnimeList](${Config.MAL_ANIME_BASE}/${
+                media.idMal
+              }/)  |  [AniList](${Config.ANI_ANIME_BASE}/${media.id}/)`
             }
           ],
           timestamp: new Date(),

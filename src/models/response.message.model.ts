@@ -11,6 +11,7 @@ export class ResponseMessage
     IUnreleasedNoDate,
     ICompleted {
   Id: number;
+  IdMal: number;
   Color: number;
   Thumbnail: string;
   Title: string;
@@ -25,6 +26,7 @@ export class ResponseMessage
 
   constructor(
     $Id: number,
+    $IdMal: number,
     $Color: number,
     $Thumbnail: string,
     $Title: string,
@@ -38,6 +40,7 @@ export class ResponseMessage
     $EndDate: string
   ) {
     this.Id = $Id;
+    this.IdMal = $IdMal;
     this.Color = $Color;
     this.Thumbnail = $Thumbnail;
     this.Title = $Title;

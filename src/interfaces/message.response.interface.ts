@@ -1,5 +1,6 @@
 export interface IOngoingResponse {
   Id: number;
+  IdMal: number;
   Color: number;
   Thumbnail: string;
   Title: string;
@@ -10,6 +11,7 @@ export interface IOngoingResponse {
 
 export interface IUnreleasedWithDate {
   Id: number;
+  IdMal: number;
   Color: number;
   Thumbnail: string;
   Title: string;
@@ -20,6 +22,7 @@ export interface IUnreleasedWithDate {
 
 export interface IUnreleasedNoDate {
   Id: number;
+  IdMal: number;
   Color: number;
   Thumbnail: string;
   Title: string;
@@ -29,6 +32,7 @@ export interface IUnreleasedNoDate {
 
 export interface ICompleted {
   Id: number;
+  IdMal: number;
   Color: number;
   Thumbnail: string;
   Title: string;

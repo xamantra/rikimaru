@@ -3,13 +3,13 @@ export class UserPref {
     public discordId: string,
     public schedType: "Date" | "Countdown",
     public subsSort: "ASC" | "DESC",
-    public remindInH: number
+    public dmDelayMS: number
   ) {
-    if (remindInH > 24) {
-      remindInH = 24;
+    if (dmDelayMS > 24) {
+      dmDelayMS = 24;
     }
-    if (remindInH < 1) {
-      remindInH = 1;
+    if (dmDelayMS < 1) {
+      dmDelayMS = 1;
     }
   }
 }
