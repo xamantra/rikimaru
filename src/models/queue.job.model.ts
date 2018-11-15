@@ -78,11 +78,11 @@ export class QueueJob {
               user.username
             }" for "${title} Episode ${nextEpisode}"`
           );
-          await this.Sleep(1000);
-          const support = await this.SupportTemplate();
-          await user.send(support).catch(err => {
-            console.log(err);
-          });
+          // await this.Sleep(1000);
+          // const support = await this.SupportTemplate();
+          // await user.send(support).catch(err => {
+          //   console.log(err);
+          // });
           resolve();
         })
         .catch(err => {
@@ -148,28 +148,28 @@ export class QueueJob {
     });
   }
 
-  private SupportTemplate() {
-    return new Promise<any>((resolve, reject) => {
-      const embed = {
-        embed: {
-          color: Color.Random,
-          fields: [
-            {
-              name: `Support me on Discord Bot List (DBL)`,
-              value: `[Vote to ${Config.BOT_NAME}](${Config.DBL_BOT_LINK}/vote)`
-            }
-          ]
-        }
-      };
-      resolve(embed);
-    });
-  }
+  // private SupportTemplate() {
+  //   return new Promise<any>((resolve, reject) => {
+  //     const embed = {
+  //       embed: {
+  //         color: Color.Random,
+  //         fields: [
+  //           {
+  //             name: `Support me on Discord Bot List (DBL)`,
+  //             value: `[Vote to ${Config.BOT_NAME}](${Config.DBL_BOT_LINK}/vote)`
+  //           }
+  //         ]
+  //       }
+  //     };
+  //     resolve(embed);
+  //   });
+  // }
 
-  private Sleep(timeout: number) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve();
-      }, timeout);
-    });
-  }
+  // private Sleep(timeout: number) {
+  //   return new Promise((resolve, reject) => {
+  //     setTimeout(() => {
+  //       resolve();
+  //     }, timeout);
+  //   });
+  // }
 }
