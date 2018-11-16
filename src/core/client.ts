@@ -1,12 +1,12 @@
 import { Client, User } from "discord.js";
 import { Config } from "./config";
-import DBL from "dblapi.js";
+// import DBL from "dblapi.js";
 
 export class ClientManager {
-  private static Client: Client;
+  public static Client: Client;
 
   public static async Init(client: Client) {
-    const dbl = new DBL(Config.DBL_TOKEN);
+    // const dbl = new DBL(Config.DBL_TOKEN);
     this.Client = client;
     client.on("guildCreate", guild => {
       console.log(
@@ -22,12 +22,12 @@ export class ClientManager {
           client.channels.size
         } channels of ${client.guilds.size} servers.`
       );
-      dbl.postStats(client.guilds.size);
-      setInterval(() => {
-        dbl.postStats(client.guilds.size);
-      }, 1800000);
+      // dbl.postStats(client.guilds.size);
+      // setInterval(() => {
+      //   dbl.postStats(client.guilds.size);
+      // }, 1800000);
     });
-    await client.login(Config.BOT_TOKEN);
+    client.login(Config.BOT_TOKEN);
   }
 
   public static GetClient() {
