@@ -1,6 +1,6 @@
 import { User } from "../models/subscription.model";
 import { JsonHelper } from "../helpers/json.helper";
-import { Tables } from "../core/tables";
+import { Table } from "../core/table";
 import { Mongo } from "../core/mongo";
 
 export class UserData {
@@ -14,7 +14,7 @@ export class UserData {
     return new Promise<void>(async (resolve, reject) => {
       await this.OnReady();
       this.Initializing = true;
-      const result = await Mongo.FindAll(Tables.user);
+      const result = await Mongo.FindAll(Table.user);
       const users = await JsonHelper.ArrayConvert<User>(result, User);
       if (users !== undefined && users !== null) {
         if (users.length === 0) {
@@ -72,7 +72,7 @@ export class UserData {
       });
       if (exists === false) {
         const data = { discord_id: discordId };
-        const result = await Mongo.Insert(Tables.user, data);
+        const result = await Mongo.Insert(Table.user, data);
         if (result.insertedId !== null && result.insertedId !== undefined) {
           const user = new User();
           user.Id = result.insertedId;

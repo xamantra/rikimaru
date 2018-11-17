@@ -1,5 +1,3 @@
-import { MediaType } from "./../../core/enums";
-
 export class SearchVariables {
   public static Get(
     search: string,

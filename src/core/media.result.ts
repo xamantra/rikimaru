@@ -1,4 +1,4 @@
-import { Message, DiscordAPIError } from "discord.js";
+import { Message } from "discord.js";
 import { ResponseMessage } from "../models/response.message.model";
 import { Sender } from "./sender";
 import { Config } from "./config";

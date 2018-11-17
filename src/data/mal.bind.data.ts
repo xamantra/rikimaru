@@ -1,5 +1,5 @@
 import { Mongo } from "../core/mongo";
-import { Tables } from "../core/tables";
+import { Table } from "../core/table";
 import { MalBind } from "../models/mal.bind.model";
 import { JsonHelper } from "../helpers/json.helper";
 import { ArrayHelper } from "../helpers/array.helper";
@@ -12,7 +12,7 @@ export class MalBindData {
     return new Promise(async (resolve, reject) => {
       await this.OnReady();
       this.Initializing = true;
-      const results = await Mongo.FindAll(Tables.malbind);
+      const results = await Mongo.FindAll(Table.malbind);
       const list = await JsonHelper.ArrayConvert<MalBind>(results, MalBind);
       if (list === undefined || list === null) {
         this.Initializing = false;
@@ -46,7 +46,7 @@ export class MalBindData {
           code: code,
           verified: false
         };
-        const result = await Mongo.Insert(Tables.malbind, data);
+        const result = await Mongo.Insert(Table.malbind, data);
         console.log(result.insertedId);
         const malsync = new MalBind();
         malsync.Id = result.insertedId;
@@ -71,10 +71,10 @@ export class MalBindData {
       await this.OnReady();
       const query = { discord_id: discordId };
       const newValue = { $set: { verified: true } };
-      await Mongo.Update(Tables.malbind, query, newValue);
+      await Mongo.Update(Table.malbind, query, newValue);
       const oldValue = await this.Get(discordId);
       ArrayHelper.remove(this.List, oldValue, async () => {
-        const res = await Mongo.FindOne(Tables.malbind, query);
+        const res = await Mongo.FindOne(Table.malbind, query);
         const ms = await JsonHelper.ArrayConvert<MalBind>(res, MalBind);
         const m = ms[0];
         console.log(`Update MAL bind: ${m.Code}`);
