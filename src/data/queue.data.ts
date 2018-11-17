@@ -48,7 +48,7 @@ export class QueueData {
     });
   }
 
-  public static CheckFromApi() {
+  public static Sync() {
     return new Promise(async (resolve, reject) => {
       for (let i = 0; i < this.Queues.length; i++) {
         const queue = this.Queues[i];

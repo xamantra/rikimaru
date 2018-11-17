@@ -64,4 +64,11 @@ export class Config {
       process.env.DBL_BOT_LINK || require("../extras/env").env.DBL_BOT_LINK
     );
   }
+
+  public static get QUEUE_REFRESH_RATE() {
+    return Number(
+      process.env.QUEUE_REFRESH_RATE ||
+        require("../extras/env").env.QUEUE_REFRESH_RATE
+    );
+  }
 }

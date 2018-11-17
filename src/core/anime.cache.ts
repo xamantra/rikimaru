@@ -6,7 +6,7 @@ import { Random } from "../helpers/random.helper";
 export class AnimeCache {
   private static List: IMedia[] = [];
 
-  public static async Update(index: number) {
+  public static async Update(index: number = 0) {
     setTimeout(async () => {
       if (this.List.length > 0) {
         const local = this.List[index];

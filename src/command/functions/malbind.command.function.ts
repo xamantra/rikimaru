@@ -87,7 +87,7 @@ export class MalBindFunction implements ICommandFunction {
 
   private EmbedTemplate(message: Message, command: ICommand, code: string) {
     return new Promise<any>(async (resolve, reject) => {
-      const client = await ClientManager.GetClient();
+      const client = ClientManager.Client;
       const embed = {
         embed: {
           title: `${Config.BOT_NAME} MAL Sync Center`,

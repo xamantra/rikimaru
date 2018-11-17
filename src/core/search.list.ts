@@ -6,7 +6,7 @@ import { Config } from "./config";
 export class SearchList {
   public static async Embed(message: Message, command: ICommand, fields: any) {
     return new Promise<any>(async (resolve, reject) => {
-      const client = await ClientManager.GetClient();
+      const client = await ClientManager.Client;
       const embed = {
         embed: {
           color: message.member.highestRole.color,

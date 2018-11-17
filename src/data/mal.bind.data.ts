@@ -106,24 +106,24 @@ export class MalBindData {
   public static Get(discordId: string) {
     return new Promise<MalBind>(async (resolve, reject) => {
       await this.OnReady();
-      let iteration = 0;
       if (this.List.length === 0) {
         console.log(`List is empty.`);
         resolve(null);
       }
-      this.List.forEach(m => {
-        iteration++;
+      for (let i = 0; i < this.List.length; i++) {
+        const m = this.List[i];
         if (m.DiscordId === discordId) {
           resolve(m);
+          return;
         } else {
-          if (iteration === this.List.length) {
+          if (i === this.List.length - 1) {
             console.log(
               `this.List.find(m => m.DiscordId === discordId) is 'null' or 'undefined'.`
             );
             resolve(null);
           }
         }
-      });
+      }
     });
   }
 

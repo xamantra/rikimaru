@@ -4,7 +4,7 @@ import { Config } from "../core/config";
 
 export class EmbedHelper {
   public async WelcomeEmbed(server: Guild, member: GuildMember) {
-    const client = await ClientManager.GetClient();
+    const client = await ClientManager.Client;
     const embed = {
       embed: {
         color: member.highestRole.color,

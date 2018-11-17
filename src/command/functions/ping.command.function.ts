@@ -11,16 +11,15 @@ export class PingFunction implements ICommandFunction {
   }
 
   public async Get(message: Message, isDM: boolean) {
-    ClientManager.GetClient().then(async client => {
-      const m = isDM
-        ? ((await message.author.send("Ping?")) as Message)
-        : ((await message.reply("Ping?")) as Message);
-      await m.edit(
-        `Pingga!, Pongga! Latency is ${m.createdTimestamp -
-          message.createdTimestamp}ms. API Latency is ${Math.round(
-          client.ping
-        )}ms`
-      );
-    });
+    const client = ClientManager.Client;
+    const m = isDM
+      ? ((await message.author.send("Ping?")) as Message)
+      : ((await message.reply("Ping?")) as Message);
+    await m.edit(
+      `Pingga!, Pongga! Latency is ${m.createdTimestamp -
+        message.createdTimestamp}ms. API Latency is ${Math.round(
+        client.ping
+      )}ms`
+    );
   }
 }

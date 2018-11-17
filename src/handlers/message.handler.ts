@@ -7,7 +7,7 @@ import { Sender } from "../core/sender";
 
 export class MessageHandler {
   public static async Init() {
-    const client = await ClientManager.GetClient();
+    const client = await ClientManager.Client;
     client.on("message", message => {
       if (message.author.id !== client.user.id) {
         const isCommand = MessageHelper.IsCommand(Config, message);

@@ -43,7 +43,7 @@ export class ViewSubsFunction implements ICommandFunction {
         mentionId === null ? message.author.id : mentionId;
       const sorted: any[] = [];
       let unsorted: any[] = [];
-      const dUser = await ClientManager.GetUser(discordId);
+      const dUser = await ClientManager.Client.fetchUser(discordId);
       if (dUser === null) return;
       const u = await UserData.GetUser(discordId);
       if (u === null) {
@@ -119,7 +119,7 @@ export class ViewSubsFunction implements ICommandFunction {
   ) {
     return new Promise<any>(async (resolve, reject) => {
       const member = message.guild.members.get(user.id);
-      const client = await ClientManager.GetClient();
+      const client = ClientManager.Client;
       resolve({
         embed: {
           color: member.highestRole.color,

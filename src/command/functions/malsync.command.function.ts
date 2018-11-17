@@ -22,7 +22,7 @@ export class MalSyncFunction implements ICommandFunction {
       console.log(err);
       this.SendStatus(message, dm);
     });
-    const client = await ClientManager.GetClient();
+    const client = ClientManager.Client;
     const res$m = `Your *MAL currently watching list* is now synced with your subscriptions.`;
     const prefix = Config.COMMAND_PREFIX;
     Sender.Send(

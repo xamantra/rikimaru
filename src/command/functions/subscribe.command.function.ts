@@ -75,7 +75,7 @@ export class SubscribeFunction implements ICommandFunction {
   // tslint:disable-next-line:member-ordering
   public static async Embed(message: Message, media: IMedia, newSub: boolean) {
     return new Promise<any>(async (resolve, reject) => {
-      const client = await ClientManager.GetClient();
+      const client = ClientManager.Client;
       const t = TitleHelper.Get(media.title);
       const embed = {
         embed: {

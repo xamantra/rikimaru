@@ -45,36 +45,35 @@ export class HelpFunction implements ICommandFunction {
       const botname = Config.BOT_NAME;
       const prefix = Config.COMMAND_PREFIX;
       const commands = CommandManager.Commands;
-      ClientManager.GetClient().then(client => {
-        const list: any[] = [];
-        commands.forEach(command => {
-          if (command.DevOnly === false) {
-            list.push({
-              name: `\n***${prefix}${command.Name}***`,
-              value: `*${command.Description}*`
-            });
-          }
-        });
-        const embed = {
-          embed: {
-            color: message.member.highestRole.color,
-            thumbnail: {
-              url: client.user.avatarURL
-            },
-            title: `***${botname} Help Center***`,
-            description: `Hey **${
-              message.member.user.username
-            }**! This are my command list:`,
-            fields: list,
-            timestamp: new Date(),
-            footer: {
-              icon_url: client.user.avatarURL,
-              text: `© ${botname}`
-            }
-          }
-        };
-        resolve(embed);
+      const client = ClientManager.Client;
+      const list: any[] = [];
+      commands.forEach(command => {
+        if (command.DevOnly === false) {
+          list.push({
+            name: `\n***${prefix}${command.Name}***`,
+            value: `*${command.Description}*`
+          });
+        }
       });
+      const embed = {
+        embed: {
+          color: message.member.highestRole.color,
+          thumbnail: {
+            url: client.user.avatarURL
+          },
+          title: `***${botname} Help Center***`,
+          description: `Hey **${
+            message.member.user.username
+          }**! This are my command list:`,
+          fields: list,
+          timestamp: new Date(),
+          footer: {
+            icon_url: client.user.avatarURL,
+            text: `© ${botname}`
+          }
+        }
+      };
+      resolve(embed);
     });
   }
 }

@@ -16,7 +16,6 @@ import {
 } from "./commands";
 import { ICommand } from "../interfaces/command.interface";
 import { malbind, malsync } from "./commands";
-import { Config } from "../core/config";
 
 export class CommandManager {
   private static BotCommands: BotCommand[] = [];
@@ -49,18 +48,18 @@ export class CommandManager {
 
   public static Validate(command: ICommand) {
     return new Promise<BotCommand>((resolve, reject) => {
-      let iteration = 0;
-      this.BotCommands.forEach(cmd => {
-        iteration++;
+      for (let i = 0; i < this.BotCommands.length; i++) {
+        const cmd = this.BotCommands[i];
         if (cmd.Name === command.Name) {
           resolve(cmd);
+          return;
         } else {
-          if (iteration === this.BotCommands.length) {
+          if (i === this.BotCommands.length - 1) {
             console.log(`Unknown Command.`);
             resolve(null);
           }
         }
-      });
+      }
     });
   }
 }

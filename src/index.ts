@@ -1,5 +1,4 @@
 import { QueueData } from "./data/queue.data";
-import { Client } from "discord.js";
 import { SubscriptionData } from "./data/subscription.data";
 import { UserData } from "./data/user.data";
 import { ClientManager } from "./core/client";
@@ -10,9 +9,11 @@ import { Scheduler } from "./core/scheduler";
 import { BotPresence } from "./core/presence";
 import { MalBindData } from "./data/mal.bind.data";
 import { AnimeCache } from "./core/anime.cache";
+import { Config } from "./core/config";
 
 class App {
   static _instance: App;
+  private RefreshRate = Config.QUEUE_REFRESH_RATE;
   public static get Instance() {
     return this._instance || (this._instance = new this());
   }
@@ -23,13 +24,13 @@ class App {
     await SubscriptionData.Init();
     await MalBindData.Init();
     await BotPresence.Init();
-    await QueueData.CheckFromApi();
-    AnimeCache.Update(0);
-    Scheduler.LoopJob(0, 10, 0, async () => {
-      console.log(`Refreshing Data (Runs every: 10 mins.)`);
+    await QueueData.Sync();
+    AnimeCache.Update();
+    Scheduler.LoopJob(0, this.RefreshRate, 0, async () => {
+      console.log(`Refreshing Data (Runs every: ${this.RefreshRate} mins.)`);
       await QueueData.Init();
       await BotPresence.Init();
-      await QueueData.CheckFromApi();
+      await QueueData.Sync();
     });
   }
 }
@@ -37,7 +38,7 @@ class App {
 OpenShiftUptimer.Log(true);
 OpenShiftUptimer.AutoConfigure();
 
-ClientManager.Init(new Client());
+ClientManager.Init();
 MessageHandler.Init();
 CommandManager.Init();
 

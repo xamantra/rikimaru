@@ -15,7 +15,7 @@ export class BotPresence {
       if (action === 2) {
         musicType = this.MusicType[Random.Range(0, 1)];
       }
-      const client = await ClientManager.GetClient();
+      const client = ClientManager.Client;
       client.user
         .setActivity(`${musicType} ${title}`, { type: action })
         .then(presence => {

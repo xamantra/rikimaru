@@ -45,7 +45,7 @@ export class QueueJob {
       }
       for (let i = 0; i < subscribers.length; i++) {
         const subscriber = subscribers[i];
-        const user = await ClientManager.GetUser(subscriber.DiscordId);
+        const user = await ClientManager.Client.fetchUser(subscriber.DiscordId);
         if (NullCheck.Fine(user)) {
           await this.SendMessage(title, nextEpisode, media, user);
           if (i === subscribers.length - 1) {
@@ -114,7 +114,7 @@ export class QueueJob {
   private EmbedTemplate(media: IMedia, episode: number) {
     return new Promise<any>(async (resolve, reject) => {
       const prefix = Config.COMMAND_PREFIX;
-      const client = await ClientManager.GetClient();
+      const client = ClientManager.Client;
       const t = TitleHelper.Get(media.title);
       let episodes = `?`;
       if (NullCheck.Fine(media.episodes)) {
