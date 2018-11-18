@@ -9,7 +9,7 @@ import {
   MediaListData
 } from "../models/ani.sync.model";
 
-export class Anilist {
+export class AniList {
   public static async MediaSearch(search: string) {
     return new Promise<object>((resolve, reject) => {
       const query = GraphQL.SearchQL;

@@ -8,7 +8,7 @@ import { UserData } from "../../data/user.data";
 import { Config } from "../../core/config";
 import { AniBind } from "../../models/ani.bind.model";
 import { AniBindData } from "../../data/ani.bind.data";
-import { Anilist } from "../../core/anilist";
+import { AniList } from "../../core/anilist";
 import { JsonHelper } from "../../helpers/json.helper";
 import { Root, User } from "../../models/anilist.user.model";
 import { NullCheck } from "../../helpers/null.checker.helper";
@@ -26,7 +26,7 @@ export class AniBindFunction implements ICommandFunction {
   }
 
   private async CheckBind(message?: Message, command?: ICommand, dm?: boolean) {
-    const anilistUserResult = await Anilist.UserQuery(command.Parameter);
+    const anilistUserResult = await AniList.UserQuery(command.Parameter);
     const anilistRoot = await JsonHelper.Convert<Root>(anilistUserResult, Root);
     const user = anilistRoot.data.User;
     const c = await this.SetCode(message, command, user);
@@ -46,7 +46,7 @@ export class AniBindFunction implements ICommandFunction {
       if (ani.Verified === true) {
         Sender.Send(
           message,
-          `Cool! Your Anilist account is **binded** with ${
+          `Cool! Your AniList account is **binded** with ${
             Config.BOT_NAME
           }, You can **remove** the code in your **anilist about section**.`,
           dm
@@ -89,7 +89,7 @@ export class AniBindFunction implements ICommandFunction {
           if (v.Verified) {
             Sender.Send(
               message,
-              `Cool! Your Anilist account is **binded** with ${
+              `Cool! Your AniList account is **binded** with ${
                 Config.BOT_NAME
               }, You can **remove** the code in your **anilist about section**.`,
               dm
@@ -107,7 +107,7 @@ export class AniBindFunction implements ICommandFunction {
       const client = ClientManager.Client;
       const embed = {
         embed: {
-          title: `${Config.BOT_NAME} Anilist Sync Center`,
+          title: `${Config.BOT_NAME} AniList Sync Center`,
           description: `**${
             Config.BOT_NAME
           } Code not found** on your profile. You first need to verify your ownership.`,
@@ -117,7 +117,7 @@ export class AniBindFunction implements ICommandFunction {
           fields: [
             {
               name: `Instruction`,
-              value: `*Copy and paste* the verification code below in your *Anilist about section.*. You can place it anywhere.\n[Edit Profile](https://anilist.co/settings)`
+              value: `*Copy and paste* the verification code below in your *AniList about section.*. You can place it anywhere.\n[Edit Profile](https://anilist.co/settings)`
             },
             { name: `Code`, value: `***${code}***\n\nExample:` }
           ],

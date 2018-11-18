@@ -20,6 +20,10 @@
 
 > `cc-malsync` command where you can sync your **MAL account's** _currently watching list_ to your subscription. Any anime that _exists in your subscription_ that _doesn't exists on the list_ will be removed.
 
+> `cc-anibind anilistusername` command required before using `cc-anisync`. You will need to put a code given by the bot in your **AniList About Section**. You can then remove it after verification.
+
+> `cc-anisync` command where you can sync your **AniList account's** _currently watching list_ to your subscription. Any anime that _exists in your subscription_ that _doesn't exists on the list_ will be removed.
+
 > `cc-viewsubs` command where you can view your own subscriptions with the countdowns. You can also **@mention** _as a parameter_ with this command to view other's subscription.
 
 > `cc-dmviewsubs` the same with `cc-viewsubs` it just dm you with the result.
@@ -36,7 +40,6 @@ _All DM commands might be convenient for crowded channels_
 
 ##### TODO:
 
-- Anilist sync support.
 - Profile stats.
 - Random anime recommend.
 - DM delay feature.

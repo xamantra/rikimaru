@@ -1,4 +1,4 @@
-import { Anilist } from "./anilist";
+import { AniList } from "./anilist";
 import { IMedia } from "./../interfaces/page.interface";
 import { JsonHelper } from "../helpers/json.helper";
 import { RootPage, RootMedia } from "../models/root.model";
@@ -6,7 +6,7 @@ import { RootPage, RootMedia } from "../models/root.model";
 export class MediaSearch {
   public static async All(title: string) {
     return new Promise<IMedia[]>((resolve, reject) => {
-      const result = Anilist.MediaSearch(title);
+      const result = AniList.MediaSearch(title);
       let media: IMedia[] = [];
       result
         .then($p => {
@@ -30,7 +30,7 @@ export class MediaSearch {
 
   public static async Find(id: number) {
     return new Promise<IMedia>(async (resolve, reject) => {
-      const $m = await Anilist.MediaQuery(id);
+      const $m = await AniList.MediaQuery(id);
       let media: IMedia;
       if ($m !== null) {
         media = (JsonHelper.Converter.deserialize($m, RootMedia) as RootMedia)

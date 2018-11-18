@@ -10,7 +10,7 @@ import { QueueData } from "../../data/queue.data";
 import { MediaStatus } from "../../core/media.status";
 import { Config } from "../../core/config";
 import { AniBindData } from "../../data/ani.bind.data";
-import { Anilist } from "../../core/anilist";
+import { AniList } from "../../core/anilist";
 import { JsonHelper } from "../../helpers/json.helper";
 import { ListRoot } from "../../models/ani.sync.model";
 
@@ -25,7 +25,7 @@ export class AniSyncFunction implements ICommandFunction {
       this.SendStatus(message, dm);
     });
     const client = ClientManager.Client;
-    const res$m = `Your *Anilist currently watching list* is now synced with your subscriptions.`;
+    const res$m = `Your *AniList currently watching list* is now synced with your subscriptions.`;
     const prefix = Config.COMMAND_PREFIX;
     Sender.Send(
       message,
@@ -33,7 +33,7 @@ export class AniSyncFunction implements ICommandFunction {
         embed: {
           color: message.member.highestRole.color,
           thumbnail: { url: message.author.avatarURL },
-          title: `${Config.BOT_NAME} Anilist Auto Subscribe`,
+          title: `${Config.BOT_NAME} AniList Auto Subscribe`,
           description: res$m,
           fields: [
             {
@@ -85,7 +85,7 @@ export class AniSyncFunction implements ICommandFunction {
         Sender.SendError(message, dm);
         return;
       }
-      const apiResult = await Anilist.MediaListQuery(ani.AnilistId);
+      const apiResult = await AniList.MediaListQuery(ani.AniListId);
       const converted = await JsonHelper.Convert<ListRoot>(apiResult, ListRoot);
       const list = converted.data.collection.lists[0].entries;
       if (list === null) {
@@ -125,7 +125,7 @@ export class AniSyncFunction implements ICommandFunction {
   private SendStatus(message: Message, dm: boolean) {
     Sender.Send(
       message,
-      `Oops! Your Anilist account is not verified and binded.\n Enter the command **${
+      `Oops! Your AniList account is not verified and binded.\n Enter the command **${
         Config.COMMAND_PREFIX
       }anibind anilistusername**`,
       dm

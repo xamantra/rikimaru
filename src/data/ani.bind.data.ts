@@ -56,9 +56,9 @@ export class AniBindData {
         console.log(result.insertedId);
         const aniBind = new AniBind();
         aniBind.Id = result.insertedId;
-        aniBind.AnilistId = anilistId;
+        aniBind.AniListId = anilistId;
         aniBind.DiscordId = discordId;
-        aniBind.AnilistUsername = anilistUsername;
+        aniBind.AniListUsername = anilistUsername;
         aniBind.Code = code;
         aniBind.Verified = false;
         this.List.push(aniBind);
@@ -84,7 +84,7 @@ export class AniBindData {
         const res = await Mongo.FindOne(Table.aniBind, query);
         const ms = await JsonHelper.ArrayConvert<AniBind>(res, AniBind);
         const m = ms[0];
-        console.log(`Update Anilist bind: ${m.Code}`);
+        console.log(`Update AniList bind: ${m.Code}`);
         if (m !== null && m !== undefined) {
           this.List.push(m);
           resolve(m);
