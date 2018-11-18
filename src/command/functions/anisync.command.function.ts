@@ -13,6 +13,7 @@ import { AniBindData } from "../../data/ani.bind.data";
 import { AniList } from "../../core/anilist";
 import { JsonHelper } from "../../helpers/json.helper";
 import { ListRoot } from "../../models/ani.sync.model";
+import { NullCheck } from "../../helpers/null.checker.helper";
 
 export class AniSyncFunction implements ICommandFunction {
   async Execute(
@@ -86,9 +87,17 @@ export class AniSyncFunction implements ICommandFunction {
         return;
       }
       const apiResult = await AniList.MediaListQuery(ani.AniListId);
+      if (!NullCheck.Fine(apiResult)) {
+        Sender.SendError(message, dm);
+        return;
+      }
       const converted = await JsonHelper.Convert<ListRoot>(apiResult, ListRoot);
+      if (!NullCheck.Fine(converted)) {
+        Sender.SendError(message, dm);
+        return;
+      }
       const list = converted.data.collection.lists[0].entries;
-      if (list === null) {
+      if (!NullCheck.Fine(list)) {
         Sender.SendError(message, dm);
         return;
       }

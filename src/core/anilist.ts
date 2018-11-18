@@ -51,10 +51,7 @@ export class AniList {
         })
         .catch(error => {
           console.log(error);
-          const root = new Root();
-          root.data = new Data();
-          root.data.User = null;
-          resolve(root);
+          resolve(null);
         });
     });
   }
@@ -70,11 +67,7 @@ export class AniList {
         })
         .catch(error => {
           console.log(error);
-          const root = new ListRoot();
-          root.data = new MediaListData();
-          root.data.collection = new MediaListCollection();
-          root.data.collection.lists = [];
-          resolve(root);
+          resolve(null);
         });
     });
   }

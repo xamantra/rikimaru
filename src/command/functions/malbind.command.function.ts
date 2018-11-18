@@ -25,6 +25,10 @@ export class MalBindFunction implements ICommandFunction {
 
   private async CheckBind(message?: Message, command?: ICommand, dm?: boolean) {
     const about = await MAL.GetProfileAbout(command.Parameter);
+    if (!NullCheck.Fine(about)) {
+      this.NotFindError(message, command);
+      return;
+    }
     const c = await this.SetCode(message, command, about);
     this.ProcessCode(message, command, dm, c, about);
   }
@@ -69,12 +73,8 @@ export class MalBindFunction implements ICommandFunction {
     about: string
   ) {
     const embed = await this.EmbedTemplate(message, command, code);
-    if (about === null) {
-      message.channel.send(
-        `:regional_indicator_x: Go me nasai! I wasn't able to find mal user: **${
-          command.Parameter
-        }**`
-      );
+    if (!NullCheck.Fine(about)) {
+      this.NotFindError(message, command);
       return;
     } else {
       if (about.includes(code)) {
@@ -141,5 +141,13 @@ export class MalBindFunction implements ICommandFunction {
         resolve(code);
       }
     });
+  }
+
+  private NotFindError(message: Message, command: ICommand) {
+    message.channel.send(
+      `:regional_indicator_x: Go me nasai! I wasn't able to find mal user: **${
+        command.Parameter
+      }**`
+    );
   }
 }

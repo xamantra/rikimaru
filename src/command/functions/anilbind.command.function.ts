@@ -27,10 +27,18 @@ export class AniBindFunction implements ICommandFunction {
 
   private async CheckBind(message?: Message, command?: ICommand, dm?: boolean) {
     const anilistUserResult = await AniList.UserQuery(command.Parameter);
-    const anilistRoot = await JsonHelper.Convert<Root>(anilistUserResult, Root);
-    const user = anilistRoot.data.User;
-    const c = await this.SetCode(message, command, user);
-    this.ProcessCode(message, command, dm, c, user);
+    if (NullCheck.Fine(anilistUserResult)) {
+      this.NotFindError(message, command);
+      return;
+    } else {
+      const anilistUser = await JsonHelper.Convert<Root>(
+        anilistUserResult,
+        Root
+      );
+      const user = anilistUser.data.User;
+      const c = await this.SetCode(message, command, user);
+      this.ProcessCode(message, command, dm, c, user);
+    }
   }
 
   private async ProcessCode(
@@ -74,11 +82,7 @@ export class AniBindFunction implements ICommandFunction {
   ) {
     const embed = await this.EmbedTemplate(message, command, code);
     if (!NullCheck.Fine(user)) {
-      message.channel.send(
-        `:regional_indicator_x: Go me nasai! I wasn't able to find anilist user: **${
-          command.Parameter
-        }**`
-      );
+      this.NotFindError(message, command);
       return;
     } else {
       if (NullCheck.Fine(user.about) && user.about.includes(code)) {
@@ -148,5 +152,13 @@ export class AniBindFunction implements ICommandFunction {
         resolve(code);
       }
     });
+  }
+
+  private NotFindError(message: Message, command: ICommand) {
+    message.channel.send(
+      `:regional_indicator_x: Go me nasai! I wasn't able to find mal user: **${
+        command.Parameter
+      }**`
+    );
   }
 }
