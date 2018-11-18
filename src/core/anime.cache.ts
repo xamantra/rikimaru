@@ -2,6 +2,7 @@ import { IMedia } from "../interfaces/page.interface";
 import { MediaSearch } from "./media.search";
 import { ArrayHelper } from "../helpers/array.helper";
 import { Random } from "../helpers/random.helper";
+import { TitleHelper } from "../helpers/title.helper";
 
 export class AnimeCache {
   private static List: IMedia[] = [];
@@ -82,6 +83,7 @@ export class AnimeCache {
         const apiResult = await MediaSearch.All(keyword);
         if (apiResult.length === 0) {
           resolve(found);
+          return;
         }
         for (let x = 0; x < apiResult.length; x++) {
           const fromApi = apiResult[x];
@@ -132,19 +134,18 @@ export class AnimeCache {
     return new Promise<boolean>(async (resolve, reject) => {
       const titleMatch = await this.ScanTitle(keyword, title);
       const acroMatch = await this.ScanAcro(keyword, title);
-      if (titleMatch < 0) {
+      if (titleMatch) {
+        resolve(titleMatch);
+      } else if (acroMatch) {
+        resolve(acroMatch);
+      } else {
         resolve(false);
-        return;
-      } else if (acroMatch < 0) {
-        resolve(false);
-        return;
       }
-      resolve(true);
     });
   }
 
   private static async ScanTitle(keyword: string, title: string) {
-    return new Promise<number>((resolve, reject) => {
+    return new Promise<boolean>((resolve, reject) => {
       const keywords = keyword.split(/ +/g);
       let match = 0;
       for (let i = 0; i < keywords.length; i++) {
@@ -154,36 +155,47 @@ export class AnimeCache {
         }
         if (i === keywords.length - 1) {
           if (match === keyword.length) {
-            resolve(match);
+            resolve(true);
             return;
           }
-          resolve(-1);
+          resolve(false);
         }
       }
     });
   }
 
   private static async ScanAcro(keyword: string, title: string) {
-    return new Promise<number>((resolve, reject) => {
-      let match = 0;
-      const titleWords = title.split(/ +/g);
-      for (let i = 0; i < keyword.length; i++) {
-        const letter = keyword[i];
-        if (titleWords[i][0] === letter) {
-          match++;
-        }
-        if (i === keyword.length - 1) {
-          if (match === keyword.length) {
-            resolve(match);
-            return;
-          }
-          resolve(-1);
-        }
+    return new Promise<boolean>((resolve, reject) => {
+      const titleWords = title.toLowerCase().split(/ +/g);
+      // acronym doesn't have space.
+      if (keyword.includes(" ")) {
+        resolve(false);
+        return;
+      }
+      const acronym = keyword.replace(".", "").toLowerCase();
+      let acroTitle = "";
+      for (let i = 0; i < titleWords.length; i++) {
+        const word = titleWords[i];
+        acroTitle += `${word[0]}`;
+      }
+      if (acroTitle.includes(acronym)) {
+        resolve(true);
+      } else {
+        resolve(false);
       }
     });
   }
 
   public static Log() {
-    console.log(this.List);
+    for (let i = 0; i < this.List.length; i++) {
+      const anime = this.List[i];
+      const title = TitleHelper.Get(anime.title);
+      const id = anime.id;
+      const malId = anime.idMal;
+      const episodes = anime.episodes;
+      console.log(
+        `${i + 1}. Ids:[${id}, ${malId}], "${title}", ${episodes} episodes.`
+      );
+    }
   }
 }
