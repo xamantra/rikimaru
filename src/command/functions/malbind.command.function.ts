@@ -71,7 +71,7 @@ export class MalBindFunction implements ICommandFunction {
     const embed = await this.EmbedTemplate(message, command, code);
     if (about === null) {
       message.channel.send(
-        `:regional_indicator_x: Ge me nasai! I wasn't able to find mal user: **${
+        `:regional_indicator_x: Go me nasai! I wasn't able to find mal user: **${
           command.Parameter
         }**`
       );

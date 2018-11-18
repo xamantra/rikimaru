@@ -75,7 +75,7 @@ export class AniBindFunction implements ICommandFunction {
     const embed = await this.EmbedTemplate(message, command, code);
     if (!NullCheck.Fine(user)) {
       message.channel.send(
-        `:regional_indicator_x: Ge me nasai! I wasn't able to find anilist user: **${
+        `:regional_indicator_x: Go me nasai! I wasn't able to find anilist user: **${
           command.Parameter
         }**`
       );
