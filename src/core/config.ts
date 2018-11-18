@@ -71,4 +71,11 @@ export class Config {
         require("../extras/env").env.QUEUE_REFRESH_RATE
     );
   }
+
+  public static get CACHE_UPDATE_INTERVAL() {
+    return Number(
+      process.env.CACHE_UPDATE_INTERVAL ||
+        require("../extras/env").env.CACHE_UPDATE_INTERVAL
+    );
+  }
 }

@@ -3,6 +3,9 @@ import { MediaSearch } from "./media.search";
 import { ArrayHelper } from "../helpers/array.helper";
 import { Random } from "../helpers/random.helper";
 import { TitleHelper } from "../helpers/title.helper";
+import { MediaStatus } from "./media.status";
+import { Config } from "./config";
+import { NullCheck } from "../helpers/null.checker.helper";
 
 export class AnimeCache {
   private static List: IMedia[] = [];
@@ -10,25 +13,30 @@ export class AnimeCache {
   public static async Update(index: number = 0) {
     setTimeout(async () => {
       if (this.List.length > 0) {
-        const local = this.List[index];
-        const fromApi = await MediaSearch.Find(local.idMal);
-        if (fromApi !== null && fromApi !== undefined) {
-          ArrayHelper.remove(this.List, local, async () => {
-            const exists = await this.Exists(fromApi.idMal);
-            if (exists === false) {
-              this.List.push(fromApi);
-              this.Check(index);
-            } else {
-              this.Check(index);
-            }
-          });
+        const fromCache = this.List[index];
+        // we only update the "cached anime" if it is NOT competed.
+        if (!MediaStatus.Completed(fromCache)) {
+          const fromApi = await MediaSearch.Find(fromCache.idMal);
+          if (NullCheck.Fine(fromApi)) {
+            ArrayHelper.remove(this.List, fromCache, async () => {
+              const exists = await this.Exists(fromApi.idMal);
+              if (exists === false) {
+                this.List.push(fromApi);
+                this.Check(index);
+              } else {
+                this.Check(index);
+              }
+            });
+          } else {
+            this.Check(index);
+          }
         } else {
-          this.Check(0);
+          this.Check(index);
         }
       } else {
         this.Check(0);
       }
-    }, 3000);
+    }, Config.CACHE_UPDATE_INTERVAL);
   }
 
   private static Check(index: number) {
