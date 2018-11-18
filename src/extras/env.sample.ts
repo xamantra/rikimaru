@@ -1,19 +1,15 @@
-import { IFirebaseConfig } from "../interfaces/firebase.config.interface";
+// Create a "env.ts" file in the same directory with your own technical configurations.
 // tslint:disable-next-line:class-name
 export class env {
   public static BOT_TOKEN =
     "ThisisAbotToken.bareWithme.IhackedDiscord.aWhileagoLikeaBoss";
-  public static COMMAND_PREFIX = "-";
-  public static MONGO_BASE = "mongodb://localhost:27017/";
+  public static COMMAND_PREFIX = "cc-";
+  public static MONGO_BASE = "mongodb://localhost:27017/rikimaru";
   public static MONGO_DATABASE = "rikimaru";
-  public static MAL_PROFILE_BASE = "https://myanimelist.net/profile/";
+  public static MAL_PROFILE_BASE = "https://myanimelist.net/profile";
   public static MAL_CW_BASE = "https://myanimelist.net/animelist";
-  public static FirebaseConfig: IFirebaseConfig = {
-    apiKey: "thisisafirebaseapikey",
-    authDomain: "app-name-here.firebaseapp.com",
-    databaseURL: "https://app-name-here.firebaseio.com",
-    projectId: "app-name-here",
-    storageBucket: "app-name-here.appspot.com",
-    messagingSenderId: "9999999999999"
-  };
+  public static MAL_ANIME_BASE = "https://myanimelist.net/anime";
+  public static ANI_ANIME_BASE = "https://anilist.co/anime";
+  public static QUEUE_REFRESH_RATE = "10";
+  public static CACHE_UPDATE_INTERVAL = "1";
 }

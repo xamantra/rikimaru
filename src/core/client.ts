@@ -28,4 +28,8 @@ export class ClientManager {
     });
     this.Client.login(Config.BOT_TOKEN);
   }
+
+  public static get BotName() {
+    return this.Client.user.username;
+  }
 }
