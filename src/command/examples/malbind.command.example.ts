@@ -3,7 +3,7 @@ import { ICommand } from "../../interfaces/command.interface";
 import { Random } from "../../helpers/random.helper";
 import { Config } from "../../core/config";
 
-export class MalSyncExample implements ICommandExample {
+export class MalBindExample implements ICommandExample {
   Count: number;
   Usernames: string[];
 

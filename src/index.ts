@@ -10,6 +10,7 @@ import { BotPresence } from "./core/presence";
 import { MalBindData } from "./data/mal.bind.data";
 import { AnimeCache } from "./core/anime.cache";
 import { Config } from "./core/config";
+import { AniBindData } from "./data/ani.bind.data";
 
 class App {
   static _instance: App;
@@ -23,6 +24,7 @@ class App {
     await QueueData.Init();
     await SubscriptionData.Init();
     await MalBindData.Init();
+    await AniBindData.Init();
     await BotPresence.Init();
     await QueueData.Sync();
     AnimeCache.Update();

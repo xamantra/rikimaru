@@ -9,8 +9,13 @@ import {
   viewSubsFunction,
   unsubFunction
 } from "./functions";
-import { mediaExample, malBindExample } from "./examples";
-import { malBindFunction, malSyncFunction } from "./functions";
+import { mediaExample, malBindExample, aniBindExample } from "./examples";
+import {
+  malBindFunction,
+  malSyncFunction,
+  aniBindFunction,
+  aniSyncFunction
+} from "./functions";
 import { Config } from "../core/config";
 
 const prefix = Config.COMMAND_PREFIX;
@@ -130,6 +135,28 @@ export const malsync = new BotCommand(
   Response.ChannelReply,
   60,
   malSyncFunction,
+  null,
+  false
+);
+export const anibind = new BotCommand(
+  "anibind",
+  ``,
+  true,
+  false,
+  Response.ChannelReply,
+  30,
+  aniBindFunction,
+  aniBindExample,
+  false
+);
+export const anisync = new BotCommand(
+  "anisync",
+  ``,
+  false,
+  false,
+  Response.ChannelReply,
+  30,
+  aniSyncFunction,
   null,
   false
 );

@@ -15,7 +15,7 @@ import {
   dmunsub
 } from "./commands";
 import { ICommand } from "../interfaces/command.interface";
-import { malbind, malsync } from "./commands";
+import { malbind, malsync, anibind, anisync } from "./commands";
 
 export class CommandManager {
   private static BotCommands: BotCommand[] = [];
@@ -35,6 +35,8 @@ export class CommandManager {
     cmds.push(dmunsub);
     cmds.push(malbind);
     cmds.push(malsync);
+    cmds.push(anibind);
+    cmds.push(anisync);
     cmds.push(ping);
     cmds.push(dmping);
     cmds.push(logall);

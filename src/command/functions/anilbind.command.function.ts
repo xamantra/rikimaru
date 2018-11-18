@@ -3,30 +3,34 @@ import { Message } from "discord.js";
 import { ICommand } from "../../interfaces/command.interface";
 import { Sender } from "../../core/sender";
 import { Random } from "../../helpers/random.helper";
-import { MalBindData } from "../../data/mal.bind.data";
-import { MalBind } from "../../models/mal.bind.model";
 import { ClientManager } from "../../core/client";
 import { UserData } from "../../data/user.data";
-import { MAL } from "../../core/mal";
 import { Config } from "../../core/config";
+import { AniBind } from "../../models/ani.bind.model";
+import { AniBindData } from "../../data/ani.bind.data";
+import { Anilist } from "../../core/anilist";
+import { JsonHelper } from "../../helpers/json.helper";
+import { Root, User } from "../../models/anilist.user.model";
 import { NullCheck } from "../../helpers/null.checker.helper";
 
-export class MalBindFunction implements ICommandFunction {
+export class AniBindFunction implements ICommandFunction {
   async Execute(
     message?: Message,
     command?: ICommand,
     dm?: boolean
   ): Promise<void> {
-    await UserData.Insert(message.author.id).catch((err: Error) => {
-      console.log(`Internal error: ${err.message}`);
+    await UserData.Insert(message.author.id).catch(err => {
+      console.log(err);
     });
     this.CheckBind(message, command, dm);
   }
 
   private async CheckBind(message?: Message, command?: ICommand, dm?: boolean) {
-    const about = await MAL.GetProfileAbout(command.Parameter);
-    const c = await this.SetCode(message, command, about);
-    this.ProcessCode(message, command, dm, c, about);
+    const anilistUserResult = await Anilist.UserQuery(command.Parameter);
+    const anilistRoot = await JsonHelper.Convert<Root>(anilistUserResult, Root);
+    const user = anilistRoot.data.User;
+    const c = await this.SetCode(message, command, user);
+    this.ProcessCode(message, command, dm, c, user);
   }
 
   private async ProcessCode(
@@ -34,17 +38,17 @@ export class MalBindFunction implements ICommandFunction {
     command: ICommand,
     dm: boolean,
     c: string,
-    about: string
+    user: User
   ) {
-    const code = MalBind.CodeFormat(c);
-    const mal = await MalBindData.Get(message.author.id);
-    if (mal !== null) {
-      if (mal.Verified === true) {
+    const code = AniBind.CodeFormat(c);
+    const ani = await AniBindData.Get(message.author.id);
+    if (ani !== null) {
+      if (ani.Verified === true) {
         Sender.Send(
           message,
-          `Cool! Your MAL account is **binded** with ${
+          `Cool! Your Anilist account is **binded** with ${
             Config.BOT_NAME
-          }, You can **remove** the code in your **mal about section**.`,
+          }, You can **remove** the code in your **anilist about section**.`,
           dm
         );
       } else {
@@ -52,12 +56,12 @@ export class MalBindFunction implements ICommandFunction {
           message,
           command,
           dm,
-          MalBind.CodeFormat(mal.Code),
-          about
+          AniBind.CodeFormat(ani.Code),
+          user
         );
       }
     } else {
-      this.CheckProfile(message, command, dm, code, about);
+      this.CheckProfile(message, command, dm, code, user);
     }
   }
 
@@ -66,28 +70,28 @@ export class MalBindFunction implements ICommandFunction {
     command: ICommand,
     dm: boolean,
     code: string,
-    about: string
+    user: User
   ) {
     const embed = await this.EmbedTemplate(message, command, code);
-    if (about === null) {
+    if (user === null) {
       message.channel.send(
-        `:regional_indicator_x: Ge me nasai! I wasn't able to find mal user: **${
+        `:regional_indicator_x: Ge me nasai! I wasn't able to find anilist user: **${
           command.Parameter
         }**`
       );
       return;
     } else {
-      if (about.includes(code)) {
-        const v = await MalBindData.Verify(message.author.id);
+      if (user.about.includes(code)) {
+        const v = await AniBindData.Verify(message.author.id);
         if (v === null) {
           Sender.Send(message, embed, dm);
         } else {
           if (v.Verified) {
             Sender.Send(
               message,
-              `Cool! Your MAL account is **binded** with ${
+              `Cool! Your Anilist account is **binded** with ${
                 Config.BOT_NAME
-              }, You can **remove** the code in your **mal about section**.`,
+              }, You can **remove** the code in your **anilist about section**.`,
               dm
             );
           }
@@ -103,17 +107,17 @@ export class MalBindFunction implements ICommandFunction {
       const client = ClientManager.Client;
       const embed = {
         embed: {
-          title: `${Config.BOT_NAME} MAL Sync Center`,
+          title: `${Config.BOT_NAME} Anilist Sync Center`,
           description: `**${
             Config.BOT_NAME
           } Code not found** on your profile. You first need to verify your ownership.`,
           color: message.member.highestRole.color,
           thumbnail: { url: message.author.avatarURL },
-          image: { url: `https://i.imgur.com/UFL2LDu.png` },
+          image: { url: `https://i.imgur.com/SwKmEzo.png` },
           fields: [
             {
               name: `Instruction`,
-              value: `*Copy and paste* the verification code below in your *MAL about section.*. You can place it anywhere.\n[Edit Profile](https://myanimelist.net/editprofile.php)`
+              value: `*Copy and paste* the verification code below in your *Anilist about section.*. You can place it anywhere.\n[Edit Profile](https://anilist.co/settings)`
             },
             { name: `Code`, value: `***${code}***\n\nExample:` }
           ],
@@ -128,15 +132,18 @@ export class MalBindFunction implements ICommandFunction {
     });
   }
 
-  private SetCode(message: Message, command: ICommand, about: string) {
+  private SetCode(message: Message, command: ICommand, user: User) {
     return new Promise<string>((resolve, reject) => {
       const code = Random.Range(10000000, 99999999).toString();
-      if (NullCheck.Fine(about)) {
-        MalBindData.Insert(message.author.id, command.Parameter, code).then(
-          () => {
-            resolve(code);
-          }
-        );
+      if (NullCheck.Fine(user)) {
+        AniBindData.Insert(
+          message.author.id,
+          user.id,
+          command.Parameter,
+          code
+        ).then(() => {
+          resolve(code);
+        });
       } else {
         resolve(code);
       }

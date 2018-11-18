@@ -1,14 +1,16 @@
-import { JsonObject, JsonProperty } from "json2typescript";
 import { Config } from "../core/config";
+import { JsonObject, JsonProperty } from "json2typescript";
 
 @JsonObject("")
-export class MalBind {
+export class AniBind {
   @JsonProperty("_id", String)
   public Id: string = undefined;
+  @JsonProperty("anilist_id", Number)
+  public AnilistId: number = undefined;
   @JsonProperty("discord_id", String)
   public DiscordId: string = undefined;
-  @JsonProperty("mal_username", String)
-  public MalUsername: string = undefined;
+  @JsonProperty("anilist_username", String)
+  public AnilistUsername: string = undefined;
   @JsonProperty("code", String)
   public Code: string = undefined;
   @JsonProperty("verified", Boolean)

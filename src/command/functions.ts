@@ -7,6 +7,8 @@ import { MediaFunction } from "./functions/media.command.function";
 import { PingFunction } from "./functions/ping.command.function";
 import { MalBindFunction } from "./functions/malbind.command.function";
 import { MalSyncFunction } from "./functions/malsync.command.function";
+import { AniBindFunction } from "./functions/anilbind.command.function";
+import { AniSyncFunction } from "./functions/anisync.command.function";
 
 export const helpFunction = new HelpFunction();
 export const whenAnimeFunction = new MediaFunction();
@@ -17,3 +19,5 @@ export const unsubFunction = new UnsubFunction();
 export const logAllFunction = new LogAllFunction();
 export const malBindFunction = new MalBindFunction();
 export const malSyncFunction = new MalSyncFunction();
+export const aniBindFunction = new AniBindFunction();
+export const aniSyncFunction = new AniSyncFunction();
