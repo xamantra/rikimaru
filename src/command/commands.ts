@@ -118,7 +118,7 @@ export const dmunsub = new BotCommand(
 );
 export const malbind = new BotCommand(
   "malbind",
-  `Bind your mal account with your C.C.`,
+  `Bind your mal account with your C.C. data.`,
   true,
   false,
   Response.ChannelReply,
@@ -140,7 +140,7 @@ export const malsync = new BotCommand(
 );
 export const anibind = new BotCommand(
   "anibind",
-  ``,
+  `Bind your anilist account with your C.C. data.`,
   true,
   false,
   Response.ChannelReply,
@@ -151,7 +151,7 @@ export const anibind = new BotCommand(
 );
 export const anisync = new BotCommand(
   "anisync",
-  ``,
+  `Automatically subscribe to all ongoing anime in your Anilist CW list. And also unsubscribe to any anime that it is not in your list.`,
   false,
   false,
   Response.ChannelReply,
