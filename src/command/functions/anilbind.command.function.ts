@@ -157,7 +157,9 @@ export class AniBindFunction implements ICommandFunction {
 
   private SendOK(message: Message, command: ICommand) {
     message.channel.send(
-      `Cool! AniList account **"${command.Parameter}"** is **binded** with ${
+      `:white_check_mark: Cool! AniList account **"${
+        command.Parameter
+      }"** is **binded** with ${
         Config.BOT_NAME
       }, The code can be remove in **anilist about section**.`
     );

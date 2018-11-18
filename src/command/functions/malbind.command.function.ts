@@ -143,7 +143,9 @@ export class MalBindFunction implements ICommandFunction {
 
   private SendOK(message: Message, command: ICommand) {
     message.channel.send(
-      `Cool! MAL account **"${command.Parameter}"** is **binded** with ${
+      `:white_check_mark: Cool! MAL account **"${
+        command.Parameter
+      }"** is **binded** with ${
         Config.BOT_NAME
       }, The code can be remove in **mal about section**.`
     );
