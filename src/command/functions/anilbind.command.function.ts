@@ -73,7 +73,7 @@ export class AniBindFunction implements ICommandFunction {
     user: User
   ) {
     const embed = await this.EmbedTemplate(message, command, code);
-    if (user === null) {
+    if (!NullCheck.Fine(user)) {
       message.channel.send(
         `:regional_indicator_x: Ge me nasai! I wasn't able to find anilist user: **${
           command.Parameter
@@ -81,7 +81,7 @@ export class AniBindFunction implements ICommandFunction {
       );
       return;
     } else {
-      if (user.about.includes(code)) {
+      if (NullCheck.Fine(user.about) && user.about.includes(code)) {
         const v = await AniBindData.Verify(message.author.id);
         if (v === null) {
           Sender.Send(message, embed, dm);
