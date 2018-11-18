@@ -2,8 +2,6 @@
 
 - _Konichiwa!_ I am an **anime discord bot** that shows next **episode countdown/schedule**. I can synchronize your **MAL account** like a good boy. I can also let you subscribe to an anime and DM you when an episode is aired like an alarm clock.
 
-[![Discord Bots](https://discordbots.org/api/widget/501772345372049437.svg)](https://discordbots.org/bot/501772345372049437)
-
 ###### _Anime Commands:_
 
 > `cc-when anime name or keyword` command where you can see the countdown for next episode of most anime. Anime that lacks information from the source will sometimes display **null** or **undefined**.
@@ -26,7 +24,7 @@
 
 > `cc-dmviewsubs` the same with `cc-viewsubs` it just dm you with the result.
 
-##### _Other Commands:_
+###### _Other Commands:_
 
 > `cc-help` show all commands available.
 
