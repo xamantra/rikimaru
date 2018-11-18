@@ -35,7 +35,15 @@ export class AniBindFunction implements ICommandFunction {
         anilistUserResult,
         Root
       );
+      if (!NullCheck.Fine(anilistUser)) {
+        this.NotFindError(message, command);
+        return;
+      }
       const user = anilistUser.data.User;
+      if (!NullCheck.Fine(user)) {
+        this.NotFindError(message, command);
+        return;
+      }
       const c = await this.SetCode(message, command, user);
       this.ProcessCode(message, command, dm, c, user);
     }
@@ -81,28 +89,24 @@ export class AniBindFunction implements ICommandFunction {
     user: User
   ) {
     const embed = await this.EmbedTemplate(message, command, code);
-    if (!NullCheck.Fine(user)) {
-      this.NotFindError(message, command);
-      return;
-    } else {
-      if (NullCheck.Fine(user.about) && user.about.includes(code)) {
-        const v = await AniBindData.Verify(message.author.id);
-        if (v === null) {
-          Sender.Send(message, embed, dm);
-        } else {
-          if (v.Verified) {
-            Sender.Send(
-              message,
-              `Cool! Your AniList account is **binded** with ${
-                Config.BOT_NAME
-              }, You can **remove** the code in your **anilist about section**.`,
-              dm
-            );
-          }
-        }
-      } else {
+    if (NullCheck.Fine(user.about) && user.about.includes(code)) {
+      const v = await AniBindData.Verify(message.author.id);
+      if (v === null) {
         Sender.Send(message, embed, dm);
+      } else {
+        if (v.Verified) {
+          this.ChannelSend(
+            message,
+            `Cool! AniList account **"${
+              command.Parameter
+            }"** is **binded** with ${
+              Config.BOT_NAME
+            }, The code can now be remove in **anilist about section**.`
+          );
+        }
       }
+    } else {
+      Sender.Send(message, embed, dm);
     }
   }
 
@@ -160,5 +164,9 @@ export class AniBindFunction implements ICommandFunction {
         command.Parameter
       }**`
     );
+  }
+
+  private ChannelSend(message: Message, content: string) {
+    message.channel.send(content);
   }
 }
