@@ -3,6 +3,7 @@ import rp from "request-promise";
 import { JsonHelper } from "../helpers/json.helper";
 import { MalAnime } from "../models/mal.anime.model";
 import cheerio from "cheerio";
+import { StatusCodeError } from "request-promise/errors";
 
 export class MAL {
   public static GetCWList(username: string) {
@@ -51,8 +52,8 @@ export class MAL {
               .text()
           );
         })
-        .catch(err => {
-          console.log(err);
+        .catch(() => {
+          console.log(`MAL user "${username}" not found...`);
           resolve(null);
         });
     });

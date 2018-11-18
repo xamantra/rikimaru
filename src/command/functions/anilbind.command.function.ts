@@ -27,7 +27,7 @@ export class AniBindFunction implements ICommandFunction {
 
   private async CheckBind(message?: Message, command?: ICommand, dm?: boolean) {
     const anilistUserResult = await AniList.UserQuery(command.Parameter);
-    if (NullCheck.Fine(anilistUserResult)) {
+    if (!NullCheck.Fine(anilistUserResult)) {
       this.NotFindError(message, command);
       return;
     } else {
@@ -156,7 +156,7 @@ export class AniBindFunction implements ICommandFunction {
 
   private NotFindError(message: Message, command: ICommand) {
     message.channel.send(
-      `:regional_indicator_x: Go me nasai! I wasn't able to find mal user: **${
+      `:regional_indicator_x: Go me nasai! I wasn't able to find AniList user: **${
         command.Parameter
       }**`
     );
