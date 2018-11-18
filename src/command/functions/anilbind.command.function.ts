@@ -60,13 +60,8 @@ export class AniBindFunction implements ICommandFunction {
     const ani = await AniBindData.Get(message.author.id);
     if (ani !== null) {
       if (ani.Verified === true) {
-        Sender.Send(
-          message,
-          `Cool! Your AniList account is **binded** with ${
-            Config.BOT_NAME
-          }, You can **remove** the code in your **anilist about section**.`,
-          dm
-        );
+        this.SendOK(message, command);
+        return;
       } else {
         this.CheckProfile(
           message,
@@ -95,14 +90,8 @@ export class AniBindFunction implements ICommandFunction {
         Sender.Send(message, embed, dm);
       } else {
         if (v.Verified) {
-          this.ChannelSend(
-            message,
-            `Cool! AniList account **"${
-              command.Parameter
-            }"** is **binded** with ${
-              Config.BOT_NAME
-            }, The code can now be remove in **anilist about section**.`
-          );
+          this.SendOK(message, command);
+          return;
         }
       }
     } else {
@@ -166,7 +155,11 @@ export class AniBindFunction implements ICommandFunction {
     );
   }
 
-  private ChannelSend(message: Message, content: string) {
-    message.channel.send(content);
+  private SendOK(message: Message, command: ICommand) {
+    message.channel.send(
+      `Cool! AniList account **"${command.Parameter}"** is **binded** with ${
+        Config.BOT_NAME
+      }, The code can be remove in **anilist about section**.`
+    );
   }
 }

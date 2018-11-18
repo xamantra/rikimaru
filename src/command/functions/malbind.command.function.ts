@@ -44,13 +44,8 @@ export class MalBindFunction implements ICommandFunction {
     const mal = await MalBindData.Get(message.author.id);
     if (mal !== null) {
       if (mal.Verified === true) {
-        Sender.Send(
-          message,
-          `Cool! Your MAL account is **binded** with ${
-            Config.BOT_NAME
-          }, You can **remove** the code in your **mal about section**.`,
-          dm
-        );
+        this.SendOK(message, command);
+        return;
       } else {
         this.CheckProfile(
           message,
@@ -83,13 +78,8 @@ export class MalBindFunction implements ICommandFunction {
           Sender.Send(message, embed, dm);
         } else {
           if (v.Verified) {
-            Sender.Send(
-              message,
-              `Cool! Your MAL account is **binded** with ${
-                Config.BOT_NAME
-              }, You can **remove** the code in your **mal about section**.`,
-              dm
-            );
+            this.SendOK(message, command);
+            return;
           }
         }
       } else {
@@ -148,6 +138,14 @@ export class MalBindFunction implements ICommandFunction {
       `:regional_indicator_x: Go me nasai! I wasn't able to find mal user: **${
         command.Parameter
       }**`
+    );
+  }
+
+  private SendOK(message: Message, command: ICommand) {
+    message.channel.send(
+      `Cool! MAL account **"${command.Parameter}"** is **binded** with ${
+        Config.BOT_NAME
+      }, The code can be remove in **mal about section**.`
     );
   }
 }
